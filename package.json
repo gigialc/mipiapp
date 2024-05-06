@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "build": "GENERATE_SOURCEMAP=true react-scripts build --public-url=/frontend/public/"
+  },
+  "dependencies": {
+    "@types/react-router": "^5.1.20",
+    "react-router": "^6.23.0",
+    "react-scripts": "^5.0.1"
+  }
+}
