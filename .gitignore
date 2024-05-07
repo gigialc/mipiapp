@@ -2,3 +2,7 @@
 docker-data
 .DS_Store
 node_modules
+
+
+frontend/.env
+backend/.env
