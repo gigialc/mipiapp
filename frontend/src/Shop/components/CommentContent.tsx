@@ -1,0 +1,113 @@
+//Created by Georgina Alacaraz
+import { Button, Grid } from '@mui/material';
+import { StringDecoder } from 'string_decoder';
+import { UserContextType } from './Types';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useLocation } from 'react-router-dom';
+import { UserContext } from './Auth';
+import { Paper } from '@mui/material';
+import { Card, CardContent, Typography } from '@mui/material';
+import { IconButton } from '@mui/material';
+import HeartIcon from '@mui/icons-material/Favorite';
+import Box from '@mui/material/Box';
+import { useNavigate } from 'react-router-dom';
+import { PostType } from './Types';
+import CommentCard from './commentsCard';
+
+
+interface WindowWithEnv extends Window {
+  __ENV?: {
+    backendURL: string, // REACT_APP_BACKEND_URL environment variable
+    sandbox: "true" | "false", // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
+  }
+}
+
+const _window: WindowWithEnv = window;
+const backendURL = _window.__ENV && _window.__ENV.backendURL;
+
+const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true });
+const config = { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } };
+
+export default function CommentContent (){ 
+  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
+  const [post, setPost] = useState<PostType | null>(null);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [comments, setComments] = useState<{ _id: string, content: string, likes: [] ,user: { username: string } }[]>([]);
+  const [commentId, setCommentId] = useState<string | null>(null);
+  const location = useLocation();
+  const postId = location.state.postId;
+  console.log(postId);
+
+
+      //return comments from this postID
+      useEffect(() => {
+        const fetchComments = async () => {
+          try {
+            const response = await axiosClient.get(`/comments/fetch/${postId}`);
+            console.log(response.data.comments);
+            setComments(response.data.comments || []);
+          } catch (error) {
+            console.error("Failed to fetch comments: ", error);
+          }
+        };
+        fetchComments();
+        const fetchLikeStatus = async () => {
+          try {
+            const response = await axiosClient.get(`/comments/likeComment/${postId}`);
+            setIsLiked(response.data.isLiked);
+            console.log(response.data);
+            setLikesCount(response.data.likeCount);
+          } catch (error) {
+            console.error("Failed to fetch like status: ", error);
+          }
+        };
+       fetchLikeStatus();
+
+       const fetchPost = async () => {
+        try {
+          const response = await axiosClient.get(`/posts/${postId}`);
+          console.log(response.data);
+          setPost(response.data || null);
+        } catch (error) {
+          console.error("Failed to fetch post: ", error);
+        }
+      }
+      fetchPost();
+      }, [postId, commentId]);
+
+
+  return (
+    <div style={{ maxWidth: '600px', margin: '1', textAlign: 'left' }}>
+      {post ? (
+        <CardContent>
+          <Typography variant="h6" gutterBottom align="left">
+            {post.title}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" align="left">
+            {post.description}
+          </Typography>
+        </CardContent>
+      ) : (
+        <Typography variant="subtitle2" style={{ marginTop: '5px', fontStyle: "italic", color: '#9E4291' }}>
+          Loading post...
+        </Typography>
+      )}
+      <br /><br />
+      
+      {comments.map((comment) => (
+        <CommentCard 
+          key={comment._id}
+          _id={comment._id}
+          content={comment.content}
+          user={comment.user}
+          likes={comment.likes}
+          postId={postId}
+        />
+      ))}
+    </div>
+  );
+  
+}
+
