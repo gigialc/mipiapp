@@ -23,6 +23,7 @@ interface Environment {
   mongo_user: string,
   mongo_password: string,
   frontend_url: string,
+  MONGO_URI: string,
 }
 
 
@@ -30,6 +31,7 @@ const env: Environment = {
   session_secret: process.env.SESSION_SECRET || "This is my session secret",
   pi_api_key: process.env.PI_API_KEY || '',
   platform_api_url: process.env.PLATFORM_API_URL || '',
+  MONGO_URI: process.env.MONGO_URI || '',
   mongo_host: process.env.MONGO_HOST || 'localhost:27017',
   mongo_db_name: process.env.MONGODB_DATABASE_NAME || 'demo-app',
   mongo_user: process.env.MONGODB_USERNAME || '',

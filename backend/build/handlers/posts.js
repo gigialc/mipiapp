@@ -54,7 +54,7 @@ function mountPostEndpoints(router) {
                         title: posts.title,
                         description: posts.description,
                         user: req.session.currentUser,
-                        community_id: communityId,
+                        community_id: communityId, // Store the community ID directly
                         comments: [],
                         likes: [],
                     };
@@ -119,7 +119,7 @@ function mountPostEndpoints(router) {
                         _id: commentId,
                         content: content,
                         user: req.session.currentUser,
-                        createdAt: new Date(),
+                        createdAt: new Date(), // Adding a timestamp for when the comment is created
                         post: mongodb_1.ObjectId,
                         likes: (Array)
                     };

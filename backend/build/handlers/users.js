@@ -172,7 +172,7 @@ function mountUserEndpoints(router) {
                 case 1:
                     communities = _a.sent();
                     communityMap = communities.filter(function (c) { return c; }).map(function (community) { return ({
-                        _id: community._id.toString(),
+                        _id: community._id.toString(), // Convert ObjectId to string
                         name: community.name,
                         description: community.description,
                         posts: community.posts,
@@ -220,7 +220,7 @@ function mountUserEndpoints(router) {
                 case 1:
                     communities = _a.sent();
                     communityMap = communities.filter(function (c) { return c; }).map(function (community) { return ({
-                        _id: community._id.toString(),
+                        _id: community._id.toString(), // Convert ObjectId to string
                         name: community.name,
                         description: community.description,
                         posts: community.posts,

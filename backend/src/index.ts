@@ -29,6 +29,15 @@ const mongoClientOptions = {
   },
 }
 
+
+const mongoose = require('mongoose');
+
+const mongoURI = process.env.MONGO_URI;
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB connection successful'))
+  .catch((err: Error) => console.error('MongoDB connection error:', err));
+
+
 //
 // I. Initialize and set up the express app and various middlewares and packages:
 //
@@ -47,9 +56,13 @@ app.use(logger('common', {
 app.use(express.json())
 
 // Handle CORS:
+
+// Adjust the CORS settings to include your frontend domain
 app.use(cors({
-  origin: env.frontend_url,
-  credentials: true
+  origin: 'https://destigfemme.app', // Allow your frontend domain to make requests
+  credentials: true, // Allows cookies to be sent along with the requests
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify which methods to allow
+  allowedHeaders: ['Content-Type', 'Authorization'] // Specify allowed headers
 }));
 
 // Handle cookies 🍪
