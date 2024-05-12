@@ -106,7 +106,9 @@ export type AuthResult = {
   // Make TS accept the existence of our window.__ENV object - defined in index.html:
   export interface WindowWithEnv extends Window {
       __ENV?: {
-        backendURL: string, // REACT_APP_BACKEND_URL environment variable
+        BACKEND_URL: string, // REACT_APP_BACKEND_URL environment variable
         sandbox: "true" | "false", // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
       }
     }
+
+    
