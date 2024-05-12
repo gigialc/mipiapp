@@ -8,7 +8,7 @@ import { useState } from "react";
 export const UserContext = React.createContext<UserContextType | null >(null);
 
 const _window: WindowWithEnv = window;
-const backendURL = _window.__ENV && _window.__ENV.backendURL;
+const backendURL = _window.__ENV && _window.__ENV.BACKEND_URL;
 
 const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
 

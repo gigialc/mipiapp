@@ -47,69 +47,58 @@ var cookie_parser_1 = __importDefault(require("cookie-parser"));
 var express_session_1 = __importDefault(require("express-session"));
 var morgan_1 = __importDefault(require("morgan"));
 var connect_mongo_1 = __importDefault(require("connect-mongo"));
-var mongodb_1 = require("mongodb");
-var environments_1 = __importDefault(require("./environments"));
+var mongoose_1 = __importDefault(require("mongoose"));
+var dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+// Import routes and other utilities
 var payments_1 = __importDefault(require("./handlers/payments"));
 var users_1 = __importDefault(require("./handlers/users"));
 var community_1 = __importDefault(require("./handlers/community"));
 var posts_1 = __importDefault(require("./handlers/posts"));
 var comments_1 = __importDefault(require("./handlers/comments"));
-// We must import typedefs for ts-node-dev to pick them up when they change (even though tsc would supposedly
-// have no problem here)
-// https://stackoverflow.com/questions/65108033/property-user-does-not-exist-on-type-session-partialsessiondata#comment125163548_65381085
 require("./types/session");
-var dbName = environments_1.default.mongo_db_name;
-var mongoUri = "mongodb://".concat(environments_1.default.mongo_host, "/").concat(dbName);
-var mongoClientOptions = {
-    authSource: "admin",
-    auth: {
-        username: environments_1.default.mongo_user,
-        password: environments_1.default.mongo_password,
-    },
-};
-//
-// I. Initialize and set up the express app and various middlewares and packages:
-//
+var mongoURI = process.env.MONGO_URI;
+if (!mongoURI) {
+    console.error('MongoDB URI not defined in environment variables');
+    process.exit(1); // Exit if no MongoDB URI is defined
+}
+// MongoDB connection
+mongoose_1.default.connect(mongoURI)
+    //print mongodb connection status
+    .then(function () { console.log('Connected to MongoDB URI:', (mongoURI)); })
+    .catch(function (err) {
+    console.error('MongoDB connection error:', err);
+    process.exit(1); // Exit if cannot connect to MongoDB
+});
 var app = (0, express_1.default)();
-// Log requests to the console in a compact format:
 app.use((0, morgan_1.default)('dev'));
-// Full log of all requests to /log/access.log:
 app.use((0, morgan_1.default)('common', {
     stream: fs_1.default.createWriteStream(path_1.default.join(__dirname, '..', 'log', 'access.log'), { flags: 'a' }),
 }));
-// Enable response bodies to be sent as JSON:
 app.use(express_1.default.json());
-// Handle CORS:
 app.use((0, cors_1.default)({
-    origin: environments_1.default.frontend_url,
-    credentials: true
+    origin: 'https://destigfemme.app',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
-// Handle cookies 🍪
 app.use((0, cookie_parser_1.default)());
-// Use sessions:
 app.use((0, express_session_1.default)({
-    secret: environments_1.default.session_secret,
+    secret: process.env.SESSION_SECRET || 'your_default_secret_value',
     resave: false,
     saveUninitialized: false,
     store: connect_mongo_1.default.create({
-        mongoUrl: mongoUri,
-        mongoOptions: mongoClientOptions,
-        dbName: dbName,
+        mongoUrl: mongoURI,
         collectionName: 'user_sessions'
     }),
 }));
-//
-// II. Mount app endpoints:
-// Payments endpoint under /payments:
+// Endpoint mounting
 var paymentsRouter = express_1.default.Router();
 (0, payments_1.default)(paymentsRouter);
 app.use('/payments', paymentsRouter);
-// User endpoints (e.g signin, signout) under /user:
 var userRouter = express_1.default.Router();
 (0, users_1.default)(userRouter);
 app.use('/user', userRouter);
-console.log("hi3");
-// Community endpoints under /community:
 var communityRouter = express_1.default.Router();
 (0, community_1.default)(communityRouter);
 app.use('/community', communityRouter);
@@ -119,41 +108,14 @@ app.use('/posts', postRouter);
 var commentRouter = express_1.default.Router();
 (0, comments_1.default)(commentRouter);
 app.use('/comments', commentRouter);
-// Hello World page to check everything works:
 app.get('/', function (_, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         res.status(200).send({ message: "Hello, World!" });
         return [2 /*return*/];
     });
 }); });
-// III. Boot up the app:
-app.listen(3333, function () { return __awaiter(void 0, void 0, void 0, function () {
-    var client, db, err_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, mongodb_1.MongoClient.connect(mongoUri, mongoClientOptions)];
-            case 1:
-                client = _a.sent();
-                db = client.db(dbName);
-                app.locals.orderCollection = db.collection('orders');
-                app.locals.userCollection = db.collection('users');
-                //adding communities to the database, you can see the fields of communities in the types folder
-                app.locals.communityCollection = db.collection('communities');
-                app.locals.postCollection = db.collection('posts');
-                app.locals.commentCollection = db.collection('comments');
-                // app.locals.likeCollection = db.collection('likes');
-                console.log('Connected to MongoDB on: ', mongoUri);
-                return [3 /*break*/, 3];
-            case 2:
-                err_1 = _a.sent();
-                console.error('Connection to MongoDB failed: ', err_1);
-                return [3 /*break*/, 3];
-            case 3:
-                console.log("App platform demo app - Backend listening on port 3333!");
-                console.log("CORS config: configured to respond to a frontend hosted on ".concat(environments_1.default.frontend_url));
-                return [2 /*return*/];
-        }
-    });
-}); });
+var port = process.env.PORT || 3000;
+app.listen(port, function () {
+    console.log('Backend listening on port 3000!');
+    console.log("CORS configured for ".concat(process.env.FRONTEND_URL));
+});
