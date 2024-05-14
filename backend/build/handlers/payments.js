@@ -1,195 +1,107 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var axios_1 = __importDefault(require("axios"));
-var platformAPIClient_1 = __importDefault(require("../services/platformAPIClient"));
+const axios_1 = __importDefault(require("axios"));
+const platformAPIClient_1 = __importDefault(require("../services/platformAPIClient"));
 require("../types/session");
 function mountPaymentsEndpoints(router) {
-    var _this = this;
-    router.post('/incomplete', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-        var payment, paymentId, txid, txURL, app, orderCollection, order, horizonResponse, paymentIdOnBlock;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    payment = req.body.payment;
-                    paymentId = payment.identifier;
-                    txid = payment.transaction && payment.transaction.txid;
-                    txURL = payment.transaction && payment.transaction._link;
-                    app = req.app;
-                    orderCollection = app.locals.orderCollection;
-                    return [4 /*yield*/, orderCollection.findOne({ pi_payment_id: paymentId })];
-                case 1:
-                    order = _a.sent();
-                    // order doesn't exist 
-                    if (!order) {
-                        return [2 /*return*/, res.status(400).json({ message: "Order not found" })];
-                    }
-                    return [4 /*yield*/, axios_1.default.create({ timeout: 20000 }).get(txURL)];
-                case 2:
-                    horizonResponse = _a.sent();
-                    paymentIdOnBlock = horizonResponse.data.memo;
-                    // and check other data as well e.g. amount
-                    if (paymentIdOnBlock !== order.pi_payment_id) {
-                        return [2 /*return*/, res.status(400).json({ message: "Payment id doesn't match." })];
-                    }
-                    // mark the order as paid
-                    return [4 /*yield*/, orderCollection.updateOne({ pi_payment_id: paymentId }, { $set: { txid: txid, paid: true } })];
-                case 3:
-                    // mark the order as paid
-                    _a.sent();
-                    // let Pi Servers know that the payment is completed
-                    return [4 /*yield*/, platformAPIClient_1.default.post("/v2/payments/".concat(paymentId, "/complete"), { txid: txid })];
-                case 4:
-                    // let Pi Servers know that the payment is completed
-                    _a.sent();
-                    return [2 /*return*/, res.status(200).json({ message: "Handled the incomplete payment ".concat(paymentId) })];
-            }
-        });
-    }); });
+    router.post('/incomplete', async (req, res) => {
+        const payment = req.body.payment;
+        const paymentId = payment.identifier;
+        const txid = payment.transaction && payment.transaction.txid;
+        const txURL = payment.transaction && payment.transaction._link;
+        /*
+          implement your logic here
+          e.g. verifying the payment, delivering the item to the user, etc...
+    
+          below is a naive example
+        */
+        // find the incomplete order
+        const app = req.app;
+        const orderCollection = app.locals.orderCollection;
+        const order = await orderCollection.findOne({ pi_payment_id: paymentId });
+        // order doesn't exist 
+        if (!order) {
+            return res.status(400).json({ message: "Order not found" });
+        }
+        // check the transaction on the Pi blockchain
+        const horizonResponse = await axios_1.default.create({ timeout: 20000 }).get(txURL);
+        const paymentIdOnBlock = horizonResponse.data.memo;
+        // and check other data as well e.g. amount
+        if (paymentIdOnBlock !== order.pi_payment_id) {
+            return res.status(400).json({ message: "Payment id doesn't match." });
+        }
+        // mark the order as paid
+        await orderCollection.updateOne({ pi_payment_id: paymentId }, { $set: { txid, paid: true } });
+        // let Pi Servers know that the payment is completed
+        await platformAPIClient_1.default.post(`/v2/payments/${paymentId}/complete`, { txid });
+        return res.status(200).json({ message: `Handled the incomplete payment ${paymentId}` });
+    });
     console.log("hi2");
     // approve the current payment
-    router.post('/approve', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-        var app, paymentId, currentPayment, orderCollection;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    console.log(req.session.currentUser);
-                    if (!req.session.currentUser) {
-                        return [2 /*return*/, res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" })];
-                    }
-                    app = req.app;
-                    paymentId = req.body.paymentId;
-                    console.log("buy");
-                    return [4 /*yield*/, platformAPIClient_1.default.get("/v2/payments/".concat(paymentId))];
-                case 1:
-                    currentPayment = _a.sent();
-                    console.log("high");
-                    orderCollection = app.locals.orderCollection;
-                    /*
-                      implement your logic here
-                      e.g. creating an order record, reserve an item if the quantity is limited, etc...
-                    */
-                    return [4 /*yield*/, orderCollection.insertOne({
-                            pi_payment_id: paymentId,
-                            product_id: currentPayment.data.metadata.productId,
-                            user: req.session.currentUser.uid,
-                            txid: null,
-                            paid: false,
-                            cancelled: false,
-                            created_at: new Date()
-                        })];
-                case 2:
-                    /*
-                      implement your logic here
-                      e.g. creating an order record, reserve an item if the quantity is limited, etc...
-                    */
-                    _a.sent();
-                    console.log("hi3");
-                    // let Pi Servers know that you're ready
-                    return [4 /*yield*/, platformAPIClient_1.default.post("/v2/payments/".concat(paymentId, "/approve"))];
-                case 3:
-                    // let Pi Servers know that you're ready
-                    _a.sent();
-                    return [2 /*return*/, res.status(200).json({ message: "Approved the payment ".concat(paymentId) })];
-            }
+    router.post('/approve', async (req, res) => {
+        console.log(req.session.currentUser);
+        if (!req.session.currentUser) {
+            return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
+        }
+        const app = req.app;
+        const paymentId = req.body.paymentId;
+        console.log("buy");
+        const currentPayment = await platformAPIClient_1.default.get(`/v2/payments/${paymentId}`);
+        console.log("high");
+        const orderCollection = app.locals.orderCollection;
+        /*
+          implement your logic here
+          e.g. creating an order record, reserve an item if the quantity is limited, etc...
+        */
+        await orderCollection.insertOne({
+            pi_payment_id: paymentId,
+            product_id: currentPayment.data.metadata.productId,
+            user: req.session.currentUser.uid,
+            txid: null,
+            paid: false,
+            cancelled: false,
+            created_at: new Date()
         });
-    }); });
+        console.log("hi3");
+        // let Pi Servers know that you're ready
+        await platformAPIClient_1.default.post(`/v2/payments/${paymentId}/approve`);
+        return res.status(200).json({ message: `Approved the payment ${paymentId}` });
+    });
     // complete the current payment
-    router.post('/complete', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-        var app, paymentId, txid, orderCollection, paymentDto;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    app = req.app;
-                    paymentId = req.body.paymentId;
-                    txid = req.body.txid;
-                    orderCollection = app.locals.orderCollection;
-                    /*
-                      implement your logic here
-                      e.g. verify the transaction, deliver the item to the user, etc...
-                    */
-                    return [4 /*yield*/, orderCollection.updateOne({ pi_payment_id: paymentId }, { $set: { txid: txid, paid: true } })];
-                case 1:
-                    /*
-                      implement your logic here
-                      e.g. verify the transaction, deliver the item to the user, etc...
-                    */
-                    _a.sent();
-                    return [4 /*yield*/, platformAPIClient_1.default.post("/v2/payments/".concat(paymentId, "/complete"), { txid: txid })];
-                case 2:
-                    paymentDto = _a.sent();
-                    if (paymentDto.data.status.developer_completed === true && paymentDto.data.status.transaction_verified === true) {
-                        return [2 /*return*/, res.status(200).json({ message: "Completed the payment ".concat(paymentId), paymentCompleted: true })];
-                    }
-                    else {
-                        return [2 /*return*/, res.status(200).json({ message: "Completed the payment ".concat(paymentId), paymentCompleted: false })];
-                    }
-                    return [2 /*return*/];
-            }
-        });
-    }); });
+    router.post('/complete', async (req, res) => {
+        const app = req.app;
+        const paymentId = req.body.paymentId;
+        const txid = req.body.txid;
+        const orderCollection = app.locals.orderCollection;
+        /*
+          implement your logic here
+          e.g. verify the transaction, deliver the item to the user, etc...
+        */
+        await orderCollection.updateOne({ pi_payment_id: paymentId }, { $set: { txid: txid, paid: true } });
+        // let Pi server know that the payment is completed
+        const paymentDto = await platformAPIClient_1.default.post(`/v2/payments/${paymentId}/complete`, { txid });
+        if (paymentDto.data.status.developer_completed === true && paymentDto.data.status.transaction_verified === true) {
+            return res.status(200).json({ message: `Completed the payment ${paymentId}`, paymentCompleted: true });
+        }
+        else {
+            return res.status(200).json({ message: `Completed the payment ${paymentId}`, paymentCompleted: false });
+        }
+    });
     // handle the cancelled payment
-    router.post('/cancelled_payment', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-        var app, paymentId, orderCollection;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    app = req.app;
-                    paymentId = req.body.paymentId;
-                    orderCollection = app.locals.orderCollection;
-                    console.log(app, paymentId, orderCollection);
-                    /*
-                      implement your logic here
-                      e.g. mark the order record to cancelled, etc...
-                    */
-                    return [4 /*yield*/, orderCollection.updateOne({ pi_payment_id: paymentId }, { $set: { cancelled: true } })];
-                case 1:
-                    /*
-                      implement your logic here
-                      e.g. mark the order record to cancelled, etc...
-                    */
-                    _a.sent();
-                    return [2 /*return*/, res.status(200).json({ message: "Cancelled the payment ".concat(paymentId) })];
-            }
-        });
-    }); });
+    router.post('/cancelled_payment', async (req, res) => {
+        const app = req.app;
+        const paymentId = req.body.paymentId;
+        const orderCollection = app.locals.orderCollection;
+        console.log(app, paymentId, orderCollection);
+        /*
+          implement your logic here
+          e.g. mark the order record to cancelled, etc...
+        */
+        await orderCollection.updateOne({ pi_payment_id: paymentId }, { $set: { cancelled: true } });
+        return res.status(200).json({ message: `Cancelled the payment ${paymentId}` });
+    });
 }
 exports.default = mountPaymentsEndpoints;
