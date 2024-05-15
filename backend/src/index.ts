@@ -41,7 +41,7 @@ app.use(logger('common', {
 
 app.use(express.json());
 app.use(cors({
-  origin: 'https://destigfemme.app',
+  origin: 'https://young-castle-93921-4eef81b63299.herokuapp.com/',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
