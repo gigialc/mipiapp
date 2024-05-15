@@ -2,6 +2,7 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -41,7 +42,7 @@ app.use((0, morgan_1.default)('common', {
 }));
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
-    origin: 'https://young-castle-93921-4eef81b63299.herokuapp.com/',
+    origin: 'www.destigfemme.app',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
