@@ -49,7 +49,7 @@ export default function mountUserEndpoints(router: Router) {
 
     req.session.currentUser = currentUser;
 
-    return res.status(200).json({ message: "User signed in" });
+    return res.status(200).json({ message: "User signed in" , user: currentUser});
   });
   console.log("hi6")
 

@@ -42,19 +42,20 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     const signIn = async () => {
       const scopes = ['username', 'payments', 'wallet_address'];
       const authResult: AuthResult = await window.Pi.authenticate(scopes, onIncompletePaymentFound);
-      await signInUser(authResult);
-      setUser(authResult.user);
+      const user = await signInUser(authResult);
+      setUser(user.data.user);
       setShowModal(false);
       // getCommunity();
     }
 
     const signInUser = async (authResult: AuthResult) => {
-        await axiosClient.post('/user/signin', {authResult});
-        return setShowModal(false);
+        const user = await axiosClient.post('/user/signin', {authResult});
+        setShowModal(false);
+        return user;
     }
     
     const signOutUser = async() =>{
-      const nullUser = { uid: '', bio: "", username: '', coinbalance: 0, community: [], posts: [], comments: [], likes: []};
+      const nullUser = null;
       setUser(nullUser);
     }
 
