@@ -100,7 +100,7 @@ export default function  MyList() {
 
   useEffect(() => {
     if (user){
-    axiosClient.get('/user/me', config)
+    axiosClient.get('/user/me')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
         // If response.data is an array, we can use forEach
