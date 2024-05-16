@@ -42,7 +42,7 @@ app.use((0, morgan_1.default)('common', {
 }));
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
-    origin: 'www.destigfemme.app',
+    origin: 'https://mipiapp-368dtm9pr-gigis-projects-11055176.vercel.app',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
