@@ -105,7 +105,10 @@ export default function  UserToAppPayments() {
   }
   , [user]);
 
+
+
   useEffect(() => {
+    if (user ){
     axiosClient.get('/user/me')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
@@ -124,7 +127,7 @@ export default function  UserToAppPayments() {
       .catch((error) => {
         console.error('Error fetching /user/me:', error);
       });
-    }
+    }}
   , []);
   
 

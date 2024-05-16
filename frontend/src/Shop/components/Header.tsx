@@ -44,6 +44,7 @@ export default function Header() {
   };
 
   useEffect(() => {
+    if (user) {
     axiosClient.get('/user/userInfo')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
@@ -54,7 +55,7 @@ export default function Header() {
         console.error('Error fetching /user/me:', error);
       });
 
-    }
+    }}
   , []);
 
   return (

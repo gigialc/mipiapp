@@ -99,6 +99,7 @@ export default function  MyList() {
   , [user]);
 
   useEffect(() => {
+    if (user){
     axiosClient.get('/user/me')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
@@ -117,7 +118,7 @@ export default function  MyList() {
       .catch((error) => {
         console.error('Error fetching /user/me:', error);
       });
-    }
+    }}
   , []);
   
 

@@ -13,7 +13,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useEffect } from 'react';
 import { UserData } from './Types';
-
+import {User } from './Types';
 
 // Make TS accept the existence of our window.__ENV object - defined in index.html:
 interface WindowWithEnv extends Window {
@@ -34,6 +34,7 @@ const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Al
 export default function ProfileEdit() {
   const [editMode, setEditMode] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
+  const { user } = useContext(UserContext) as UserContextType;
   const [profile, setProfile] = useState({
     username: userData?.username, // Initial state, replace with user.username
     bio: userData?.bio, 
@@ -62,6 +63,7 @@ export default function ProfileEdit() {
   };
 
   useEffect(() => {
+    if (user) {
     axiosClient.get('/user/userInfo')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
@@ -71,7 +73,7 @@ export default function ProfileEdit() {
         console.error('Error fetching /user/me:', error);
       });
 
-    }
+    }}
   , []);
 
 

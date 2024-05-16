@@ -14,10 +14,6 @@ import { UserData } from "./components/Types";
 import axios from 'axios';
 
 
-// testing to link blog posts to blog pages
-
-// Make TS accept the existence of our window.__ENV object - defined in index.html:
-
 interface WindowWithEnv extends Window {
   __ENV?: {
     BACKEND_URL: string, // REACT_APP_BACKEND_URL environment variable
@@ -86,6 +82,7 @@ export default function HomePage() {
   }, [createCommunityData]);
 
   useEffect(() => {
+    if (user) {
     axiosClient.get('/user/userInfo')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
@@ -94,7 +91,7 @@ export default function HomePage() {
         console.error('Error fetching /user/me:', error);
       });
 
-    }
+    }}
   , []);
 
   useEffect(() => {
