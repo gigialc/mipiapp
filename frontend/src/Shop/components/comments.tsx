@@ -43,7 +43,7 @@ export default function Comments() {
             return;
         }
 
-        if(user.uid === "") {
+        if(!user) {
             saveShowModal(true);
             return; // Exit if user is not signed in
         }
@@ -52,7 +52,7 @@ export default function Comments() {
     };
 
     const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
-        if(user.uid === "") {
+        if(!user) {
           return saveShowModal(true);
         }
       

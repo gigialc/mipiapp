@@ -45,7 +45,7 @@ export default function  PublicProfile() {
   const navigate = useNavigate();
 
   const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
-    if (user.uid === "") {
+    if (!user) {
       return saveShowModal(true);
     }
   

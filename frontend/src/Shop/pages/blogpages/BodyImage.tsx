@@ -13,7 +13,7 @@ export default function UserToAppPayments(){
   const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
 
   const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
-    if(user.uid === "") {
+    if(!user) {
       return saveShowModal(true);
     }
     const paymentData = { amount, memo, metadata: { ...paymentMetadata, user_id: user.uid } };
