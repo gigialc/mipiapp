@@ -37,9 +37,9 @@ export default function  PublicProfile() {
   const [selectedCommunity, setSelectedCommunity] = useState<CommunityType[] | null>(null); // Moved here
   const [community, setCommunity] = useState<any>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [username, setUsername] = useState(user.username || "anonymous");
-  const [bio, setBio] = useState(user.bio || "No bio yet");
-  const [coins, setCoins] = useState(user.coinbalance || 0);
+  const [username, setUsername] = useState(user?.username || "anonymous");
+  const [bio, setBio] = useState(user?.bio || "No bio yet");
+  const [coins, setCoins] = useState(user?.coinbalance || 0);
   const location = useLocation();
   const communityId = location.state?.communityId;
   const navigate = useNavigate();

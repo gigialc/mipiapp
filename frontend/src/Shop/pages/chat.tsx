@@ -65,7 +65,7 @@ export default function Chat() {
   
     // Ensure this matches what your backend expects
     const data = {
-      userId: user.uid, // Assuming user.uid is the unique identifier for the user
+      userId: user?.uid, // Assuming user.uid is the unique identifier for the user
       communityId: communityId, // The ID of the community to follow
     };
   

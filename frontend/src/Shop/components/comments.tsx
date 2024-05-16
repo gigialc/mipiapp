@@ -44,6 +44,7 @@ export default function Comments() {
         }
 
         if(!user) {
+          
             saveShowModal(true);
             return; // Exit if user is not signed in
         }
