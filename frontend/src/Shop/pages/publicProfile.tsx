@@ -20,7 +20,7 @@ import { Paper, Grid, Avatar, Link } from '@mui/material';
 interface WindowWithEnv extends Window {
   __ENV?: {
     BACKEND_URL: string, // REACT_APP_BACKEND_URL environment variable
-    sandbox: "true" | "false", // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
+    sandbox: string, // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
   }
 }
 

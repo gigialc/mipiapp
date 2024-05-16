@@ -19,7 +19,7 @@ const logoImageUrl = 'df2.png'; // Replace with actual logo image URL
 interface WindowWithEnv extends Window {
   __ENV?: {
     backendURL: string, // REACT_APP_BACKEND_URL environment variable
-    sandbox: "true" | "false", // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
+    sandbox: string, // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
   }
 }
 

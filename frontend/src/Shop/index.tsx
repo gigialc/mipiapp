@@ -12,13 +12,16 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { UserData } from "./components/Types";
 import axios from 'axios';
+
+
 // testing to link blog posts to blog pages
 
 // Make TS accept the existence of our window.__ENV object - defined in index.html:
+
 interface WindowWithEnv extends Window {
   __ENV?: {
     BACKEND_URL: string, // REACT_APP_BACKEND_URL environment variable
-    sandbox: "true" | "false";  // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
+    sandbox: string, // REACT_APP_SANDBOX environment variable
   }
 }
 

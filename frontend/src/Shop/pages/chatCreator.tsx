@@ -13,7 +13,7 @@ import { UserContextType } from "../components/Types";
 interface WindowWithEnv extends Window {
   __ENV?: {
     backendURL: string,
-    sandbox: "true" | "false",
+    sandbox: string,
   }
 }
 
