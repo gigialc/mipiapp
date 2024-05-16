@@ -24,9 +24,7 @@
         if (window.__ENV) {
           const backendURL = window.__ENV.backendURL || '';
           const sandbox = window.__ENV.sandbox || 'false'; // Default to 'false' if not set
-
-          var runSDKInSandboxMode = sandbox === "true";
-          Pi.init({ version: "2.0", sandbox: runSDKInSandboxMode });
+          Pi.init({ version: "2.0", sandox: sandbox });
         } else {
           console.error("Environment variables not found!");
         }
