@@ -77,7 +77,7 @@ export default function  MyList() {
 
   
   const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
-    if (user.uid === "") {
+    if (!user) {
       return saveShowModal(true);
     }
 

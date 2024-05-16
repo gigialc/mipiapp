@@ -36,18 +36,18 @@ export default function  UserToAppPayments() {
   const [selectedCommunity, setSelectedCommunity] = useState<CommunityType[] | null>(null); // Moved here
   const [userData, setUserData] = useState<UserData | null>(null);
   const [openFormModal, setOpenFormModal] = useState(false);
-  const [username, setUsername] = useState(user.username || "anonymous");
+  const [username, setUsername] = useState(user?.username || "anonymous");
   const [inputValue, setInputValue] = useState("");
   const [tabValue, setTabValue] = useState(0); // Default to the first tab
   const [showUpdate, setShowUpdate] = useState(false);
-  const [bio, setBio] = useState(user.bio || "No bio yet");
-  const [coins, setCoins] = useState(user.coinbalance || 0);
+  const [bio, setBio] = useState(user?.bio || "No bio yet");
+  const [coins, setCoins] = useState(user?.coinbalance || 0);
 
 
   console.log("User Data :" , userData);
   console.log("User: ", user);
-  console.log("User Data: ", user.username);
-  console.log("User Data: ", user.bio);
+  console.log("User Data: ", user?.username);
+  console.log("User Data: ", user?.bio);
   const navigate = useNavigate();
   
   const getGreeting = () => {
@@ -84,7 +84,7 @@ export default function  UserToAppPayments() {
   };
   
   const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
-    if (user.uid === "") {
+    if (user?.uid === "") {
       return saveShowModal(true);
     }
 
@@ -148,7 +148,7 @@ export default function  UserToAppPayments() {
       <Header />
       <div style={{ padding: '20px', marginBottom: '80px' }}>
         <Typography variant="h6" style={{ fontWeight: 'bold', color: '#E69BD1', marginBottom: '0px' }}>
-          Welcome to your profile, {user.username} !
+          Welcome to your profile, {user?.username} !
         </Typography>
         <EditProfile />
         <div style={{}}>

@@ -33,7 +33,7 @@ const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Al
 export default function Header() {
   const { user, saveUser } = React.useContext(UserContext) as UserContextType;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [coins, setCoins] = useState(user.coinbalance || 0);
+  const [coins, setCoins] = useState(user?.coinbalance || 0);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -71,17 +71,17 @@ export default function Header() {
             size="large"
             aria-label="account of current user"
         
-            onClick={user.uid === '' ? saveUser : saveUser} // This seems redundant, consider simplifying
+            onClick={user?.uid === '' ? saveUser : saveUser} // This seems redundant, consider simplifying
             color="inherit"
           >
-            {user.uid === '' ? (
-              <Typography component="div" sx={{ color: 'black', paddingRight:3 }}>
+            {!user ? (
+              <Typography component="div" sx={{ color: 'black', paddingRight: 3 }}>
                 sign-in
               </Typography>
             ) : (
               <Container>
                 <Typography sx={{ color: 'black' }}>
-                  @{user.username} | sign out
+                  @{user?.username} | sign out
                 </Typography>
               </Container>
             )}
