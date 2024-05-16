@@ -8,6 +8,7 @@ import logger from 'morgan';
 import MongoStore from 'connect-mongo';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import env from './environments';
 dotenv.config();
 // Import routes and other utilities
 import mountPaymentsEndpoints from './handlers/payments';
@@ -41,7 +42,7 @@ app.use(logger('common', {
 
 app.use(express.json());
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: env.frontend_url,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -87,5 +88,5 @@ const port = process.env.PORT || 3000
 
 app.listen(port, () => {
     console.log('Backend listening on port 3000!');
-    console.log(`CORS configured for ${process.env.FRONTEND_URL}`);
+    console.log(`CORS configured for ${env.frontend_url}`);
 });
