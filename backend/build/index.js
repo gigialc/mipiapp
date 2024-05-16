@@ -81,3 +81,4 @@ app.listen(port, () => {
     console.log('Backend listening on port 3000!');
     console.log(`CORS configured for ${process.env.FRONTEND_URL}`);
 });
+
