@@ -107,40 +107,40 @@ export default function  UserToAppPayments() {
 
 
 
-  // useEffect(() => {
-  //   if (user ){
-  //   axiosClient.get('/user/me')
-  //     .then((response) => {
-  //       console.log('Response data for /user/me:', response.data);
-  //       // If response.data is an array, we can use forEach
-  //       if (Array.isArray(response.data)) {
-  //         response.data.forEach((community: CommunityType) => {
-  //           if (!community._id) {
-  //             console.error('Community does not have _id:', community);
-  //           }
-  //         });
-  //         setCreateCommunityData(response.data);
-  //       } else {
-  //         console.error('Expected an array for /user/me response data, but got:', response.data);
-  //       }
-  //     })  
-  //     .catch((error) => {
-  //       console.error('Error fetching /user/me:', error);
-  //     });
-  //   }}
-  // , []);
+  useEffect(() => {
+    if (user ){
+    axiosClient.get('/user/me')
+      .then((response) => {
+        console.log('Response data for /user/me:', response.data);
+        // If response.data is an array, we can use forEach
+        if (Array.isArray(response.data)) {
+          response.data.forEach((community: CommunityType) => {
+            if (!community._id) {
+              console.error('Community does not have _id:', community);
+            }
+          });
+          setCreateCommunityData(response.data);
+        } else {
+          console.error('Expected an array for /user/me response data, but got:', response.data);
+        }
+      })  
+      .catch((error) => {
+        console.error('Error fetching /user/me:', error);
+      });
+    }}
+  , []);
   
 
-  // useEffect(() => {
-  //   axiosClient.get('/user/joined')
-  //     .then((response) => {
-  //       console.log('Joined communities:', response.data);
-  //       setSelectedCommunity(response.data);
-  //     })  
-  //     .catch((error) => {
-  //       console.error('Error fetching joined communities:', error);
-  //     });
-  // }, []);
+  useEffect(() => {
+    axiosClient.get('/user/joined')
+      .then((response) => {
+        console.log('Joined communities:', response.data);
+        setSelectedCommunity(response.data);
+      })  
+      .catch((error) => {
+        console.error('Error fetching joined communities:', error);
+      });
+  }, []);
 
   
   return (
