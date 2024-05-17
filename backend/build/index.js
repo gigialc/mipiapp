@@ -2,7 +2,6 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -14,6 +13,7 @@ const morgan_1 = __importDefault(require("morgan"));
 const connect_mongo_1 = __importDefault(require("connect-mongo"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const environments_1 = __importDefault(require("./environments"));
 dotenv_1.default.config();
 // Import routes and other utilities
 const payments_1 = __importDefault(require("./handlers/payments"));
@@ -42,7 +42,7 @@ app.use((0, morgan_1.default)('common', {
 }));
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
-    origin: env.frontend_url,
+    origin: environments_1.default.frontend_url,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
@@ -63,7 +63,7 @@ const paymentsRouter = express_1.default.Router();
 app.use('/payments', paymentsRouter);
 const userRouter = express_1.default.Router();
 (0, users_1.default)(userRouter);
-app.use('/user', userRouter);
+app.use('/users', userRouter);
 const communityRouter = express_1.default.Router();
 (0, community_1.default)(communityRouter);
 app.use('/community', communityRouter);
@@ -79,6 +79,5 @@ app.get('/', async (_, res) => {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log('Backend listening on port 3000!');
-    console.log(`CORS configured for ${process.env.FRONTEND_URL}`);
+    console.log(`CORS configured for ${environments_1.default.frontend_url}`);
 });
-

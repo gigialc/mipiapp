@@ -48,7 +48,7 @@ function mountUserEndpoints(router) {
             currentUser = await userCollection.findOne(insertResult.insertedId);
         }
         req.session.currentUser = currentUser;
-        return res.status(200).json({ message: "User signed in" });
+        return res.status(200).json({ message: "User signed in", user: currentUser });
     });
     console.log("hi6");
     // handle the user auth accordingly
