@@ -26,7 +26,7 @@ function App() {
     return (
         <AuthProvider>
             <Routes>
-                <Route path="/" element={<Shop />} />
+                <Route path="/Profile" element={<Shop />} />
                 <Route path="/Add" element={<Add />} />
                 <Route path="/Profile" element={<Profile />} />// Make sure Profile is a valid React component
                 <Route path="/Newsletter" element={<Newsletter />} /> 
