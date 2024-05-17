@@ -66,7 +66,7 @@ app.use('/payments', paymentsRouter);
 
 const userRouter = express.Router();
 mountUserEndpoints(userRouter);
-app.use('/user', userRouter);
+app.use('/users', userRouter);
 
 const communityRouter = express.Router();
 mountCommunityEndpoints(communityRouter);

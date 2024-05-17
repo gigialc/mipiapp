@@ -43,6 +43,7 @@ export default function Header() {
     setAnchorEl(null);
   };
 
+
   useEffect(() => {
     if (user) {
     axiosClient.get('/user/userInfo')
@@ -67,11 +68,10 @@ export default function Header() {
           <img src={logoImageUrl} alt="Destig Femme" style={{ height: 'auto', width: '100%', objectFit: 'cover' }} />
         </Box>
           
-          <IconButton
+        <IconButton
             size="large"
             aria-label="account of current user"
-        
-            onClick={user?.uid === '' ? saveUser : saveUser} // This seems redundant, consider simplifying
+            onClick={saveUser} // Handles both sign-in and sign-out based on user state
             color="inherit"
           >
             {!user ? (
