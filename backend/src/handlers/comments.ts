@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { ObjectId } from "mongodb";
 import { CommunityType } from "../types/community";
-import { UserData } from "../types/user";
+import { UserData } from "../types/users";
 import "../types/session";
 import platformAPIClient from "../services/platformAPIClient";
 //comment collection

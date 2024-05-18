@@ -13,5 +13,6 @@ export interface UserData {
   communitiesJoined: Array<ObjectId>,
   likes: Array<ObjectId>, 
   comments: Array<ObjectId>,
-  posts: Array<ObjectId>
+  posts: Array<ObjectId>,
+  timestamp: Date // Add a field for the timestamp
 }

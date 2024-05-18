@@ -1,7 +1,7 @@
 // Define community types
 // Creator: Gigi
 import { ObjectId } from "mongodb";
-import { UserData } from "./user";
+import { UserData } from "./users";
 import { CommentType } from "./comments";
 
 export interface PostType {
@@ -13,5 +13,6 @@ export interface PostType {
         _id: ObjectId,
     },
     comments: CommentType[],
-    likes: Array<ObjectId>
+    likes: Array<ObjectId>,
+    timestamp: Date
 }

@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { UserData } from "./user";
+import { UserData } from "./users";
 
 export interface CommentType {
     _id: ObjectId;
@@ -7,6 +7,7 @@ export interface CommentType {
     user: UserData;
     posts: ObjectId;
     likes: Array<ObjectId>;
-    date: Date;
+    timestamp: Date;
+
 }
 

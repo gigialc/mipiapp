@@ -1,7 +1,7 @@
 // Define community types
 // Creator: Gigi
 import { ObjectId } from "mongodb";
-import { UserData } from "./user";
+import { UserData } from "./users";
 
 export interface CommunityType {
     _id: ObjectId,
@@ -11,6 +11,7 @@ export interface CommunityType {
     price: number,
     members: Array<ObjectId>,
     posts: Array<ObjectId>,
-    comments : Array<String>
+    comments : Array<String>,
+    timestamp: Date
 }
 
