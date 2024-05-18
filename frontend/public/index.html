@@ -24,7 +24,10 @@
         if (window.__ENV) {
           const backendURL = window.__ENV.backendURL || '';
           const sandbox = window.__ENV.sandbox || 'false'; // Default to 'false' if not set
-          Pi.init({ version: "2.0", sandox: sandbox });
+          console.log("Initializing Pi SDK with the following settings:");
+          console.log("backendURL:", backendURL);
+          console.log("sandbox:", sandbox);
+          Pi.init({ version: "2.0", sandbox: sandbox === 'true' });
         } else {
           console.error("Environment variables not found!");
         }
