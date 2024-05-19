@@ -1,17 +1,16 @@
 // Define community types
 // Creator: Gigi
-import { ObjectId } from "mongodb";
-import { UserData } from "./user";
+import { Types } from 'mongoose';
+import { UserData } from './user';
 
 export interface CommunityType {
-    _id: ObjectId,
-    name: string,
-    description: string,
-    user: UserData,
-    price: number,
-    members: Array<ObjectId>,
-    posts: Array<ObjectId>,
-    comments : Array<String>,
-    timestamp: Date
+  _id: Types.ObjectId;  // Use Types.ObjectId from mongoose for consistency
+  name: string;
+  description: string;
+  user: UserData;  // Assuming UserData is correctly typed
+  price: number;
+  members: Array<Types.ObjectId>;
+  posts: Array<Types.ObjectId>;
+  comments: Array<string>;  // Assuming comments are strings
+  timestamp: Date;
 }
-

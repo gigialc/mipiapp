@@ -1,13 +1,12 @@
-import { ObjectId } from "mongodb";
-import { UserData } from "./user";
+import { Types } from 'mongoose';
+import { UserData } from './user';
 
 export interface CommentType {
-    _id: ObjectId;
+    _id: Types.ObjectId;
     content: string;
-    user: UserData;
-    posts: ObjectId;
-    likes: Array<ObjectId>;
+    user: Types.ObjectId;
+    posts: Types.ObjectId;
+    likes: Types.ObjectId[];
     timestamp: Date;
-
 }
 

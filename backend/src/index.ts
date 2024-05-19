@@ -16,7 +16,11 @@ import mountUserEndpoints from './handlers/user';
 import mountCommunityEndpoints from './handlers/community';
 import mountPostEndpoints from './handlers/posts';
 import mountCommentEndpoints from './handlers/comments';
-import "./types/session";
+// Import types
+import { UserData } from './types/user';
+import { CommunityType } from './types/community';
+import { PostType } from './types/posts';
+import { CommentType } from './types/comments';
 
 const mongoURI = process.env.MONGO_URI;
 
@@ -74,6 +78,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Initialize the database and collections
+  mongoose.connection.once('open', () => {
+    const db = mongoose.connection.db;
+    app.locals.userCollection = db.collection<UserData>('user');
+    app.locals.communityCollection = db.collection<CommunityType>('community');
+    app.locals.postCollection = db.collection<PostType>('posts');
+    app.locals.commentCollection = db.collection<CommentType>('comments');
+
+  console.log('Collections initialized');
+});
 
 // Endpoint mounting
 const paymentsRouter = express.Router();

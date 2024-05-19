@@ -1,68 +1,57 @@
-import { Router } from "express";
-
+import { Router, Request, Response } from 'express';
+import { Types } from 'mongoose';
+import Community, { CommunityDocument } from '../models/community';
 import platformAPIClient from "../services/platformAPIClient";
-import { ObjectId } from "mongodb";
-import { assert } from "console";
 
-export default function mountUserEndpoints(router: Router) {
-  // handle the user auth accordingly
+export default function mountCommunityEndpoints(router: Router) {
   router.post('/signin', async (req, res) => {
     const auth = req.body.authResult;
     const userCollection = req.app.locals.userCollection;
-    
+
     try {
-      // Verify the user's access token with the /me endpoint:
       const me = await platformAPIClient.get(`/v2/me`, { headers: { 'Authorization': `Bearer ${auth.accessToken}` } });
       console.log(me);
     } catch (err) {
       console.log(err);
-      return res.status(401).json({error: "Invalid access token"}) 
+      return res.status(401).json({ error: "Invalid access token" });
     }
 
     let currentUser = await userCollection.findOne({ uid: auth.user.uid });
 
     if (currentUser) {
-      await userCollection.updateOne({
-        _id: currentUser._id
-      }, {
-        $set: {
-          accessToken: auth.accessToken,
-        }
-      });
-        } else {
-            const insertResult = await userCollection.insertOne({
-                username: auth.user.username,
-                uid: auth.user.uid,
-                roles: auth.user.roles,
-                accessToken: auth.accessToken,
-                communitiesCreated: [],
-                communitiesJoined: [],
-                likes: [],
-                comments: [],
-                posts: [],
-                bio: "",
-                coinBalance: 0,
-                timestamp: new Date()
-
-            });
-            
-            currentUser = await userCollection.findOne(insertResult.insertedId);
-        }
-
-        req.session.currentUser = currentUser;
-
-        return res.status(200).json({ message: "User signed in", user: currentUser });
+      await userCollection.updateOne(
+        { _id: currentUser._id },
+        { $set: { accessToken: auth.accessToken } }
+      );
+    } else {
+      const insertResult = await userCollection.insertOne({
+        username: auth.user.username,
+        uid: auth.user.uid,
+        roles: auth.user.roles,
+        accessToken: auth.accessToken,
+        communitiesCreated: [],
+        communitiesJoined: [],
+        likes: [],
+        comments: [],
+        posts: [],
+        bio: "",
+        coinBalance: 0,
+        timestamp: new Date()
       });
 
-  console.log("hi6")
+      currentUser = await userCollection.findOne({ _id: insertResult.insertedId });
+    }
 
-  // handle the user auth accordingly
+    req.session.currentUser = currentUser;
+
+    return res.status(200).json({ message: "User signed in", user: currentUser });
+  });
+
   router.get('/signout', async (req, res) => {
     req.session.currentUser = null;
     return res.status(200).json({ message: "User signed out" });
   });
 
-  //Get info about user 
   router.get('/userInfo', async (req, res) => {
     const currentUser = req.session.currentUser;
     if (!currentUser) {
@@ -71,52 +60,48 @@ export default function mountUserEndpoints(router: Router) {
     return res.status(200).json(currentUser);
   });
 
-  //Update user info
   router.post('/update', async (req, res) => {
     const currentUser = req.session.currentUser;
     if (!currentUser) {
       return res.status(401).json({ error: "No current user found" });
     }
     const userCollection = req.app.locals.userCollection;
-    const { username, bio, coinbalance } = req.body;
+    const { username, bio, coinBalance } = req.body;
+
     const updatedUser = await userCollection.findOneAndUpdate(
       { uid: currentUser.uid },
-      { $set: { username: username, bio: bio, coinBalance: coinbalance } },
+      { $set: { username, bio, coinBalance } },
       { new: true, returnDocument: 'after' }
     );
-    if (!updatedUser) {
+
+    if (!updatedUser.value) {
       return res.status(404).json({ error: "User not found" });
     }
-    return res.status(200).json({ message: "User updated successfully" });
+
+    req.session.currentUser = updatedUser.value;
+    return res.status(200).json({ message: "User updated successfully", user: updatedUser.value });
   });
 
-  // Get all the communitiesCreated the user has created
   router.get('/me', async (req, res) => {
     try {
       const currentUser = req.session.currentUser;
       if (!currentUser) {
         return res.status(401).json({ error: "No current user found" });
       }
-  
+
       const communityCollection = req.app.locals.communityCollection;
-      // Fetch communities in parallel
-      const communities = await Promise.all(
-        currentUser.communitiesCreated.map(async (communityId) => {
-          // Directly find a single community by _id
-          const community = await communityCollection.findOne({ _id: new ObjectId(communityId) });
-          return community; // May return null if not found
-        })
-      );
-  
-      // Filter out nulls and map to desired structure
-      const communityMap = communities.filter(c => c).map((community) => ({
-        _id: community._id.toString(), // Convert ObjectId to string
+
+      const communities = await communityCollection.find({
+        _id: { $in: currentUser.communitiesCreated.map(id => new Types.ObjectId(id)) }
+      }).toArray();
+
+      const communityMap = communities.map((community: CommunityDocument) => ({  // Explicitly define type
+        _id: community._id.toString(),
         name: community.name,
         description: community.description,
         posts: community.posts,
-        // Add other fields as needed
       }));
-  
+
       if (communityMap.length > 0) {
         return res.status(200).json(communityMap);
       } else {
@@ -127,32 +112,27 @@ export default function mountUserEndpoints(router: Router) {
       return res.status(500).json({ error: "Internal server error" });
     }
   });
-  
 
-  // Get all the communitiesJoined the user has joined
   router.get('/joined', async (req, res) => {
     try {
       const currentUser = req.session.currentUser;
       if (!currentUser) {
         return res.status(401).json({ error: "No current user found" });
       }
-  
+
       const communityCollection = req.app.locals.communityCollection;
-      const communities = await Promise.all(
-        currentUser.communitiesJoined.map(async (communityId) => {
-          const community = await communityCollection.findOne({ _id: new ObjectId(communityId) });
-          return community; // May return null if not found
-        })
-      );
-  
-      const communityMap = communities.filter(c => c).map((community) => ({
-        _id: community._id.toString(), // Convert ObjectId to string
+
+      const communities = await communityCollection.find({
+        _id: { $in: currentUser.communitiesJoined.map(id => new Types.ObjectId(id)) }
+      }).toArray();
+
+      const communityMap = communities.map((community: CommunityDocument) => ({  // Explicitly define type
+        _id: community._id.toString(),
         name: community.name,
         description: community.description,
         posts: community.posts,
-        // Add other fields as needed
       }));
-  
+
       if (communityMap.length > 0) {
         return res.status(200).json(communityMap);
       } else {
@@ -163,9 +143,7 @@ export default function mountUserEndpoints(router: Router) {
       return res.status(500).json({ error: "Internal server error" });
     }
   });
-  
 
-  // Update the user collection by adding a community object to the joined communities
   router.post('/addUser', async (req, res) => {
     try {
       const { userId, communityId } = req.body;
@@ -173,11 +151,11 @@ export default function mountUserEndpoints(router: Router) {
 
       const updatedUser = await userCollection.findOneAndUpdate(
         { uid: userId },
-        { $addToSet: { communitiesJoined: communityId } }, // Use communityId directly if it's stored as a string
+        { $addToSet: { communitiesJoined: new Types.ObjectId(communityId) } },
         { new: true, returnDocument: 'after' }
       );
 
-      if (!updatedUser) {
+      if (!updatedUser.value) {
         return res.status(404).json({ error: "User not found" });
       }
 
@@ -186,28 +164,39 @@ export default function mountUserEndpoints(router: Router) {
       console.error(error);
       return res.status(500).json({ error: "Internal server error" });
     }
-});
-  
-  //get username for the user id from community
+  });
+
   router.get('/username', async (req, res) => {
     const userCollection = req.app.locals.userCollection;
-    const user = req.query.user_id;
-    console.log(user);
-    const userObject = await userCollection.findOne({ uid: user });
-    console.log(userObject);
-    return res.status(200).json({ username: userObject.username });
+    const userId = req.query.user_id as string;
+
+    try {
+      const userObject = await userCollection.findOne({ uid: userId });
+      if (!userObject) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      return res.status(200).json({ username: userObject.username });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
   });
 
-  //check if user has liked a particular postid
   router.get('/liked', async (req, res) => {
     const userCollection = req.app.locals.userCollection;
-    const user = req.query.user_id;
-    const post = req.query.post_id;
-    const userObject = await userCollection.findOne({ uid: user });
-    const liked = userObject.likes.includes(post);
-    return res.status(200).json({ liked });
+    const userId = req.query.user_id as string;
+    const postId = req.query.post_id as string;
+
+    try {
+      const userObject = await userCollection.findOne({ uid: userId });
+      if (!userObject) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      const liked = userObject.likes.includes(new Types.ObjectId(postId));
+      return res.status(200).json({ liked });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
   });
-
-
 }
-
