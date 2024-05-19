@@ -5,39 +5,41 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Web site created using create-react-app" />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/df2.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-    <!-- Import the Pi Network App Platform SDK: -->
-    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
-
     <script>
-      // Define environment variables
+      // Set up environment variables
       window.__ENV = {
         backendURL: "%REACT_APP_BACKEND_URL%",
         sandbox: "%REACT_APP_SANDBOX_SDK%"
       };
-
-      // Function to initialize Pi SDK
-      function initializePiSDK() {
-        if (window.__ENV) {
-          const backendURL = window.__ENV.backendURL || '';
-          const sandbox = window.__ENV.sandbox || 'false'; // Default to 'false' if not set
-          console.log("Initializing Pi SDK with the following settings:");
-          console.log("backendURL:", backendURL);
-          console.log("sandbox:", sandbox);
-          Pi.init({ version: "2.0", sandbox: sandbox === 'true' });
-        } else {
-          console.error("Environment variables not found!");
-        }
-      }
-
-      // Ensure Pi SDK is initialized after the environment variables are defined
-      initializePiSDK();
     </script>
-    
-    <title>React App</title>
+
+    <!-- Import the Pi Network App Platform SDK -->
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+    <script>
+      // Initialize Pi SDK based on the environment
+      const runSDKInSandboxMode = window.__ENV.sandbox === "true"; // treat env vars as strings, not booleans
+      Pi.init({ version: "2.0", sandbox: runSDKInSandboxMode });
+
+      // Ensure postMessage uses the correct origin
+      window.addEventListener("message", (event) => {
+        if (event.origin !== "https://app-cdn.minepi.com") {
+          console.error("Invalid origin:", event.origin);
+          return;
+        }
+        // Handle the valid message
+        console.log("Received message:", event.data);
+      }, false);
+    </script>
+
+    <title>Destig Femme</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
