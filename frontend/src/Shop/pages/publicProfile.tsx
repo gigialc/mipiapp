@@ -48,8 +48,6 @@ export default function  PublicProfile() {
     if (!user) {
       return saveShowModal(true);
     }
-  
-
     // Define a state to track the selected community
 
     const paymentData = { amount, memo, metadata: paymentMetadata };
@@ -76,8 +74,6 @@ export default function  PublicProfile() {
         });
     }, [communityId]);
 
-
-  
     return (
       <>
   <Header />
