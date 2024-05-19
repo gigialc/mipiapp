@@ -11,21 +11,24 @@ export default function mountUserEndpoints(router: Router) {
     const userCollection = req.app.locals.userCollection;
     
     try {
-        // Verify the user's access token with the /me endpoint:
-        const me = await platformAPIClient.get(`https://api.pi-apps.io/v2/me`, { 
-            headers: { 'Authorization': `Bearer ${auth.accessToken}` } 
-        });
-        
-        let currentUser = await userCollection.findOne({ uid: auth.user.uid });
-        
-        if (currentUser) {
-            await userCollection.updateOne({
-                _id: currentUser._id
-            }, {
-                $set: {
-                    accessToken: auth.accessToken,
-                }
-            });
+      // Verify the user's access token with the /me endpoint:
+      const me = await platformAPIClient.get(`/v2/me`, { headers: { 'Authorization': `Bearer ${auth.accessToken}` } });
+      console.log(me);
+    } catch (err) {
+      console.log(err);
+      return res.status(401).json({error: "Invalid access token"}) 
+    }
+
+    let currentUser = await userCollection.findOne({ uid: auth.user.uid });
+
+    if (currentUser) {
+      await userCollection.updateOne({
+        _id: currentUser._id
+      }, {
+        $set: {
+          accessToken: auth.accessToken,
+        }
+      });
         } else {
             const insertResult = await userCollection.insertOne({
                 username: auth.user.username,
@@ -39,6 +42,8 @@ export default function mountUserEndpoints(router: Router) {
                 posts: [],
                 bio: "",
                 coinBalance: 0,
+                timestamp: new Date()
+
             });
             
             currentUser = await userCollection.findOne(insertResult.insertedId);
@@ -47,17 +52,7 @@ export default function mountUserEndpoints(router: Router) {
         req.session.currentUser = currentUser;
 
         return res.status(200).json({ message: "User signed in", user: currentUser });
-    } catch (err) {
-        console.error(err);
-
-        // Check if the error is due to invalid access token
-        if (err instanceof Error) {
-          console.error(err.message);
-      } else {
-          console.error(err);
-      }
-    }
-  });
+      });
 
   console.log("hi6")
 

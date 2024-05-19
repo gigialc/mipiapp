@@ -1,16 +1,16 @@
 // Created by Georgina Alacaraz
-import MuiBottomNavigation from "../MuiBottomNavigation";
-import Header from "./components/Header";
+import MuiBottomNavigation from "../../MuiBottomNavigation";
+import Header from "../components/Header";
 import { Box, Grid, Typography } from "@mui/material";
-import { UserContextType, MyPaymentMetadata , CommunityType} from "./components/Types";
-import { onCancel, onError, onReadyForServerApproval, onReadyForServerCompletion } from "./components/Payments";
-import SignIn from "./components/SignIn";
-import ProductCard from "./components/ProductCard";
-import { UserContext } from "./components/Auth";
+import { UserContextType, MyPaymentMetadata , CommunityType} from "../components/Types";
+import { onCancel, onError, onReadyForServerApproval, onReadyForServerCompletion } from "../components/Payments";
+import SignIn from "../components/SignIn";
+import ProductCard from "../components/ProductCard";
+import { UserContext } from "../components/Auth";
 import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { UserData } from "./components/Types";
+import { UserData } from "../components/Types";
 import axios from 'axios';
 
 

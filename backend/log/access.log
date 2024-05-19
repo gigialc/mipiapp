@@ -19421,3 +19421,5 @@
 ::1 - - [17/May/2024:22:50:20 +0000] "GET /%REACT_APP_BACKEND_URL%/user/joined HTTP/1.1" 404 178
 ::1 - - [17/May/2024:22:50:20 +0000] "GET /undefined/user/joined HTTP/1.1" 404 160
 ::1 - - [17/May/2024:22:50:44 +0000] "GET /ws HTTP/1.1" 404 141
+::1 - - [18/May/2024:22:49:53 +0000] "GET / HTTP/1.1" 200 27
+::1 - - [18/May/2024:22:49:53 +0000] "GET /cart.json HTTP/1.1" 404 148

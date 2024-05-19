@@ -24,6 +24,8 @@ interface Environment {
   mongo_password: string,
   frontend_url: string,
   MONGO_URI: string,
+  wallet_public_address: string,
+  wallet_secret_seed: string,
 }
 
 
@@ -37,6 +39,8 @@ const env: Environment = {
   mongo_user: process.env.MONGODB_USERNAME || '',
   mongo_password: process.env.MONGODB_PASSWORD || '',
   frontend_url: process.env.FRONTEND_URL || 'http://localhost:3314',
+  wallet_public_address: process.env.DEV_WALLET_PUBLIC_ADDRESS || '',
+  wallet_secret_seed: process.env.DEV_WALLET_SECRECT_SEED || '',
 };
 
 export default env;

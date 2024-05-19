@@ -7,19 +7,25 @@
 * update or add, the types or interfaces your app needs
 */
 
+
 export type AuthResult = {
     accessToken: string,
     user: {
       uid: string,
       bio: string,
+      accessToken: string,
       coinbalance: number,
-      username: string
-      community: CommunityType[]
+      username: string,
+      community: CommunityType[];
+      likes: string[];
+      comments: CommentType[];
+      posts: PostType[];
+      date: Date;
     }
-
     };
-    //or null
+
     export type User = AuthResult['user'];
+
 
     export type CommunityType = {
       _id: string,
@@ -34,7 +40,7 @@ export type AuthResult = {
     };
     
     export type UserContextType = {
-      user: { uid: string; username: string; bio: string; coinbalance: number; community: CommunityType[]} | null;
+      user: { uid: string; username: string; accessToken: string; bio: string; coinbalance: number; community: CommunityType[]; likes: string[]; comments: CommentType[]; posts: PostType[]; date: Date } | null;
       saveUser: () => void;
       showModal: boolean;
       saveShowModal: (value: boolean) => void;
@@ -43,6 +49,7 @@ export type AuthResult = {
       addCommunityToUser: (newCommunity: CommunityType) => void;
       addPostToCommunity: (newPost: CommunityType) => void;
       addCommentToPost: (newComment: CommunityType) => void;
+      
     };
 
     export type PostType = {
@@ -51,7 +58,7 @@ export type AuthResult = {
       description: string,
       community_id: string,
       user_uid: string,
-      likes: number,
+      likes: string[],
       comments: CommentType[],
     };
 
@@ -60,16 +67,21 @@ export type AuthResult = {
       comment: string,
       post_id: string,
       user_uid: string,
-      likes: number,
-    };
+      likes: string[],
+    };// Import the 'ObjectId' type from the 'mongodb' package
 
     export type UserData = {
       uid: string,
       bio: string,
       coinbalance: number,
+      accessToken: string,
       username: string,
       community: CommunityType[],
-    } | null;
+      likes: string[];      // Changed to array of ObjectId
+      comments: CommentType[];   // Changed to array of ObjectId
+      posts: PostType[];      // Changed to array of ObjectId
+      date: Date;
+    };
 
     
 

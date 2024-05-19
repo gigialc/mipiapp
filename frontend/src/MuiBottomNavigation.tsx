@@ -36,7 +36,7 @@ const MuiBottomNavigation: React.FC = () => {
         label="Home"
         icon={<HomeIcon sx={{ color: "#9E4291" }} />}
         value={bnValue}
-        onClick={() => navigate("/Shop")}
+        onClick={() => navigate("/")}
         style={blackLabelStyle}
 
       />

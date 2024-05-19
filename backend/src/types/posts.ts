@@ -1,7 +1,7 @@
 // Define community types
 // Creator: Gigi
 import { ObjectId } from "mongodb";
-import { UserData } from "./users";
+import { UserData } from "./user";
 import { CommentType } from "./comments";
 
 export interface PostType {

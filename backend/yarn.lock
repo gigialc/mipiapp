@@ -1800,6 +1800,13 @@
   resolved "https://registry.npmjs.org/@types/mime/-/mime-1.3.2.tgz"
   integrity sha512-YATxVxgRqNH6nHEIsvg6k2Boc1JHI9ZbH5iWFFv/MTkchz3b1ieGDa5T0a9RznNdI0KhVbdbWSN+KWWrQZRxTw==
 
+"@types/mongodb@^4.0.7":
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-4.0.7.tgz#ebaa80c53b684ea52ccfe7721c0f5c9ef7b4f511"
+  integrity sha512-lPUYPpzA43baXqnd36cZ9xxorprybxXDzteVKCPAdp14ppHtFJHnXYvNpmBvtMUTb5fKXVv6sVbzo1LHkWhJlw==
+  dependencies:
+    mongodb "*"
+
 "@types/morgan@^1.9.9":
   version "1.9.9"
   resolved "https://registry.yarnpkg.com/@types/morgan/-/morgan-1.9.9.tgz#d60dec3979e16c203a000159daa07d3fb7270d7f"
@@ -3412,6 +3419,15 @@ mongodb-redact@^0.2.2:
   integrity sha512-tmgDpSBymFtKggsLzpa0vDYaqh2wEXOswBZtJkXvbPKP0ThfPwoFYXtOukactU6WZsC4RYmpSPM4P6582FR/Xw==
   dependencies:
     lodash "^4.17.15"
+
+mongodb@*:
+  version "6.6.2"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-6.6.2.tgz#7ecdd788e9162f6c5726cef40bdd2813cc01e56c"
+  integrity sha512-ZF9Ugo2JCG/GfR7DEb4ypfyJJyiKbg5qBYKRintebj8+DNS33CyGMkWbrS9lara+u+h+yEOGSRiLhFO/g1s1aw==
+  dependencies:
+    "@mongodb-js/saslprep" "^1.1.5"
+    bson "^6.7.0"
+    mongodb-connection-string-url "^3.0.0"
 
 mongodb@6.5.0:
   version "6.5.0"

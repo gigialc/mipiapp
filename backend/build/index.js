@@ -17,7 +17,7 @@ const environments_1 = __importDefault(require("./environments"));
 dotenv_1.default.config();
 // Import routes and other utilities
 const payments_1 = __importDefault(require("./handlers/payments"));
-const users_1 = __importDefault(require("./handlers/users"));
+const user_1 = __importDefault(require("./handlers/user"));
 const community_1 = __importDefault(require("./handlers/community"));
 const posts_1 = __importDefault(require("./handlers/posts"));
 const comments_1 = __importDefault(require("./handlers/comments"));
@@ -27,7 +27,7 @@ if (!mongoURI) {
     console.error('MongoDB URI not defined in environment variables');
     process.exit(1); // Exit if no MongoDB URI is defined
 }
-// MongoDB connection
+// MongoDB connectiona
 mongoose_1.default.connect(mongoURI)
     //print mongodb connection status
     .then(() => { console.log('Connected to MongoDB URI:', (mongoURI)); })
@@ -36,16 +36,18 @@ mongoose_1.default.connect(mongoURI)
     process.exit(1); // Exit if cannot connect to MongoDB
 });
 const app = (0, express_1.default)();
+// Log requests to the console in a compact format:
 app.use((0, morgan_1.default)('dev'));
+// Full log of all requests to /log/access.log:
 app.use((0, morgan_1.default)('common', {
     stream: fs_1.default.createWriteStream(path_1.default.join(__dirname, '..', 'log', 'access.log'), { flags: 'a' }),
 }));
+// Enable response bodies to be sent as JSON:
 app.use(express_1.default.json());
+// Handle CORS:
 app.use((0, cors_1.default)({
     origin: environments_1.default.frontend_url,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    credentials: true
 }));
 app.use((0, cookie_parser_1.default)());
 app.use((0, express_session_1.default)({
@@ -57,12 +59,19 @@ app.use((0, express_session_1.default)({
         collectionName: 'user_sessions'
     }),
 }));
+// Middleware to log request details
+app.use((req, res, next) => {
+    console.log(`Received request: ${req.method} ${req.url}`);
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    next();
+});
 // Endpoint mounting
 const paymentsRouter = express_1.default.Router();
 (0, payments_1.default)(paymentsRouter);
 app.use('/payments', paymentsRouter);
 const userRouter = express_1.default.Router();
-(0, users_1.default)(userRouter);
+(0, user_1.default)(userRouter);
 app.use('/users', userRouter);
 const communityRouter = express_1.default.Router();
 (0, community_1.default)(communityRouter);
@@ -76,8 +85,8 @@ app.use('/comments', commentRouter);
 app.get('/', async (_, res) => {
     res.status(200).send({ message: "Hello, World!" });
 });
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 app.listen(port, () => {
-    console.log('Backend listening on port 3000!');
-    console.log(`CORS configured for ${environments_1.default.frontend_url}`);
+    console.log(`App platform demo app - Backend listening on port ${port}!`);
+    console.log(`CORS configured for frontend hosted on ${environments_1.default.frontend_url}`);
 });

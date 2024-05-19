@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-import { UserData } from "./users";
+import { UserData } from "./user";
 
 export interface CommentType {
     _id: ObjectId;

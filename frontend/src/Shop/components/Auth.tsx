@@ -1,7 +1,7 @@
 // Created by Georgina Alacaraz
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { UserContextType, AuthResult, UserData, WindowWithEnv, CommunityType } from "./Types";
+import { UserContextType, AuthResult, UserData, WindowWithEnv, CommunityType , User} from "./Types";
 import { onIncompletePaymentFound } from "./Payments";
 
 export const UserContext = React.createContext<UserContextType | null >(null);
@@ -12,88 +12,66 @@ const backendURL = _window.__ENV && _window.__ENV.BACKEND_URL;
 const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true });
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<UserData | null>(null);
-    const [showModal, setShowModal] = useState<boolean>(false);
+    const [user, setUser] = React.useState<User>( { uid: '', username: '', accessToken: '',bio: '', coinbalance: 0, community: [], likes: [], comments: [], posts: [], date: new Date()});
+    const [showModal, setShowModal] = React.useState<boolean>(false);
     const [community, setCommunity] = useState<CommunityType[]>([]);
     const [post, setPost] = useState<CommunityType[]>([]);
     const [comment, setComment] = useState<CommunityType[]>([]);
 
-
-    const addCommunityToUser = (newCommunity: CommunityType) => {
-      setCommunity((prevCommunities) => [...prevCommunities, newCommunity]);
-    };
-
-    const addCommentToPost = (newComment: CommunityType) => {
-      setPost((prevComments) => [...prevComments, newComment]);
-    };
-
-    const addPostToCommunity = (newPost: CommunityType) => {
-      setPost((prevPosts) => [...prevPosts, newPost]);
-    };
-
-    const addLikeToComment = (newLike: CommunityType) => {
-      setComment((prevLikes) => [...prevLikes, newLike]);
-    };
-
-    const addLikeToPost = (newLike: CommunityType) => {
-      setPost((prevLikes) => [...prevLikes, newLike]);
-    };
-
     const signIn = async () => {
       const scopes = ['username', 'payments', 'wallet_address'];
       const authResult: AuthResult = await window.Pi.authenticate(scopes, onIncompletePaymentFound);
-      try {
-        const response = await axiosClient.post('/users/signin', { authResult });
-        setUser(response.data.user);
-        setShowModal(false);
-      } catch (error) {
-        console.error('Sign-in error:', error);
-      }
-    };
+      await signInUser(authResult);
+      setUser(authResult.user);
+      setShowModal(false);
+    }
 
-    const signOutUser = async () => {
-      try {
-        await axiosClient.post('/users/signout');
-        setUser(null);
-      } catch (error) {
-        console.error("Error signing out user:", error);
-      }
-    };
+    const signInUser = async (authResult: AuthResult) => {
+        await axiosClient.post('/users/signin', {authResult});
+        return setShowModal(false);
+    }
+    
+    const signOutUser = async() =>{
+      const nullUser = { uid: '', username: '', accessToken: '',bio: '', coinbalance: 0, community: [], likes: [], comments: [], posts: [], date: new Date()};
+      setUser(nullUser);
+    }
 
-    const saveUser = () => {
-      if (user) {
-          signOutUser();
-      } else {
-          signIn();
-      }
-    };
+    const saveUser = () =>{
+      user.uid === '' ? signIn() : signOutUser();
+    }
 
     const saveShowModal = (value: boolean) => {
       setShowModal(value);
-    };
+    }
 
     const onModalClose = () => {
       saveShowModal(false);
-    };
+    }
 
     const userContext: UserContextType = {
-      user,
-      community,
-      saveUser,
-      showModal,
+      user, 
+      saveUser, 
+      showModal, 
       saveShowModal,
       onModalClose,
-      addCommunityToUser,
-      addPostToCommunity,
-      addCommentToPost,
-    };
+      community,
+      addCommunityToUser: (newCommunity: CommunityType) => {
+        setCommunity([...community, newCommunity]);
+      },
+      addPostToCommunity: (newPost: CommunityType) => {
+        setPost([...post, newPost]);
+      },
+      addCommentToPost: (newComment: CommunityType) => {
+        setComment([...comment, newComment]);
+      }
+    }
 
     return (
-      <UserContext.Provider value={userContext}>
-        {children}
-      </UserContext.Provider>
-    );
-};
+        <UserContext.Provider value={ userContext }>
+            {children}
+        </UserContext.Provider>
+    )
+}
 
 export default AuthProvider;
 
