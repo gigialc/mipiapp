@@ -21,7 +21,6 @@ const user_1 = __importDefault(require("./handlers/user"));
 const community_1 = __importDefault(require("./handlers/community"));
 const posts_1 = __importDefault(require("./handlers/posts"));
 const comments_1 = __importDefault(require("./handlers/comments"));
-require("./types/session");
 const mongoURI = process.env.MONGO_URI;
 if (!mongoURI) {
     console.error('MongoDB URI not defined in environment variables');
@@ -66,13 +65,22 @@ app.use((req, res, next) => {
     console.log('Body:', req.body);
     next();
 });
+// Initialize the database and collections
+mongoose_1.default.connection.once('open', () => {
+    const db = mongoose_1.default.connection.db;
+    app.locals.userCollection = db.collection('user');
+    app.locals.communityCollection = db.collection('community');
+    app.locals.postCollection = db.collection('posts');
+    app.locals.commentCollection = db.collection('comments');
+    console.log('Collections initialized');
+});
 // Endpoint mounting
 const paymentsRouter = express_1.default.Router();
 (0, payments_1.default)(paymentsRouter);
 app.use('/payments', paymentsRouter);
 const userRouter = express_1.default.Router();
 (0, user_1.default)(userRouter);
-app.use('/users', userRouter);
+app.use('/user', userRouter);
 const communityRouter = express_1.default.Router();
 (0, community_1.default)(communityRouter);
 app.use('/community', communityRouter);

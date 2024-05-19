@@ -9,16 +9,17 @@ function mountPostEndpoints(router) {
             const posts = req.body;
             // Assuming community_id is directly passed and needs to be stored as ObjectId
             const communityId = new mongodb_1.ObjectId(posts.community_id); // Convert to ObjectId if it's passed as a string
-            const postsData = {
+            const postData = {
                 _id: new mongodb_1.ObjectId(),
                 title: posts.title,
                 description: posts.description,
-                user: req.session.currentUser,
-                community_id: communityId, // Store the community ID directly
+                user: new mongodb_1.ObjectId(req.session.currentUser?._id),
+                communityId: communityId,
                 comments: [],
                 likes: [],
+                timestamp: new Date()
             };
-            const insertResult = await postCollection.insertOne(postsData);
+            const insertResult = await postCollection.insertOne(postData);
             // Fetch the newly created post using the insertedId
             const newPost = await postCollection.findOne({ _id: insertResult.insertedId });
             // Other operations like updating user's communitiesCreated...
@@ -38,7 +39,7 @@ function mountPostEndpoints(router) {
             const postCollection = req.app.locals.postCollection;
             const communityId = new mongodb_1.ObjectId(req.query.community_id); // Cast and convert to ObjectId
             // Directly find posts with the matching community_id
-            const posts = await postCollection.find({ community_id: communityId }).toArray();
+            const posts = await postCollection.find({ communityId: communityId }).toArray();
             return res.status(200).json({ posts });
         }
         catch (error) {
@@ -51,6 +52,7 @@ function mountPostEndpoints(router) {
             return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
         }
         try {
+            const postCollection = req.app.locals.postCollection;
             const commentCollection = req.app.locals.commentCollection;
             const postId = req.body.post_id;
             const content = req.body.content;
@@ -60,14 +62,14 @@ function mountPostEndpoints(router) {
             const commentData = {
                 _id: commentId,
                 content: content,
-                user: req.session.currentUser,
-                createdAt: new Date(), // Adding a timestamp for when the comment is created
-                post: mongodb_1.ObjectId,
-                likes: (Array)
+                user: new mongodb_1.ObjectId(req.session.currentUser._id),
+                posts: postId,
+                likes: [],
+                timestamp: new Date()
             };
             // Update the post to include the new comment
-            const updateResult = await commentCollection.updateOne({ _id: new mongodb_1.ObjectId(postId) }, // Ensure to convert postId to ObjectId
-            { $push: { comments: commentData } });
+            const updateResult = await commentCollection.updateOne({ _id: postId }, // Ensure to convert postId to ObjectId
+            { $push: { comments: commentData._id } });
             if (updateResult.matchedCount === 0) {
                 return res.status(404).json({ message: "Post not found" });
             }
@@ -109,19 +111,20 @@ function mountPostEndpoints(router) {
             const post = await postCollection.findOne({ _id: new mongodb_1.ObjectId(postId), "likes.uid": new mongodb_1.ObjectId(userId) });
             if (!post) {
                 // User hasn't liked the post yet, add like
-                await postCollection.updateOne({ _id: new mongodb_1.ObjectId(postId) }, { $push: { likes: { uid: new mongodb_1.ObjectId(userId) } } });
+                await postCollection.updateOne({ _id: new mongodb_1.ObjectId(postId) }, { $push: { likes: new mongodb_1.ObjectId(userId) }
+                });
                 // Add post id to the user's liked array
-                await userCollection.updateOne({ _id: new mongodb_1.ObjectId(userId) }, { $push: { likes: postId } });
+                await userCollection.updateOne({ _id: new mongodb_1.ObjectId(userId) }, { $push: { likes: new mongodb_1.ObjectId(postId) } });
                 const likeCount = await postCollection.findOne({ _id: new mongodb_1.ObjectId(postId) });
-                return res.status(200).json({ isLiked: true, likeCount: likeCount.likes.length });
+                return res.status(200).json({ isLiked: true, likeCount: likeCount?.likes.length });
             }
             else {
                 // User has already liked the post, remove like
-                await postCollection.updateOne({ _id: new mongodb_1.ObjectId(postId) }, { $pull: { likes: { uid: new mongodb_1.ObjectId(userId) } } });
+                await postCollection.updateOne({ _id: new mongodb_1.ObjectId(postId) }, { $pull: { likes: userId } });
                 // Remove post id from the user's liked array
                 await userCollection.updateOne({ _id: new mongodb_1.ObjectId(userId) }, { $pull: { likes: postId } });
                 const likeCount = await postCollection.findOne({ _id: new mongodb_1.ObjectId(postId) });
-                return res.status(200).json({ isLiked: false, likesCount: likeCount.likes.length });
+                return res.status(200).json({ isLiked: false, likesCount: likeCount?.likes.length });
             }
         }
         catch (error) {
@@ -138,10 +141,10 @@ function mountPostEndpoints(router) {
             const post = await postCollection.findOne({ _id: new mongodb_1.ObjectId(postId), "likes.uid": new mongodb_1.ObjectId(userId) });
             const likeCount = await postCollection.findOne({ _id: new mongodb_1.ObjectId(postId) });
             if (post) {
-                return res.status(200).json({ isLiked: true, likeCount: likeCount.likes.length });
+                return res.status(200).json({ isLiked: true, likeCount: likeCount?.likes.length || 0 });
             }
             else {
-                return res.status(200).json({ isLiked: false, likeCount: likeCount.likes.length });
+                return res.status(200).json({ isLiked: false, likeCount: likeCount?.likes.length || 0 });
             }
         }
         catch (error) {
@@ -151,13 +154,19 @@ function mountPostEndpoints(router) {
     });
     //fetch username of person who made the comment by finding the userid of the postcollection and comparing it to usercollection
     router.get('/username', async (req, res) => {
-        const postCollection = req.app.locals.postCollection;
-        const commentUserId = req.query.user_id;
-        console.log(commentUserId);
         const userCollection = req.app.locals.userCollection;
-        const userObject = await userCollection.findOne({ _id: new mongodb_1.ObjectId(commentUserId) });
-        console.log(userObject);
-        return res.status(200).json({ username: userObject.username });
+        const commentUserId = req.query.user_id;
+        try {
+            const userObject = await userCollection.findOne({ _id: new mongodb_1.ObjectId(commentUserId) });
+            if (!userObject) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            return res.status(200).json({ username: userObject.username });
+        }
+        catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Error fetching username", error });
+        }
     });
 }
 exports.default = mountPostEndpoints;
