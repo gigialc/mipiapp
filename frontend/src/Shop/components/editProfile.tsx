@@ -20,7 +20,7 @@ import {User } from './Types';
 interface WindowWithEnv extends Window {
   __ENV?: {
     backendURL: string, // REACT_APP_BACKEND_URL environment variable
-    sandbox: "true" | "false", // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
+    sandbox: string, // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
   }
 }
 
@@ -65,7 +65,7 @@ export default function ProfileEdit() {
 
   useEffect(() => {
    if (user.uid !== '') {
-    
+
     axiosClient.get('/user/userInfo')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
