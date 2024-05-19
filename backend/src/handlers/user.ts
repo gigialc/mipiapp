@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 import Community, { CommunityDocument } from '../models/community';
 import platformAPIClient from "../services/platformAPIClient";
 
-export default function mountCommunityEndpoints(router: Router) {
+export default function mountUserEndpoints(router: Router) {
   router.post('/signin', async (req, res) => {
     const auth = req.body.authResult;
     const userCollection = req.app.locals.userCollection;
