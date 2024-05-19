@@ -1,50 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Destig Femme Game</title>
-</head>
-<body>
-  
+  <head>
+      <meta charset="utf-8" />
+      <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta name="theme-color" content="#000000" />
+      <meta
+        name="description"
+        content="Web site created using create-react-app"
+      />
+      <link rel="apple-touch-icon" href="%PUBLIC_URL%/df2.png" />
+      <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-    <script>
-        // Set up environment variables (ensure these are correctly replaced in your build process)
+      <script>
+        // Set up environment variables
         window.__ENV = {
-            backendURL: "%REACT_APP_BACKEND_URL%",
-            sandbox: "%REACT_APP_SANDBOX_SDK%" // Even though you might not need it, ensure it is correctly set
+          backendURL: "%REACT_APP_BACKEND_URL%",
+          sandbox: "%REACT_APP_SANDBOX_SDK%"
         };
+      </script>
 
-        // Import the Pi Network App Platform SDK
-        const piSdkScript = document.createElement('script');
-        piSdkScript.src = "https://sdk.minepi.com/pi-sdk.js";
-        document.head.appendChild(piSdkScript);
+      <!-- Import the Pi Network App Platform SDK -->
+      <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 
-        piSdkScript.onload = () => {
-            // Initialize Pi SDK based on the environment
-            const runSDKInSandboxMode = window.__ENV.sandbox === "true"; // treat env vars as strings, not booleans
-            Pi.init({ version: "2.0", sandbox: runSDKInSandboxMode });
+      <script>
+        // Initialize Pi SDK based on the environment
+        const runSDKInSandboxMode = window.__ENV.sandbox === "false"; // treat env vars as strings, not booleans
+        Pi.init({ version: "2.0", sandbox: runSDKInSandboxMode });
 
-            // Add event listener for postMessage
-            window.addEventListener("message", (event) => {
-                const validOrigin = "https://www.destigfemme.app";
-                console.log(`Received message from origin: ${event.origin}`);
-                if (event.origin !== validOrigin) {
-                    console.error(`Invalid origin: ${event.origin}, expected ${validOrigin}`);
-                    return;
-                }
-                // Handle the valid message
-                console.log("Received message:", event.data);
-            }, false);
-        };
+        // Ensure postMessage uses the correct origin
+        window.addEventListener("message", (event) => {
+          // Validate the origin
+          if (event.origin !== "https://www.destigfemme.app") {
+            console.error("Invalid origin:", event.origin);
+            return;
+          }
+          // Handle the valid message
+          console.log("Received message:", event.data);
+        }, false);
+      </script>
 
-        // Ensure the iframe has loaded before sending the message
-        const iframe = document.getElementById('game-iframe');
-        iframe.addEventListener('load', () => {
-            const targetOrigin = 'https://www.destigfemme.app';
-            // Use postMessage to communicate with the iframe
-            iframe.contentWindow.postMessage('hello world', targetOrigin);
-        });
-    </script>
-</body>
+      <title>Destig Femme</title>
+    </head>
+    <body>
+      <noscript>You need to enable JavaScript to run this app.</noscript>
+      <div id="root"></div>
+    </body>
 </html>
