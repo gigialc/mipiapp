@@ -9,7 +9,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {UserData } from "../components/Types";
 import { Tabs, Tab, Box } from "@mui/material";
-import MyList from "../components/mylist";
+import MyList from "../mylist";
 import Subscribed from "../components/subscribed";
 import { TextField, Button } from '@mui/material';
 import EditProfile from "../components/editProfile";

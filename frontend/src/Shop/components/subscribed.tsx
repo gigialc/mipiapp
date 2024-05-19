@@ -20,7 +20,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { Tabs, Tab, Box } from "@mui/material";
-import MyList from "../components/mylist";
+import MyList from "../mylist";
 
 
 // Make TS accept the existence of our window.__ENV object - defined in index.html:

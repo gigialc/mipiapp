@@ -102,11 +102,8 @@ export default function mountCommunityEndpoints(router: Router) {
         posts: community.posts,
       }));
 
-      if (communityMap.length > 0) {
         return res.status(200).json(communityMap);
-      } else {
-        return res.status(404).json({ error: "User did not create any communities" });
-      }
+     
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: "Internal server error" });
