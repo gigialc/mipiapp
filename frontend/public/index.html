@@ -30,6 +30,7 @@
 
         // Ensure postMessage uses the correct origin
         window.addEventListener("message", (event) => {
+          // Validate the origin
           if (event.origin !== "https://app-cdn.minepi.com") {
             console.error("Invalid origin:", event.origin);
             return;

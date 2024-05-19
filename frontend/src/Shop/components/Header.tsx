@@ -71,10 +71,10 @@ export default function Header() {
         <IconButton
             size="large"
             aria-label="account of current user"
-            onClick={saveUser} // Handles both sign-in and sign-out based on user state
+            onClick={user?.uid === '' ? (saveUser ) : (saveUser)}
             color="inherit"
           >
-            {!user ? (
+              { user?.uid === '' ? (
               <Typography component="div" sx={{ color: 'black', paddingRight: 3 }}>
                 sign-in
               </Typography>
