@@ -92,7 +92,7 @@ export default function MyList() {
         .get("/user/me")
         .then((response) => {
           console.log("Response data for /user/me:", response.data);
-          if (Array.isArray(response.data)) {
+          if (Array.isArray(response.data) && response.data.length > 0) {
             response.data.forEach((community: CommunityType) => {
               if (!community._id) {
                 console.error("Community does not have _id:", community);
@@ -121,7 +121,7 @@ export default function MyList() {
       .get("/user/joined")
       .then((response) => {
         console.log("Joined communities:", response.data);
-        if (Array.isArray(response.data)) {
+        if (Array.isArray(response.data) && response.data.length > 0) {
           setSelectedCommunity(response.data);
         } else {
           console.error("Expected an array for /user/joined response data, but got:", response.data);
@@ -164,6 +164,30 @@ export default function MyList() {
           ))
         ) : (
           <Typography variant="body1">No community data available</Typography>
+        )}
+      </List>
+
+      <List>
+        {selectedCommunity.length > 0 ? (
+          selectedCommunity.map((community) => (
+            <ListItem
+              key={community._id}
+              onClick={() => handleCommunityClick1(community)}
+              style={{
+                backgroundColor: "#efc9e4",
+                marginBottom: "10px",
+                borderRadius: "4px",
+                boxShadow: `
+                0 -2px 4px rgba(255, 182, 193, 0.2), 
+                0 2px 4px rgba(255, 182, 193, 0.2),
+                0 2px 4px rgba(0,0,0,0.1)`,
+              }}
+            >
+              <ListItemText primary={community.name} secondary={community.description} />
+            </ListItem>
+          ))
+        ) : (
+          <Typography variant="body1">No joined community data available</Typography>
         )}
       </List>
     </div>
