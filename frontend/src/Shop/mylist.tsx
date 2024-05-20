@@ -28,8 +28,8 @@ const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, wit
 
 export default function MyList() {
   const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
-  const [createCommunityData, setCreateCommunityData] = useState<CommunityType[] | null>(null);
-  const [selectedCommunity, setSelectedCommunity] = useState<CommunityType[] | null>(null);
+  const [createCommunityData, setCreateCommunityData] = useState<CommunityType[]>([]);
+  const [selectedCommunity, setSelectedCommunity] = useState<CommunityType[]>([]);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [openFormModal, setOpenFormModal] = useState(false);
   const [tabValue, setTabValue] = useState(0);
@@ -101,10 +101,12 @@ export default function MyList() {
             setCreateCommunityData(response.data);
           } else {
             console.error("Expected an array for /user/me response data, but got:", response.data);
+            setCreateCommunityData([]);
           }
         })
         .catch((error) => {
           console.error("Error fetching /user/me:", error);
+          setCreateCommunityData([]);
           if (error.response && error.response.data) {
             console.error("Error response data:", error.response.data);
           } else {
@@ -119,10 +121,16 @@ export default function MyList() {
       .get("/user/joined")
       .then((response) => {
         console.log("Joined communities:", response.data);
-        setSelectedCommunity(response.data);
+        if (Array.isArray(response.data)) {
+          setSelectedCommunity(response.data);
+        } else {
+          console.error("Expected an array for /user/joined response data, but got:", response.data);
+          setSelectedCommunity([]);
+        }
       })
       .catch((error) => {
         console.error("Error fetching joined communities:", error);
+        setSelectedCommunity([]);
         if (error.response && error.response.data) {
           console.error("Error response data:", error.response.data);
         } else {
@@ -136,7 +144,7 @@ export default function MyList() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: "5px" }}></div>
 
       <List>
-        {createCommunityData ? (
+        {createCommunityData.length > 0 ? (
           createCommunityData.map((community) => (
             <ListItem
               key={community._id}
