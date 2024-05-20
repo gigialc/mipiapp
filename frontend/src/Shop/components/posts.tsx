@@ -10,14 +10,13 @@ import Fab from '@mui/material/Fab';
 
 interface WindowWithEnv extends Window {
     __ENV?: {
-      BACKEND_URL: string, // REACT_APP_BACKEND_URL environment variable
+      backendURL: string, // REACT_APP_BACKEND_URL environment variable
       sandbox: string, // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
     }
   }
   
   const _window: WindowWithEnv = window;
-  const backendURL = _window.__ENV && _window.__ENV.BACKEND_URL;
-  
+  const backendURL = _window.__ENV?.backendURL || process.env.REACT_APP_BACKEND_URL  || 'https://young-castle-93921-4eef81b63299.herokuapp.com';
   
   const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
   const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};

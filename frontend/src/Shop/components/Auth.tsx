@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { UserContextType, AuthResult, UserData, WindowWithEnv, CommunityType, User } from "./Types";
+import { UserContextType, AuthResult, UserData, CommunityType, User } from "./Types";
 import { onIncompletePaymentFound } from "./Payments";
 
 export const UserContext = React.createContext<UserContextType | null>(null);
 
 
-const _window: WindowWithEnv = window;
-const backendURL = _window.__ENV && _window.__ENV.BACKEND_URL;
-
-const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true });
+interface WindowWithEnv extends Window {
+    __ENV?: {
+      backendURL: string, // REACT_APP_BACKEND_URL environment variable
+      sandbox: string, // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
+    }
+  }
+  
+  const _window: WindowWithEnv = window;
+  const backendURL = _window.__ENV?.backendURL || process.env.REACT_APP_BACKEND_URL  || 'https://young-castle-93921-4eef81b63299.herokuapp.com';
+  
+  const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
+  const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);

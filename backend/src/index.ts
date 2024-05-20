@@ -29,94 +29,100 @@ if (!mongoURI) {
     process.exit(1); // Exit if no MongoDB URI is defined
 }
 
-// MongoDB connectiona
+// MongoDB connection
 mongoose.connect(mongoURI)
-//print mongodb connection status
-    .then(() => {console.log('Connected to MongoDB URI:', (mongoURI)); })
+    .then(() => {
+        console.log('Connected to MongoDB URI:', mongoURI);
+
+        const app: express.Application = express();
+
+        // Serve static files from the React app
+        app.use(express.static(path.join(__dirname, '..', 'frontend/build')));
+
+        // Log requests to the console in a compact format:
+        app.use(logger('dev'));
+
+        // Full log of all requests to /log/access.log:
+        app.use(logger('common', {
+            stream: fs.createWriteStream(path.join(__dirname, '..', 'log', 'access.log'), { flags: 'a' }),
+        }));
+
+        // Enable response bodies to be sent as JSON:
+        app.use(express.json());
+
+        // Handle CORS:
+        app.use(cors({
+            origin: "https://www.destigfemme.app",
+            credentials: true
+        }));
+
+        app.use(cookieParser());
+        app.use(session({
+            secret: process.env.SESSION_SECRET || 'your_default_secret_value',
+            resave: false,
+            saveUninitialized: false,
+            store: MongoStore.create({
+                mongoUrl: mongoURI,
+                collectionName: 'user_sessions'
+            }),
+        }));
+
+        // Middleware to log request details
+        app.use((req, res, next) => {
+            console.log(`Received request: ${req.method} ${req.url}`);
+            console.log('Headers:', req.headers);
+            console.log('Body:', req.body);
+            next();
+        });
+
+        // Initialize the database and collections
+        const db = mongoose.connection.db;
+        app.locals.userCollection = db.collection<UserData>('user');
+        app.locals.communityCollection = db.collection<CommunityType>('community');
+        app.locals.postCollection = db.collection<PostType>('posts');
+        app.locals.commentCollection = db.collection<CommentType>('comments');
+
+        console.log('Collections initialized');
+
+        // Endpoint mounting
+        const paymentsRouter = express.Router();
+        mountPaymentsEndpoints(paymentsRouter);
+        app.use('/payments', paymentsRouter);
+
+        const userRouter = express.Router();
+        mountUserEndpoints(userRouter);
+        app.use('/user', userRouter);
+
+        const communityRouter = express.Router();
+        mountCommunityEndpoints(communityRouter);
+        app.use('/community', communityRouter);
+
+        const postRouter = express.Router();
+        mountPostEndpoints(postRouter);
+        app.use('/posts', postRouter);
+
+        const commentRouter = express.Router();
+        mountCommentEndpoints(commentRouter);
+        app.use('/comments', commentRouter);
+
+        app.get('/', async (_, res) => {
+            res.status(200).send({ message: "Hello, World!" });
+        });
+
+        // The "catchall" handler: for any request that doesn't
+        // match one above, send back React's index.html file.
+        app.get('*', (req, res) => {
+            res.sendFile(path.join(__dirname, '..', 'frontend/build', 'index.html'));
+        });
+
+        const port = process.env.PORT || 3001;
+
+        app.listen(port, () => {
+            console.log(`App platform demo app - Backend listening on port ${port}!`);
+            console.log(`CORS configured for frontend hosted on ${env.frontend_url}`);
+        });
+    })
     .catch((err: Error) => {
         console.error('MongoDB connection error:', err);
         process.exit(1); // Exit if cannot connect to MongoDB
     });
-
-
-const app: express.Application = express();
-
-// Log requests to the console in a compact format:
-app.use(logger('dev'));
-
-// Full log of all requests to /log/access.log:
-app.use(logger('common', {
-  stream: fs.createWriteStream(path.join(__dirname, '..', 'log', 'access.log'), { flags: 'a' }),
-}));
-
-// Enable response bodies to be sent as JSON:
-app.use(express.json())
-
-// Handle CORS:
-app.use(cors({
-  origin: env.frontend_url,
-  credentials: true
-}));
-
-app.use(cookieParser());
-app.use(session({
-  secret: process.env.SESSION_SECRET|| 'your_default_secret_value',
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: mongoURI,
-    collectionName: 'user_sessions'
-  }),
-}));
-
-
-// Middleware to log request details
-app.use((req, res, next) => {
-  console.log(`Received request: ${req.method} ${req.url}`);
-  console.log('Headers:', req.headers);
-  console.log('Body:', req.body);
-  next();
-});
-
-// Initialize the database and collections
-  mongoose.connection.once('open', () => {
-    const db = mongoose.connection.db;
-    app.locals.userCollection = db.collection<UserData>('user');
-    app.locals.communityCollection = db.collection<CommunityType>('community');
-    app.locals.postCollection = db.collection<PostType>('posts');
-    app.locals.commentCollection = db.collection<CommentType>('comments');
-
-  console.log('Collections initialized');
-});
-
-// Endpoint mounting
-const paymentsRouter = express.Router();
-mountPaymentsEndpoints(paymentsRouter);
-app.use('/payments', paymentsRouter);
-
-const userRouter = express.Router();
-mountUserEndpoints(userRouter);
-app.use('/user', userRouter);
-
-const communityRouter = express.Router();
-mountCommunityEndpoints(communityRouter);
-app.use('/community', communityRouter);
-
-const postRouter = express.Router();
-mountPostEndpoints(postRouter);
-app.use('/posts', postRouter);
-
-const commentRouter = express.Router();
-mountCommentEndpoints(commentRouter);
-app.use('/comments', commentRouter);
-
-app.get('/', async (_, res) => {
-  res.status(200).send({ message: "Hello, World!" });
-});
-
-const port = process.env.PORT || 3001
-
-app.listen(port, () => {
-  console.log(`App platform demo app - Backend listening on port ${port}!`);
-  console.log(`CORS configured for frontend hosted on ${env.frontend_url}`);
-});

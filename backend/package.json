@@ -6,8 +6,7 @@
   "author": "St Paul",
   "scripts": {
     "build": "tsc",
-    "start": "node build/index.js",
-    "postinstall": "yarn build",
+    "start": "node dist/index.js",  
     "heroku-postbuild": "tsc"
   },
   "dependencies": {
