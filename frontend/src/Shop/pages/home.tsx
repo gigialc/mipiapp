@@ -14,17 +14,9 @@ import { UserData } from "../components/Types";
 import axios from 'axios';
 
 
-interface WindowWithEnv extends Window {
-  __ENV?: {
-    backendURL: string, // REACT_APP_BACKEND_URL environment variable
-    sandbox: string, // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
-  }
-}
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
-const _window: WindowWithEnv = window;
-const backendURL = _window.__ENV?.backendURL || process.env.REACT_APP_BACKEND_URL  || 'https://young-castle-93921-4eef81b63299.herokuapp.com';
-
-const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
+const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
 

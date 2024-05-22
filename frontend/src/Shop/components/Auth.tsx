@@ -5,19 +5,10 @@ import { onIncompletePaymentFound } from "./Payments";
 
 export const UserContext = React.createContext<UserContextType | null>(null);
 
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
-interface WindowWithEnv extends Window {
-    __ENV?: {
-      backendURL: string, // REACT_APP_BACKEND_URL environment variable
-      sandbox: string, // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
-    }
-  }
-  
-  const _window: WindowWithEnv = window;
-  const backendURL = _window.__ENV?.backendURL || process.env.REACT_APP_BACKEND_URL  || 'https://young-castle-93921-4eef81b63299.herokuapp.com';
-  
-  const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
-  const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
+const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
+const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -35,13 +26,13 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     }
 
     const signInUser = async (authResult: AuthResult) => {
-        const response = await axiosClient.post('/user/signin', { authResult });
+        const response = await axiosClient.post(`${backendURL}/api/user/signin`, { authResult });
         setUser(response.data.user); // Save user data to context
         return response.data.user;
     }
 
     const signOutUser = async () => {
-        await axiosClient.get('/user/signout');
+        await axiosClient.get(`${backendURL}/api/user/signout`);
         setUser(null);
     }
 
@@ -78,7 +69,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     useEffect(() => {
         const checkSession = async () => {
             try {
-                const response = await axiosClient.get('/user/me');
+                const response = await axiosClient.get(`${backendURL}/api/user/me`);
                 setUser(response.data.user);
             } catch (error) {
                 console.error("No active session found", error);

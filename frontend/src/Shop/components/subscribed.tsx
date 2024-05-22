@@ -23,19 +23,9 @@ import { Tabs, Tab, Box } from "@mui/material";
 import MyList from "../mylist";
 
 
-// Make TS accept the existence of our window.__ENV object - defined in index.html:
-interface WindowWithEnv extends Window {
-  __ENV?: {
-    BACKEND_URL: string, // REACT_APP_BACKEND_URL environment variable
-    sandbox: string, // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
-  }
-}
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
-const _window: WindowWithEnv = window;
-const backendURL = _window.__ENV && _window.__ENV.BACKEND_URL;
-
-
-const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
+const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
 export default function  UserToAppPayments() {
@@ -85,7 +75,7 @@ export default function  UserToAppPayments() {
 
   useEffect(() => {
     if (user){
-    axiosClient.get('/user/me')
+    axiosClient.get(`${backendURL}/api/user/me`)
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
         // If response.data is an array, we can use forEach
@@ -109,7 +99,7 @@ export default function  UserToAppPayments() {
 
 
   useEffect(() => {
-    axiosClient.get('/user/joined')
+    axiosClient.get(`${backendURL}/api/user/joined`)
       .then((response) => {
         console.log('Joined communities:', response.data);
         setSelectedCommunity(response.data);

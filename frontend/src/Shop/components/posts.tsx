@@ -8,18 +8,10 @@ import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
 // Make TS accept the existence of our window.__ENV object - defined in index.html:
 
-interface WindowWithEnv extends Window {
-    __ENV?: {
-      backendURL: string, // REACT_APP_BACKEND_URL environment variable
-      sandbox: string, // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
-    }
-  }
-  
-  const _window: WindowWithEnv = window;
-  const backendURL = _window.__ENV?.backendURL || process.env.REACT_APP_BACKEND_URL  || 'https://young-castle-93921-4eef81b63299.herokuapp.com';
-  
-  const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
-  const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+
+const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
+const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
 
 export default function Posts({ communityId }: { communityId: string }) {
@@ -89,7 +81,7 @@ export default function Posts({ communityId }: { communityId: string }) {
             };
 
             axiosClient
-                .post('/posts/posted',data, config)
+                .post(`${backendURL}/api/posts/posted`,data, config)
                 .then((response) => {
                     console.log(response);
                 })

@@ -8,17 +8,9 @@ import { Box, Grid, Typography, Card, CardContent } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import PostCard from "./PostCard";
 
-interface WindowWithEnv extends Window {
-  __ENV?: {
-    backendURL: string, // REACT_APP_BACKEND_URL environment variable
-    sandbox: string, // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
-  }
-}
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
-const _window: WindowWithEnv = window;
-const backendURL = _window.__ENV?.backendURL || process.env.REACT_APP_BACKEND_URL  || 'https://young-castle-93921-4eef81b63299.herokuapp.com';
-
-const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
+const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
 export default function PostContent({ communityId }: { communityId: string }) {
@@ -37,7 +29,7 @@ export default function PostContent({ communityId }: { communityId: string }) {
   useEffect(() => {
       const fetchPosts = async () => {
           try {
-              const response = await axiosClient.get(`/posts/posts1?community_id=${communityId}`);
+              const response = await axiosClient.get(`${backendURL}/api/posts/posts1?community_id=${communityId}`);
               console.log(response.data.posts);
               setPosts(response.data.posts || []);
 

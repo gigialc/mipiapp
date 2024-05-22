@@ -16,20 +16,10 @@ import { UserData } from './Types';
 import {User } from './Types';
 
 
-// Make TS accept the existence of our window.__ENV object - defined in index.html:
-interface WindowWithEnv extends Window {
-  __ENV?: {
-    backendURL: string, // REACT_APP_BACKEND_URL environment variable
-    sandbox: string, // REACT_APP_SANDBOX_SDK environment variable - string, not boolean!
-  }
-}
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
-const _window: WindowWithEnv = window;
-const backendURL = _window.__ENV && _window.__ENV.backendURL;
-
-
-const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
-const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}}; // Add null check
+const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
+const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
 
 export default function ProfileEdit() {
@@ -50,7 +40,7 @@ export default function ProfileEdit() {
   };
 
   const handleSave = () => {
-    axiosClient.post('/user/update', {
+    axiosClient.post(`${backendURL}/api/user/update`, {
       username: profile.username,
       bio: profile.bio,
     })
@@ -66,7 +56,7 @@ export default function ProfileEdit() {
   useEffect(() => {
    if (user.uid !== '') {
 
-    axiosClient.get('/user/userInfo')
+    axiosClient.get(`${backendURL}/api/user/userInfo`)
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
         setProfile(response.data);

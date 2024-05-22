@@ -14,16 +14,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import { Tabs, Tab, Box } from "@mui/material";
 
-interface WindowWithEnv extends Window {
-  __ENV?: {
-    backendURL: string;
-    sandbox: string;
-  };
-}
-
-const _window: WindowWithEnv = window;
-const backendURL = _window.__ENV?.backendURL || process.env.REACT_APP_BACKEND_URL || 'https://young-castle-93921-4eef81b63299.herokuapp.com';
-
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
 const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
@@ -91,7 +82,7 @@ export default function MyList() {
   useEffect(() => {
     if (user) {
       axiosClient
-        .get("/user/me")
+        .get(`${backendURL}/api/user/me`)
         .then((response) => {
           console.log("Response data for /user/me:", response.data);
           if (Array.isArray(response.data) && response.data.length > 0) {
@@ -120,7 +111,7 @@ export default function MyList() {
 
   useEffect(() => {
     axiosClient
-      .get("/user/joined")
+      .get(`${backendURL}/api/joined`)
       .then((response) => {
         console.log("Joined communities:", response.data);
         if (Array.isArray(response.data) && response.data.length > 0) {

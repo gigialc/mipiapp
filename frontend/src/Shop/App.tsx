@@ -22,18 +22,11 @@ import Comments from "./components/comments";
 import PublicProfile from "./pages/publicProfile";
 import axios from 'axios';
 
-interface WindowWithEnv extends Window {
-    __ENV?: {
-      backendURL: string;
-      sandbox: string;
-    };
-  }
-  
-  const _window: WindowWithEnv = window;
-  const backendURL = _window.__ENV?.backendURL || process.env.REACT_APP_BACKEND_URL || 'https://young-castle-93921-4eef81b63299.herokuapp.com';
-  
-  const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
-  const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+
+const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
+const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
+
 
 function App() {
     const user = null;

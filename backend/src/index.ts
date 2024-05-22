@@ -9,6 +9,7 @@ import MongoStore from 'connect-mongo';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import env from './environments';
+const app = express();
 dotenv.config();
 // Import routes and other utilities
 import mountPaymentsEndpoints from './handlers/payments';
@@ -22,11 +23,12 @@ import { CommunityType } from './types/community';
 import { PostType } from './types/posts';
 import { CommentType } from './types/comments';
 
+// MongoDB connection
 const mongoURI = process.env.MONGO_URI;
 
 if (!mongoURI) {
     console.error('MongoDB URI not defined in environment variables');
-    process.exit(1); // Exit if no MongoDB URI is defined
+    process.exit(1);
 }
 
 // MongoDB connection
@@ -34,29 +36,12 @@ mongoose.connect(mongoURI)
     .then(() => {
         console.log('Connected to MongoDB URI:', mongoURI);
 
-        const app: express.Application = express();
-
-        // Serve static files from the React app
-        app.use(express.static(path.join(__dirname, '..', 'frontend/build')));
-
-        // Log requests to the console in a compact format:
-        app.use(logger('dev'));
-
-        // Full log of all requests to /log/access.log:
-        app.use(logger('common', {
-            stream: fs.createWriteStream(path.join(__dirname, '..', 'log', 'access.log'), { flags: 'a' }),
-        }));
-
-        // Enable response bodies to be sent as JSON:
-        app.use(express.json());
-
-        // Handle CORS:
+        // Middleware setup
         app.use(cors({
             origin: "https://www.destigfemme.app",
             credentials: true
         }));
-
-        app.use(cookieParser());
+        app.use(express.json());
         app.use(session({
             secret: process.env.SESSION_SECRET || 'your_default_secret_value',
             resave: false,
@@ -66,6 +51,7 @@ mongoose.connect(mongoURI)
                 collectionName: 'user_sessions'
             }),
         }));
+
 
         // Middleware to log request details
         app.use((req, res, next) => {
@@ -84,45 +70,51 @@ mongoose.connect(mongoURI)
 
         console.log('Collections initialized');
 
-        // Endpoint mounting
-        const paymentsRouter = express.Router();
-        mountPaymentsEndpoints(paymentsRouter);
-        app.use('/payments', paymentsRouter);
 
+           // Serve static files from the React app
+        app.use(express.static(path.join(__dirname, 'frontend/build')));
+
+           // Routes
         const userRouter = express.Router();
-        mountUserEndpoints(userRouter);
-        app.use('/user', userRouter);
 
-        const communityRouter = express.Router();
-        mountCommunityEndpoints(communityRouter);
-        app.use('/community', communityRouter);
-
-        const postRouter = express.Router();
-        mountPostEndpoints(postRouter);
-        app.use('/posts', postRouter);
-
-        const commentRouter = express.Router();
-        mountCommentEndpoints(commentRouter);
-        app.use('/comments', commentRouter);
-
-        app.get('/', async (_, res) => {
+        app.get('/api', async (_, res) => {
             res.status(200).send({ message: "Hello, World!" });
         });
 
+        // Endpoint mounting
+        const paymentsRouter = express.Router();
+        mountPaymentsEndpoints(paymentsRouter);
+        app.use('/api/payments', paymentsRouter);
+
+
+        mountUserEndpoints(userRouter);
+        app.use('/api/user', userRouter);
+
+        const communityRouter = express.Router();
+        mountCommunityEndpoints(communityRouter);
+        app.use('/api/community', communityRouter);
+
+        const postRouter = express.Router();
+        mountPostEndpoints(postRouter);
+        app.use('/api/posts', postRouter);
+
+        const commentRouter = express.Router();
+        mountCommentEndpoints(commentRouter);
+        app.use('/api/comments', commentRouter);
+
         // The "catchall" handler: for any request that doesn't
         // match one above, send back React's index.html file.
+        // Handle all other routes with React app
         app.get('*', (req, res) => {
-            res.sendFile(path.join(__dirname, '..', 'frontend/build', 'index.html'));
+            res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
         });
 
         const port = process.env.PORT || 3001;
-
         app.listen(port, () => {
-            console.log(`App platform demo app - Backend listening on port ${port}!`);
-            console.log(`CORS configured for frontend hosted on ${env.frontend_url}`);
+            console.log(`Backend listening on port ${port}`);
         });
     })
-    .catch((err: Error) => {
+    .catch((err) => {
         console.error('MongoDB connection error:', err);
-        process.exit(1); // Exit if cannot connect to MongoDB
+        process.exit(1);
     });
