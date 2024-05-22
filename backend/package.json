@@ -1,13 +1,13 @@
 {
-  "name": "app-platform-demo-backend",
+  "name": "node-example",
   "version": "1.0.0",
-  "license": "MIT",
-  "description": "Destig Femme App for Pi Network",
-  "author": "St Paul",
+  "description": "This example is so cool.",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",  
-    "heroku-postbuild": "tsc"
+    "postinstall": "yarn build",
+    "heroku-postbuild": "yarn build"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -53,6 +53,8 @@
     "node": "22.0.0",
     "yarn": "1.22.22"
   },
-  "main": "index.js",
-  "keywords": []
+  "keywords": [
+    "example",
+    "heroku"
+  ]
 }
