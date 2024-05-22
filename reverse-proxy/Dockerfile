@@ -21,3 +21,4 @@ RUN sed -i  "s/worker_processes/#worker_processes/" /etc/nginx/nginx.conf && \
 # Override the default command of the base image:
 # See: https://github.com/nginxinc/docker-nginx/blob/1.15.7/mainline/stretch/Dockerfile#L99
 CMD ["/var/entrypoint.sh"]
+
