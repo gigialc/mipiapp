@@ -6,3 +6,5 @@ node_modules
 
 frontend/.env
 backend/.env
+
+docker-compose.yml
