@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  reverse-proxy:
+    build: ./reverse-proxy
+    environment:
+      HTTPS: ${HTTPS}
+      FRONTEND_DOMAIN_NAME: ${FRONTEND_DOMAIN_NAME}
+      BACKEND_DOMAIN_NAME: ${BACKEND_DOMAIN_NAME}
+      DOMAIN_VALIDATION_KEY: ${DOMAIN_VALIDATION_KEY}
+    ports:
+      - "80:80"
+      - "443:443"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - ${DATA_DIRECTORY}/reverse-proxy/etc-letsencrypt:/etc/letsencrypt/
+    depends_on:
+      - frontend
+      - backend
+
+  frontend:
+    build: ./frontend
+    environment:
+      BACKEND_URL: ${BACKEND_URL}
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    environment:
+      NODE_ENV: ${ENVIRONMENT}
+      SESSION_SECRET: ${SESSION_SECRET}
+      PI_API_KEY: ${PI_API_KEY}
+      PLATFORM_API_URL: ${PLATFORM_API_URL}
+      MONGO_URI: ${MONGO_URI}  # MongoDB Atlas URI
+      FRONTEND_URL: ${FRONTEND_URL}
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:5.0
+    environment:
+      MONGODB_USERNAME: ${MONGODB_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+    ports:
+      - 27018:27017
+    volumes:
+      - ${DATA_DIRECTORY}/mongo/data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
