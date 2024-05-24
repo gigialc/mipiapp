@@ -31,20 +31,21 @@ RUN rm -rf ./build/static/js/*.map
 
 FROM nginx:1.15.7
 
+# Copy custom nginx configuration
 COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY ./docker/entrypoint.sh /var/entrypoint.sh
 RUN chmod +x /var/entrypoint.sh
 
+# Create directory for the web app
 RUN mkdir -p /var/www/webapp
 
+# Copy the built app from the builder container
 COPY --from=builder /app/build /var/www/webapp
 
-# Default nginx configuration has only one worker process running. "Auto" is a better setting.
-# Commenting out any existing setting, and adding the desired one is more robust against new docker image versions.
-RUN sed -i  "s/worker_processes/#worker_processes/" /etc/nginx/nginx.conf && \
+# Configure nginx
+RUN sed -i "s/worker_processes/#worker_processes/" /etc/nginx/nginx.conf && \
     echo "worker_processes auto;" >> /etc/nginx/nginx.conf && \
     echo "worker_rlimit_nofile 16384;" >> /etc/nginx/nginx.conf
 
-# Override the default command of the base image:
-# See: https://github.com/nginxinc/docker-nginx/blob/1.15.7/mainline/stretch/Dockerfile#L99
+# Start Nginx
 CMD ["/var/entrypoint.sh"]
