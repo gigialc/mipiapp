@@ -6,8 +6,8 @@ FROM nginx:1.23.1
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y certbot python3-certbot-nginx
 
-COPY ./docker/nginx.conf.template /nginx.conf.template
-COPY ./docker/nginx-ssl.conf.template /nginx-ssl.conf.template
+COPY ./docker/nginx.conf /nginx.conf
+COPY ./docker/nginx-ssl.conf /nginx-ssl.conf
 COPY ./docker/entrypoint.sh /var/entrypoint.sh
 
 RUN chmod +x /var/entrypoint.sh
