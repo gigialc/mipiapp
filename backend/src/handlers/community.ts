@@ -9,7 +9,6 @@ import { CommunityType } from "../types/community";
 import { UserData } from "../types/user";
 import "../types/session";
 import platformAPIClient from "../services/platformAPIClient";
-import { useActionData } from "react-router";
 
 export default function mountCommunityEndpoints(router: Router) {
     router.get('/create', async (req, res) => {
