@@ -72,7 +72,7 @@ mongoose.connect(mongoURI)
 
 
            // Serve static files from the React app
-        app.use(express.static(path.join(__dirname, 'frontend/build')));
+        app.use(express.static(path.join(__dirname, '../../frontend/build')));
 
            // Routes
         const userRouter = express.Router();
@@ -106,7 +106,7 @@ mongoose.connect(mongoURI)
         // match one above, send back React's index.html file.
         // Handle all other routes with React app
         app.get('*', (req, res) => {
-            res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
+            res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
         });
 
         const port = process.env.PORT || 3001;
