@@ -6,12 +6,10 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import logger from 'morgan';
 import MongoStore from 'connect-mongo';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import { MongoClient } from 'mongodb';
 import env from './environments';
-const app = express();
-dotenv.config();
-// Import routes and other utilities
+import mongoose from 'mongoose';
+
 import mountPaymentsEndpoints from './handlers/payments';
 import mountUserEndpoints from './handlers/user';
 import mountCommunityEndpoints from './handlers/community';
@@ -23,98 +21,108 @@ import { CommunityType } from './types/community';
 import { PostType } from './types/posts';
 import { CommentType } from './types/comments';
 
-// MongoDB connection
-const mongoURI = process.env.MONGO_URI;
+// We must import typedefs for ts-node-dev to pick them up when they change (even though tsc would supposedly
+// have no problem here)
+// https://stackoverflow.com/questions/65108033/property-user-does-not-exist-on-type-session-partialsessiondata#comment125163548_65381085
+import "./types/session";
 
-if (!mongoURI) {
-    console.error('MongoDB URI not defined in environment variables');
-    process.exit(1);
+
+const mongoUri = env.MONGO_URI;
+const mongoClientOptions = {
+  authSource: "admin",
+  auth: {
+    username: env.mongo_user,
+    password: env.mongo_password,
+  },
 }
 
-// MongoDB connection
-mongoose.connect(mongoURI)
-    .then(() => {
-        console.log('Connected to MongoDB URI:', mongoURI);
 
-        // Middleware setup
-        app.use(cors({
-            origin: "https://www.destigfemme.app",
-            credentials: true
-        }));
-        app.use(express.json());
-        app.use(session({
-            secret: process.env.SESSION_SECRET || 'your_default_secret_value',
-            resave: false,
-            saveUninitialized: false,
-            store: MongoStore.create({
-                mongoUrl: mongoURI,
-                collectionName: 'user_sessions'
-            }),
-        }));
+//
+// I. Initialize and set up the express app and various middlewares and packages:
+//
 
+const app: express.Application = express();
 
-        // Middleware to log request details
-        app.use((req, res, next) => {
-            console.log(`Received request: ${req.method} ${req.url}`);
-            console.log('Headers:', req.headers);
-            console.log('Body:', req.body);
-            next();
-        });
+// Log requests to the console in a compact format:
+app.use(logger('dev'));
 
-        // Initialize the database and collections
-        const db = mongoose.connection.db;
-        app.locals.userCollection = db.collection<UserData>('user');
-        app.locals.communityCollection = db.collection<CommunityType>('community');
-        app.locals.postCollection = db.collection<PostType>('posts');
-        app.locals.commentCollection = db.collection<CommentType>('comments');
+// Full log of all requests to /log/access.log:
+app.use(logger('common', {
+  stream: fs.createWriteStream(path.join(__dirname, '..', 'log', 'access.log'), { flags: 'a' }),
+}));
 
-        console.log('Collections initialized');
+// Enable response bodies to be sent as JSON:
+app.use(express.json())
 
+// Handle CORS:
+app.use(cors({
+  origin: env.frontend_url,
+  credentials: true
+}));
 
-           // Serve static files from the React app
-        app.use(express.static(path.join(__dirname, '../../frontend/build')));
+// Handle cookies 🍪
+app.use(cookieParser());
 
-           // Routes
-        const userRouter = express.Router();
-
-        app.get('/api', async (_, res) => {
-            res.status(200).send({ message: "Hello, World!" });
-        });
-
-        // Endpoint mounting
-        const paymentsRouter = express.Router();
-        mountPaymentsEndpoints(paymentsRouter);
-        app.use('/api/payments', paymentsRouter);
+// Use sessions:
+app.use(session({
+  secret: env.session_secret,
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: mongoUri,
+    mongoOptions: mongoClientOptions,
+    collectionName: 'user_sessions'
+  }),
+}));
 
 
-        mountUserEndpoints(userRouter);
-        app.use('/api/user', userRouter);
+//
+// II. Mount app endpoints:
+//
 
-        const communityRouter = express.Router();
-        mountCommunityEndpoints(communityRouter);
-        app.use('/api/community', communityRouter);
+// Payments endpoint under /payments:
+const paymentsRouter = express.Router();
+mountPaymentsEndpoints(paymentsRouter);
+app.use('/api/payments', paymentsRouter);
 
-        const postRouter = express.Router();
-        mountPostEndpoints(postRouter);
-        app.use('/api/posts', postRouter);
+const userRouter = express.Router();
+mountUserEndpoints(userRouter);
+app.use('/api/user', userRouter);
 
-        const commentRouter = express.Router();
-        mountCommentEndpoints(commentRouter);
-        app.use('/api/comments', commentRouter);
+const communityRouter = express.Router();
+mountCommunityEndpoints(communityRouter);
+app.use('/api/community', communityRouter);
 
-        // The "catchall" handler: for any request that doesn't
-        // match one above, send back React's index.html file.
-        // Handle all other routes with React app
-        app.get('*', (req, res) => {
-            res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
-        });
+const postRouter = express.Router();
+mountPostEndpoints(postRouter);
+app.use('/api/posts', postRouter);
 
-        const port = process.env.PORT || 3001;
-        app.listen(port, () => {
-            console.log(`Backend listening on port ${port}`);
-        });
-    })
-    .catch((err) => {
-        console.error('MongoDB connection error:', err);
-        process.exit(1);
-    });
+const commentRouter = express.Router();
+mountCommentEndpoints(commentRouter);
+app.use('/api/comments', commentRouter);
+
+// Hello World page to check everything works:
+app.get('/api', async (_, res) => {
+  res.status(200).send({ message: "Hello, World!" });
+});
+
+
+// III. Boot up the app:
+
+app.listen(8000, async () => {
+  try {
+    const db = mongoose.connection.db;
+    app.locals.userCollection = db.collection<UserData>('user');
+    app.locals.communityCollection = db.collection<CommunityType>('community');
+    app.locals.postCollection = db.collection<PostType>('posts');
+    app.locals.commentCollection = db.collection<CommentType>('comments');
+
+    console.log('Collections initialized');
+    console.log('Connected to MongoDB on: ', mongoUri)
+  } catch (err) {
+    console.error('Connection to MongoDB failed: ', err)
+  }
+
+  console.log('App platform demo app - Backend listening on port 8000!');
+  console.log(`CORS config: configured to respond to a frontend hosted on ${env.frontend_url}`);
+});
