@@ -68,7 +68,7 @@ mongoose_1.default.connect(mongoURI)
     app.locals.commentCollection = db.collection('comments');
     console.log('Collections initialized');
     // Serve static files from the React app
-    app.use(express_1.default.static(path_1.default.join(__dirname, '../../frontend/public')));
+    app.use(express_1.default.static(path_1.default.join(__dirname, '../../frontend/build')));
     // Routes
     const userRouter = express_1.default.Router();
     app.get('/api', (_, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -93,7 +93,7 @@ mongoose_1.default.connect(mongoURI)
     // match one above, send back React's index.html file.
     // Handle all other routes with React app
     app.get('*', (req, res) => {
-        res.sendFile(path_1.default.join(__dirname, '../../frontend/public', 'index.html'));
+        res.sendFile(path_1.default.join(__dirname, '../../frontend/build', 'index.html'));
     });
     const port = process.env.PORT || 3001;
     app.listen(port, () => {
