@@ -3,7 +3,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "node your-app-main-file.js"
+    "start": "node .js"
   },
   "dependencies": {
     "@types/react-router": "^5.1.20",

@@ -9,7 +9,6 @@ import MongoStore from 'connect-mongo';
 import { MongoClient } from 'mongodb';
 import env from './environments';
 import mongoose from 'mongoose';
-
 import mountPaymentsEndpoints from './handlers/payments';
 import mountUserEndpoints from './handlers/user';
 import mountCommunityEndpoints from './handlers/community';
@@ -26,7 +25,6 @@ import { CommentType } from './types/comments';
 // https://stackoverflow.com/questions/65108033/property-user-does-not-exist-on-type-session-partialsessiondata#comment125163548_65381085
 import "./types/session";
 
-
 const mongoUri = env.MONGO_URI;
 const mongoClientOptions = {
   authSource: "admin",
@@ -36,10 +34,8 @@ const mongoClientOptions = {
   },
 }
 
-
 //
 // I. Initialize and set up the express app and various middlewares and packages:
-//
 
 const app: express.Application = express();
 
