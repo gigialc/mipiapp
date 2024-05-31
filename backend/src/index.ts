@@ -106,6 +106,10 @@ app.get('/api', async (_, res) => {
   res.status(200).send({ message: "Hello, World!" });
 });
 
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
+  });
+
 
 // III. Boot up the app:
 
