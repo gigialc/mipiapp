@@ -4,7 +4,7 @@
   "description": "This example is so cool.",
   "main": "dist/index.js",
   "scripts": {
-    "build": "next build && next export -o out",
+    "build": "tsc",
     "start": "node dist/index.js",
     "postinstall": "yarn build",
     "heroku-postbuild": "yarn build"
@@ -58,7 +58,7 @@
   },
   "builds": [
     {
-      "src": "src/index.js",
+      "src": "dist/index.js",
       "use": "@vercel/node"
     }
   ],
