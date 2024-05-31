@@ -6,7 +6,6 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import logger from 'morgan';
 import MongoStore from 'connect-mongo';
-import { MongoClient } from 'mongodb';
 import env from './environments';
 import mongoose from 'mongoose';
 import mountPaymentsEndpoints from './handlers/payments';
@@ -20,63 +19,53 @@ import { CommunityType } from './types/community';
 import { PostType } from './types/posts';
 import { CommentType } from './types/comments';
 
-// We must import typedefs for ts-node-dev to pick them up when they change (even though tsc would supposedly
-// have no problem here)
-// https://stackoverflow.com/questions/65108033/property-user-does-not-exist-on-type-session-partialsessiondata#comment125163548_65381085
+// Import typedefs for ts-node-dev to pick them up when they change
 import "./types/session";
 
 const mongoUri = env.MONGO_URI;
-const mongoClientOptions = {
-  authSource: "admin",
-  auth: {
-    username: env.mongo_user,
-    password: env.mongo_password,
-  },
-}
 
-//
-// I. Initialize and set up the express app and various middlewares and packages:
-
+// Initialize and set up the express app and various middlewares and packages
 const app: express.Application = express();
 
-// Log requests to the console in a compact format:
+// Log requests to the console in a compact format
 app.use(logger('dev'));
 
-// Full log of all requests to /log/access.log:
+// Full log of all requests to /log/access.log
 app.use(logger('common', {
   stream: fs.createWriteStream(path.join(__dirname, '..', 'log', 'access.log'), { flags: 'a' }),
 }));
 
-// Enable response bodies to be sent as JSON:
+// Enable response bodies to be sent as JSON
 app.use(express.json())
 
-// Handle CORS:
+// Handle CORS
 app.use(cors({
   origin: env.frontend_url,
   credentials: true
 }));
 
-// Handle cookies 🍪
+// Handle cookies
 app.use(cookieParser());
 
-// Use sessions:
+// Use sessions
 app.use(session({
   secret: env.session_secret,
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: mongoUri,
-    mongoOptions: mongoClientOptions,
+    mongoOptions: {
+      authSource: "admin",
+      auth: {
+        username: env.mongo_user,
+        password: env.mongo_password,
+      },
+    },
     collectionName: 'user_sessions'
   }),
 }));
 
-
-//
-// II. Mount app endpoints:
-//
-
-// Payments endpoint under /payments:
+// Mount app endpoints
 const paymentsRouter = express.Router();
 mountPaymentsEndpoints(paymentsRouter);
 app.use('/api/payments', paymentsRouter);
@@ -97,32 +86,87 @@ const commentRouter = express.Router();
 mountCommentEndpoints(commentRouter);
 app.use('/api/comments', commentRouter);
 
-// Hello World page to check everything works:
+// Hello World page to check everything works
 app.get('/api', async (_, res) => {
   res.status(200).send({ message: "Hello, World!" });
 });
 
+// Serve frontend
+app.use(express.static(path.join(__dirname, '../../frontend/build')));
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
-  });
+  res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
+});
 
 
-// III. Boot up the app:
 
-app.listen(8000, async () => {
+
+// Boot up the app
+const startServer = async () => {
   try {
-    const db = mongoose.connection.db;
-    app.locals.userCollection = db.collection<UserData>('user');
-    app.locals.communityCollection = db.collection<CommunityType>('community');
-    app.locals.postCollection = db.collection<PostType>('posts');
-    app.locals.commentCollection = db.collection<CommentType>('comments');
+    // Connect to MongoDB using Mongoose
+    await mongoose.connect(mongoUri, {
+    //   useNewUrlParser: true,
+    //   useUnifiedTopology: true,
+      authSource: "admin",
+      user: env.mongo_user,
+      pass: env.mongo_password,
+    });
+
+
+        // Initialize collections only after connection is established
+        const db = mongoose.connection.db;
+
+        // Check and initialize collections if they exist
+        const collections = await db.listCollections().toArray();
+        const collectionNames = collections.map(col => col.name);
+    
+        if (collectionNames.includes('user')) {
+          app.locals.userCollection = db.collection<UserData>('user');
+        } else {
+          console.log('User collection does not exist');
+        }
+    
+        if (collectionNames.includes('community')) {
+          app.locals.communityCollection = db.collection<CommunityType>('community');
+        } else {
+          console.log('Community collection does not exist');
+        }
+    
+        if (collectionNames.includes('posts')) {
+          app.locals.postCollection = db.collection<PostType>('posts');
+        } else {
+          console.log('Posts collection does not exist');
+        }
+    
+        if (collectionNames.includes('comments')) {
+          app.locals.commentCollection = db.collection<CommentType>('comments');
+        } else {
+          console.log('Comments collection does not exist');
+        }
+    
+        console.log('Collections initialized');
+        console.log('Connected to MongoDB on: ', mongoUri);
+
+    // // Initialize collections only after connection is established
+    // app.locals.userCollection = db.collection<UserData>('user');
+    // app.locals.communityCollection = db.collection<CommunityType>('community');
+    // app.locals.postCollection = db.collection<PostType>('posts');
+    // app.locals.commentCollection = db.collection<CommentType>('comments');
 
     console.log('Collections initialized');
-    console.log('Connected to MongoDB on: ', mongoUri)
-  } catch (err) {
-    console.error('Connection to MongoDB failed: ', err)
-  }
+    console.log('Connected to MongoDB on: ', mongoUri);
 
-  console.log('App platform demo app - Backend listening on port 8000!');
-  console.log(`CORS config: configured to respond to a frontend hosted on ${env.frontend_url}`);
-});
+    // Start the server
+    app.listen(env.PORT, () => {
+      console.log('App platform demo app - Backend listening on port ' + env.PORT);
+      console.log(`CORS config: configured to respond to a frontend hosted on ${env.frontend_url}`);
+    });
+  } catch (err) {
+    console.error('Connection to MongoDB failed: ', err);
+    process.exit(1);
+  }
+};
+
+startServer();
+
+export default app;
