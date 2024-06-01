@@ -12,7 +12,7 @@ import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { Button, Grid } from '@mui/material';
 
-export default function UserToAppPayments() {
+export default function Sexed() {
 
   const navigate = useNavigate();
 
@@ -22,28 +22,10 @@ export default function UserToAppPayments() {
 
   const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
 
-  const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
-    if(!user) {
-      return saveShowModal(true);
-    }
-
-    const paymentData = { amount, memo, metadata: paymentMetadata };
-    const callbacks = {
-      onReadyForServerApproval,
-      onReadyForServerCompletion,
-      onCancel,
-      onError
-    };
-
-    const payment = await window.Pi.createPayment(paymentData, callbacks);
-    console.log(payment);
-    
-  }
-
 
 return(
     <>
-         <Header user={user} onSignIn={signIn} onSignOut={signOut}/>
+         {/* <Header user={user} onSignIn={signIn} onSignOut={signOut}/> */}
 
     <Typography variant="h5" margin={2} color="pink">
       Sex Education

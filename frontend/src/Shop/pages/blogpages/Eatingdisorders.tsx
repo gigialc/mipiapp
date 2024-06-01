@@ -9,7 +9,7 @@ import { UserContext } from "../../components/Auth";
 import React from "react";
 
 
-export default function UserToAppPayments(){
+export default function Eatingdisorders(){
   const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
 
   const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
@@ -30,7 +30,7 @@ export default function UserToAppPayments(){
   }
   return(
     <>
-         <Header user={user} onSignIn={signIn} onSignOut={signOut}/>     
+         {/* <Header user={user} onSignIn={signIn} onSignOut={signOut}/>      */}
 
         <h2>The negative side of social media and how we can avoid it</h2>
     

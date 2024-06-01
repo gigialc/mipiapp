@@ -9,28 +9,13 @@ import { UserContext } from "../../components/Auth";
 import React from "react";
 
 
-export default function UserToAppPayments(){
+export default function BodyImage(){
   const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
 
-  const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
-    if(!user) {
-      return saveShowModal(true);
-    }
-    const paymentData = { amount, memo, metadata: { ...paymentMetadata, user_id: user.uid } };
 
-    const callbacks = {
-      onReadyForServerApproval,
-      onReadyForServerCompletion,
-      onCancel,
-      onError
-    };
-
-    const payment = await window.Pi.createPayment(paymentData, callbacks);
-    console.log(payment);
-  }
   return(
     <>
-         <Header user={user} onSignIn={signIn} onSignOut={signOut}/>     
+         {/* <Header user={user} onSignIn={signIn} onSignOut={signOut}/>      */}
 
         <div style={{ overflowY: 'auto', height: '150vh',marginLeft: '20px' }}>
 
