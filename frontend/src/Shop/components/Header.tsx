@@ -17,17 +17,17 @@ const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme
 const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
 const config = { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } };
 
-interface HeaderProps {
+interface props {
   onSignIn: () => void;
   onSignOut: () => void;
   user: User | null;
 }
 
-export default function Header({ onSignIn, onSignOut, user }: HeaderProps) {
+export default function Header(props: props) {
   const [coins, setCoins] = useState<number>(0);
 
   useEffect(() => {
-    if (user) {
+    if (props.user) {
       axiosClient.get(`/user/userInfo`)
         .then((response) => {
           console.log('Response data for /user/me:', response.data);
@@ -38,7 +38,7 @@ export default function Header({ onSignIn, onSignOut, user }: HeaderProps) {
           console.error('Error fetching /user/me:', error);
         });
     }
-  }, [user]);
+  }, []);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -49,36 +49,17 @@ export default function Header({ onSignIn, onSignOut, user }: HeaderProps) {
             <img src={logoImageUrl} alt="Destig Femme" style={{ height: 'auto', width: '100%', objectFit: 'cover' }} />
           </Box>
 
-         //sign in and sign out
-          <Box>
-            {user ? (
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'black', textAlign: 'right', paddingRight: 4 }}>
-                @{user.username}!
-                <IconButton
-                  size="large"
-                  edge="start"
-                  color="inherit"
-                  aria-label="sign out"
-                  onClick={onSignOut}
-                >
-                  Sign Out
-                </IconButton>
-              </Typography>
-            ) : (
-              <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'black', textAlign: 'right', paddingRight: 4 }}>
-                <IconButton
-                  size="large"
-                  edge="start"
-                  color="inherit"
-                  aria-label="sign in"
-                  onClick={onSignIn}
-                >
-                  Sign In
-                </IconButton>
-              </Typography>
-            )}
-          </Box>
+          {/* Adjusted Button */}
 
+          <div>
+            {props.user === null ? (
+              <button onClick={props.onSignIn}>Sign in</button>
+            ) : (
+              <div>
+                @{props.user.username} <button type="button" onClick={props.onSignOut}>Sign out</button>
+              </div>
+            )}
+          </div>
 
         </Toolbar>
         <Typography component="div" sx={{ flexGrow: 1, color: 'black', textAlign: 'right', paddingRight: 4 }}>
