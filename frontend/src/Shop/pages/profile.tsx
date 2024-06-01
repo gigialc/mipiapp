@@ -135,7 +135,7 @@ export default function  UserToAppPayments() {
   
   return (
     <>
-      <Header />
+      <Header  onSignIn={() => navigate('/signin')} onSignOut={() => navigate('/signout')} user={user} />
       <div style={{ padding: '20px', marginBottom: '80px' }}>
         <Typography variant="h6" style={{ fontWeight: 'bold', color: '#E69BD1', marginBottom: '0px' }}>
           Welcome to your profile, {user?.username} !
