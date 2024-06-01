@@ -49,13 +49,36 @@ export default function Header({ onSignIn, onSignOut, user }: HeaderProps) {
             <img src={logoImageUrl} alt="Destig Femme" style={{ height: 'auto', width: '100%', objectFit: 'cover' }} />
           </Box>
 
-          {user === null ? (
-            <button onClick={onSignIn}>Sign in</button>
-          ) : (
-            <div>
-              @{user.username} <button type="button" onClick={onSignOut}>Sign out</button>
-            </div>
-          )}
+         //sign in and sign out
+          <Box>
+            {user ? (
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'black', textAlign: 'right', paddingRight: 4 }}>
+                @{user.username}!
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="sign out"
+                  onClick={onSignOut}
+                >
+                  Sign Out
+                </IconButton>
+              </Typography>
+            ) : (
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'black', textAlign: 'right', paddingRight: 4 }}>
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  aria-label="sign in"
+                  onClick={onSignIn}
+                >
+                  Sign In
+                </IconButton>
+              </Typography>
+            )}
+          </Box>
+
 
         </Toolbar>
         <Typography component="div" sx={{ flexGrow: 1, color: 'black', textAlign: 'right', paddingRight: 4 }}>
