@@ -1,5 +1,5 @@
 import React from 'react';
-import * as ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom';
 import 'normalize.css';
 import './defaults.css';
 import Shop from './Shop/pages/home';
