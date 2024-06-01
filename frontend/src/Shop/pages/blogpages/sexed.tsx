@@ -43,7 +43,7 @@ export default function UserToAppPayments() {
 
 return(
     <>
-        <Header />
+         <Header user={user} onSignIn={signIn} onSignOut={signOut}/>
 
     <Typography variant="h5" margin={2} color="pink">
       Sex Education

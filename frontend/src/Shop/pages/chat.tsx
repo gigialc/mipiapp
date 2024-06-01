@@ -74,7 +74,7 @@ export default function Chat() {
 
   return (
     <>
-      <Header />
+       <Header user={user} onSignIn={signIn} onSignOut={signOut}/>
       <div style={{ padding: '15px' }}>
         <div style={{ marginBottom: '20px' }}>
           {community ? (

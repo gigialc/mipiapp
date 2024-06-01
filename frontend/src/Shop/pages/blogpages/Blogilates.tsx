@@ -30,7 +30,7 @@ export default function UserToAppPayments(){
   }
   return(
     <>
-        <Header/>   
+         <Header user={user} onSignIn={signIn} onSignOut={signOut}/>   
         <div style={{ overflowY: 'auto', height: '150vh',marginLeft: '20px' }}>  
 
         <h2>What I’d look like if I had the “perfect” body throughout history…</h2>

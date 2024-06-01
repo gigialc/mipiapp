@@ -30,7 +30,7 @@ export default function UserToAppPayments(){
   }
   return(
     <>
-        <Header/>     
+         <Header user={user} onSignIn={signIn} onSignOut={signOut}/>     
 
         <h2>The negative side of social media and how we can avoid it</h2>
     

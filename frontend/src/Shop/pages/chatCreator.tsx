@@ -8,6 +8,51 @@ import PostContent from "../components/PostContent";
 import SignIn from "../components/SignIn";
 import { UserContext } from "../components/Auth";
 import { UserContextType } from "../components/Types";
+import { Types } from 'mongoose';
+import { CommentType, CommunityType, PostType } from "../components/Types";
+
+type MyPaymentMetadata = {};
+
+type AuthResult = {
+  accessToken: string,
+  user: {
+  uid: string;
+  username: string;
+  bio: string;
+  coinbalance: number;
+  communitiesCreated: Types.ObjectId[];
+  communitiesJoined: Types.ObjectId[];
+  likes: string[]; // Changed from ObjectId[] to string[]
+  comments: CommentType[]; // Assuming CommentType is defined elsewhere
+  posts: PostType[]; // Assuming PostType is defined elsewhere
+  timestamp: Date;
+  accessToken: string; // Added
+  community: CommunityType[]; // Added, assuming CommunityType is defined elsewhere
+  date: Date;
+  }
+};
+
+interface PaymentDTO {
+  amount: number,
+  user_uid: string,
+  created_at: string,
+  identifier: string,
+  metadata: Object,
+  memo: string,
+  status: {
+    developer_approved: boolean,
+    transaction_verified: boolean,
+    developer_completed: boolean,
+    cancelled: boolean,
+    user_cancelled: boolean,
+  },
+  to_address: string,
+  transaction: null | {
+    txid: string,
+    verified: boolean,
+    _link: string,
+  },
+};
 
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
@@ -17,13 +62,80 @@ const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Al
 
 
 export default function ChatCreator() {
-  const { user, saveUser, showModal, saveShowModal, onModalClose } = useContext(UserContext) as UserContextType;
+  const { saveUser, saveShowModal, onModalClose } = useContext(UserContext) as UserContextType;
   const [community, setCommunity] = useState<any>(null);
   const [isFollowing, setIsFollowing] = useState<boolean>(false); // New state to track following status
   const navigate = useNavigate(); // Hook from react-router-dom to navigate programmatically
   const location = useLocation();
   const communityId = location.state.communityId;
+  const [showModal, setShowModal] = useState(false);
+  const [user, setUser] = useState<AuthResult['user'] | null>(null);
 
+
+
+  const signIn = async () => {
+    const scopes = ['username', 'payments'];
+    const authResult: AuthResult = await window.Pi.authenticate(scopes, onIncompletePaymentFound);
+    signInUser(authResult);
+    setUser(authResult.user);
+  }
+
+  const signOut = () => {
+    setUser(null);
+    signOutUser();
+  }
+
+  const signInUser = (authResult: AuthResult) => {
+    axiosClient.post('/user/signin', {authResult});
+    return setShowModal(false);
+  }
+
+  const signOutUser = () => {
+    return axiosClient.get('/user/signout');
+  }
+
+  const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
+    if(user === null) {
+      return setShowModal(true);
+    }
+    const paymentData = { amount, memo, metadata: paymentMetadata };
+    const callbacks = {
+      onReadyForServerApproval,
+      onReadyForServerCompletion,
+      onCancel,
+      onError
+    };
+    const payment = await window.Pi.createPayment(paymentData, callbacks);
+    console.log(payment);
+  }
+
+  const onIncompletePaymentFound = (payment: PaymentDTO) => {
+    console.log("onIncompletePaymentFound", payment);
+    return axiosClient.post('/payments/incomplete', {payment});
+  }
+
+  const onReadyForServerApproval = (paymentId: string) => {
+    console.log("onReadyForServerApproval", paymentId);
+    axiosClient.post('/payments/approve', {paymentId}, config);
+  }
+
+  const onReadyForServerCompletion = (paymentId: string, txid: string) => {
+    console.log("onReadyForServerCompletion", paymentId, txid);
+    axiosClient.post('/payments/complete', {paymentId, txid}, config);
+  }
+
+  const onCancel = (paymentId: string) => {
+    console.log("onCancel", paymentId);
+    return axiosClient.post('/payments/cancelled_payment', {paymentId});
+  }
+
+  const onError = (error: Error, payment?: PaymentDTO) => {
+    console.log("onError", error);
+    if (payment) {
+      console.log(payment);
+      // handle the error accordingly
+    }
+  }
 
   const handleNavigatePublicProfile = (communityId: string) => {
     navigate("/PublicProfile", { state: { communityId } });
@@ -59,7 +171,7 @@ export default function ChatCreator() {
 
   return (
     <>
-      <Header />
+       <Header user={user} onSignIn={signIn} onSignOut={signOut}/>
       <div style={{ padding: '15px' }}>
         <div style={{ marginBottom: '20px' }}>
           {community ? (

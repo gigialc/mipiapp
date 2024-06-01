@@ -6,7 +6,7 @@ export interface UserData {
   uid: string;
   bio: string;
   coinBalance: number;
-  roles: Array<string>;
+  // roles: Array<string>;
   accessToken: string;
   communitiesCreated: Array<Types.ObjectId>;
   communitiesJoined: Array<Types.ObjectId>;

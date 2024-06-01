@@ -2,7 +2,7 @@
 import MuiBottomNavigation from "../../MuiBottomNavigation";
 import Header from "../components/Header";
 import { Box, Grid, Typography } from "@mui/material";
-import { UserContextType, MyPaymentMetadata , CommunityType} from "../components/Types";
+import { UserContextType , CommunityType, CommentType, PostType} from "../components/Types";
 import { onCancel, onError, onReadyForServerApproval, onReadyForServerCompletion } from "../components/Payments";
 import SignIn from "../components/SignIn";
 import ProductCard from "../components/ProductCard";
@@ -12,7 +12,51 @@ import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { UserData } from "../components/Types";
 import axios from 'axios';
+import { Types } from 'mongoose';
+import { User } from "../components/Types";
 
+type MyPaymentMetadata = {};
+
+type AuthResult = {
+  accessToken: string,
+  user: {
+  uid: string;
+  username: string;
+  bio: string;
+  coinbalance: number;
+  communitiesCreated: Types.ObjectId[];
+  communitiesJoined: Types.ObjectId[];
+  likes: string[]; // Changed from ObjectId[] to string[]
+  comments: CommentType[]; // Assuming CommentType is defined elsewhere
+  posts: PostType[]; // Assuming PostType is defined elsewhere
+  timestamp: Date;
+  accessToken: string; // Added
+  community: CommunityType[]; // Added, assuming CommunityType is defined elsewhere
+  date: Date;
+  }
+};
+
+interface PaymentDTO {
+  amount: number,
+  user_uid: string,
+  created_at: string,
+  identifier: string,
+  metadata: Object,
+  memo: string,
+  status: {
+    developer_approved: boolean,
+    transaction_verified: boolean,
+    developer_completed: boolean,
+    cancelled: boolean,
+    user_cancelled: boolean,
+  },
+  to_address: string,
+  transaction: null | {
+    txid: string,
+    verified: boolean,
+    _link: string,
+  },
+};
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
@@ -21,42 +65,86 @@ const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Al
 
 
 export default function HomePage() {
-  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType; // also added this!!!!!!
+  const {  saveUser, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType; // also added this!!!!!!
   const [createCommunityData, setCreateCommunityData] = useState<CommunityType[] | null>(null);;
   const [selectedCommunity, setSelectedCommunity] = useState<CommunityType | null>(null);
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+ 
   
-  const getGreeting = () => {
-    const currentHour = new Date().getHours();
-    if (currentHour >= 0 && currentHour < 12) {
-      return "Good Morning";
-    } else if (currentHour >= 12 && currentHour < 18) {
-      return "Good Afternoon";
-    } else {
-      return "Good Night";
-    }
-  };
 
+  const signIn = async () => {
+    const scopes = ['username', 'payments'];
+    const authResult: AuthResult = await window.Pi.authenticate(scopes, onIncompletePaymentFound);
+    signInUser(authResult);
+    setUser(authResult.user);
+  }
+
+  const signOut = () => {
+    setUser(null);
+    signOutUser();
+  }
+
+  const signInUser = (authResult: AuthResult) => {
+    axiosClient.post('/user/signin', {authResult});
+    return setShowModal(false);
+  }
+
+  const signOutUser = () => {
+    return axiosClient.get('/user/signout');
+  }
+  
   const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
-    if(user) {
-      return saveShowModal(true);
-
+    if(user === null) {
+      return setShowModal(true);
     }
-
     const paymentData = { amount, memo, metadata: paymentMetadata };
     const callbacks = {
       onReadyForServerApproval,
       onReadyForServerCompletion,
-      //onCancel,
-      //onError
+      onCancel,
+      onError
+    };
+    const payment = await window.Pi.createPayment(paymentData, callbacks);
+    console.log(payment);
+  }
+
+  const onIncompletePaymentFound = (payment: PaymentDTO) => {
+    console.log("onIncompletePaymentFound", payment);
+    return axiosClient.post('/payments/incomplete', {payment});
+  }
+
+  const onReadyForServerApproval = (paymentId: string) => {
+    console.log("onReadyForServerApproval", paymentId);
+    axiosClient.post('/payments/approve', {paymentId}, config);
+  }
+
+  const onReadyForServerCompletion = (paymentId: string, txid: string) => {
+    console.log("onReadyForServerCompletion", paymentId, txid);
+    axiosClient.post('/payments/complete', {paymentId, txid}, config);
+  }
+
+  const onCancel = (paymentId: string) => {
+    console.log("onCancel", paymentId);
+    return axiosClient.post('/payments/cancelled_payment', {paymentId});
+  }
+
+  const onError = (error: Error, payment?: PaymentDTO) => {
+    console.log("onError", error);
+    if (payment) {
+      console.log(payment);
+      // handle the error accordingly
     }
+  }
+
     //make a payment
     //const payment = await window.Pi.createPayment(paymentData, callbacks);
 
     // Make an API call to add person to the community if the payment was successful
     //if (payment.paymentCompleted === true){
       console.log("Payment was successful");
-        axiosClient.post('/user/addUser', paymentMetadata)
+        axiosClient.post('/user/addUser')
             .then((response) => {
             console.log(response);
              // Redirect to the chat page
@@ -66,14 +154,12 @@ export default function HomePage() {
             console.log(error);
             });
          //}
-  }
 
   useEffect(() => {
     console.log(createCommunityData);
   }, [createCommunityData]);
 
   useEffect(() => {
-    if (user) {
     axiosClient.get('/user/userInfo')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
@@ -82,7 +168,7 @@ export default function HomePage() {
         console.error('Error fetching /user/me:', error);
       });
 
-    }}
+    }
   , []);
 
   useEffect(() => {
@@ -115,7 +201,7 @@ export default function HomePage() {
 
 return(
   <>
-  <Header />
+   <Header user={user} onSignIn={signIn} onSignOut={signOut}/>
   <Typography variant="h5" style={{ fontWeight: 'bold', color: '#E69BD1', marginBottom: '10px' , marginLeft: 20 }}>
     Communities ✨
   </Typography> 
