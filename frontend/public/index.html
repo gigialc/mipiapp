@@ -11,8 +11,8 @@
     <script>
         // Set up environment variables
         window.__ENV = {
-            backendURL: BACKEND_URL,
-            sandbox: sandbox,
+            backendURL: env.REACT_APP_BACKEND_URL,
+            sandbox: env.sandbox,
         };
         console.log('Environment variables set:', window.__ENV);
     </script>
