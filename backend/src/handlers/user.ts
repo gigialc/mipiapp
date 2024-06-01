@@ -52,6 +52,7 @@ export default function mountUserEndpoints(router: Router) {
     return res.status(200).json({ message: "User signed out" });
   });
 
+  
   router.get('/userInfo', async (req, res) => {
     const currentUser = req.session.currentUser;
     if (!currentUser) {

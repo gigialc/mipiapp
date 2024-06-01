@@ -34,16 +34,16 @@
     "express-session": "^1.17.3",
     "history": "^4.10.1",
     "mongodb": "^6.6.1",
-    "mongoose": "^8.4.0",
+    "mongoose": "^8.4.1",
     "mongosh": "^1.10.3",
     "morgan": "^1.10.0",
     "punycode": "^2.3.1",
+    "react": "^18.2.0",
     "react-hook-form": "^7.45.2",
     "react-router": "5.2.1",
     "react-router-dom": "^5.2.1",
     "socket.io-client": "^4.7.3",
-    "ts-node": "^10.9.2",
-    "react": "^18.2.0"
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -66,5 +66,4 @@
   "keywords": [
     "example"
   ]
-
 }

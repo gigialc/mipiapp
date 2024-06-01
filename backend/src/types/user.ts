@@ -14,6 +14,7 @@ export interface UserData {
   comments: Array<Types.ObjectId>;
   posts: Array<Types.ObjectId>;
   timestamp: Date;
+  
 }
 
 // Define other interfaces as needed
