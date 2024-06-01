@@ -29,7 +29,7 @@ export default function PostContent({ communityId }: { communityId: string }) {
   useEffect(() => {
       const fetchPosts = async () => {
           try {
-              const response = await axiosClient.get(`${backendURL}/api/posts/posts1?community_id=${communityId}`);
+              const response = await axiosClient.get(`/posts/posts1?community_id=${communityId}`);
               console.log(response.data.posts);
               setPosts(response.data.posts || []);
 

@@ -49,7 +49,6 @@ return(
     </Button>
     {/* Remove the Mybodycard components */}
 
-    {showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal} />}
 
     <MuiBottomNavigation />
     </>

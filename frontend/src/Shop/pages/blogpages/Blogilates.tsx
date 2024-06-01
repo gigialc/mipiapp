@@ -101,7 +101,7 @@ export default function Blogilates(){
 
         
 
-       { showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> }
+       {/* { showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> } */}
 
         <MuiBottomNavigation />
     </>

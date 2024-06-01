@@ -55,7 +55,7 @@ The implications suggest that individuals who frequently engage in comparing the
 
         </div>
 
-       { showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> }
+     
 
         <MuiBottomNavigation />
     </>

@@ -10,6 +10,7 @@ import { CommunityType } from "../components/Types";
 import { Box } from '@mui/system';
 import {Types} from 'mongoose';
 import { CommentType, PostType } from "../components/Types";
+import SignIn from "../components/SignIn";
 
 type MyPaymentMetadata = {};
 
@@ -240,6 +241,7 @@ export default function Chat() {
       <br />
       <br />
 
+      { showModal && <SignIn onSignIn={signIn} onModalClose={onModalClose} /> }
     </>
   );
   

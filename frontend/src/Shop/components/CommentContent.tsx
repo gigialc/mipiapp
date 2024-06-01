@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { PostType } from './Types';
 import CommentCard from './commentsCard';
 
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+const backendURL = process.env.REACT_APP_BACKEND_URL;
 
 const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
@@ -36,7 +36,7 @@ export default function CommentContent (){
       useEffect(() => {
         const fetchComments = async () => {
           try {
-            const response = await axiosClient.get(`${backendURL}/api/comments/fetch/${postId}`);
+            const response = await axiosClient.get(`/comments/fetch/${postId}`);
             console.log(response.data.comments);
             setComments(response.data.comments || []);
           } catch (error) {
@@ -46,7 +46,7 @@ export default function CommentContent (){
         fetchComments();
         const fetchLikeStatus = async () => {
           try {
-            const response = await axiosClient.get(`${backendURL}/api/comments/likeComment/${postId}`);
+            const response = await axiosClient.get(`/comments/likeComment/${postId}`);
             setIsLiked(response.data.isLiked);
             console.log(response.data);
             setLikesCount(response.data.likeCount);
@@ -58,7 +58,7 @@ export default function CommentContent (){
 
        const fetchPost = async () => {
         try {
-          const response = await axiosClient.get(`${backendURL}/api/posts/${postId}`);
+          const response = await axiosClient.get(`/posts/${postId}`);
           console.log(response.data);
           setPost(response.data || null);
         } catch (error) {

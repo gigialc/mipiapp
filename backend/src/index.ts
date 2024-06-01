@@ -68,26 +68,26 @@ app.use(session({
 // Mount app endpoints
 const paymentsRouter = express.Router();
 mountPaymentsEndpoints(paymentsRouter);
-app.use('/api/payments', paymentsRouter);
+app.use('/payments', paymentsRouter);
 
 const userRouter = express.Router();
 mountUserEndpoints(userRouter);
-app.use('/api/user', userRouter);
+app.use('/user', userRouter);
 
 const communityRouter = express.Router();
 mountCommunityEndpoints(communityRouter);
-app.use('/api/community', communityRouter);
+app.use('/community', communityRouter);
 
 const postRouter = express.Router();
 mountPostEndpoints(postRouter);
-app.use('/api/posts', postRouter);
+app.use('/posts', postRouter);
 
 const commentRouter = express.Router();
 mountCommentEndpoints(commentRouter);
-app.use('/api/comments', commentRouter);
+app.use('/comments', commentRouter);
 
 // Hello World page to check everything works
-app.get('/api', async (_, res) => {
+app.get('/', async (_, res) => {
   res.status(200).send({ message: "Hello, World!" });
 });
 

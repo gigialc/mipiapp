@@ -81,7 +81,7 @@ export default function Posts({ communityId }: { communityId: string }) {
             };
 
             axiosClient
-                .post(`${backendURL}/api/posts/posted`,data, config)
+                .post(`/posts/posted`,data, config)
                 .then((response) => {
                     console.log(response);
                 })

@@ -16,6 +16,7 @@ import EditProfile from "../components/editProfile";
 import { useLocation } from 'react-router-dom';
 import { Paper, Grid, Avatar, Link } from '@mui/material';
 import {Types} from 'mongoose';
+import SignIn from "../components/SignIn";
 
 type MyPaymentMetadata = {};
 
@@ -190,6 +191,8 @@ export default function  PublicProfile() {
               {community.user.bio || 'Bio not available.'}
             </Typography>
           </Grid>
+
+          { showModal && <SignIn onSignIn={signIn} onModalClose={onModalClose} /> }
         </>
       )}
     </Grid>

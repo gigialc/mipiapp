@@ -79,7 +79,7 @@ export default function MuiForm() {
             };
 
             axiosClient
-                .post(`${backendURL}/api/community/create`, data, config)
+                .post(`/community/create`, data, config)
                 .then((response) => {
                     console.log(response);
                     saveShowModal(true);

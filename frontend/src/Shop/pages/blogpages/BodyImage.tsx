@@ -33,7 +33,8 @@ export default function BodyImage(){
 
         </div>
 
-       { showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> }
+       
+      
 
         <MuiBottomNavigation />
     </>

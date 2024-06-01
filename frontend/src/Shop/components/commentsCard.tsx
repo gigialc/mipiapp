@@ -42,7 +42,7 @@ export default function CommentCard({ _id, content }: CommentType) {
 
     const handleLike = async () => {
         try {
-          const response = await axiosClient.post(`${backendURL}/api/comments/likeComment/${_id}`);
+          const response = await axiosClient.post(`/comments/likeComment/${_id}`);
           // Update based on the actual response
           setIsLiked(response.data.isLiked);
           setLikesCount(response.data.likeCount);
@@ -69,7 +69,7 @@ export default function CommentCard({ _id, content }: CommentType) {
         //fetch the like status and count
         const fetchLikeStatus = async () => {
           try {
-            const response = await axiosClient.get(`${backendURL}/api/comments/likeComment/${_id}`);
+            const response = await axiosClient.get(`/comments/likeComment/${_id}`);
             setIsLiked(response.data.isLiked);
             console.log(response.data);
             setLikesCount(response.data.likeCount);

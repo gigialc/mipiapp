@@ -28,7 +28,7 @@ export default function Header({ onSignIn, onSignOut, user }: HeaderProps) {
 
   useEffect(() => {
     if (user) {
-      axiosClient.get(`${backendURL}/api/user/userInfo`)
+      axiosClient.get(`/user/userInfo`)
         .then((response) => {
           console.log('Response data for /user/me:', response.data);
           setCoins(response.data.coinbalance);

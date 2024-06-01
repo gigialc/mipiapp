@@ -75,7 +75,7 @@ export default function  UserToAppPayments() {
 
   useEffect(() => {
     if (user){
-    axiosClient.get(`${backendURL}/api/user/me`)
+    axiosClient.get(`/user/me`)
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
         // If response.data is an array, we can use forEach
@@ -99,7 +99,7 @@ export default function  UserToAppPayments() {
 
 
   useEffect(() => {
-    axiosClient.get(`${backendURL}/api/user/joined`)
+    axiosClient.get(`/user/joined`)
       .then((response) => {
         console.log('Joined communities:', response.data);
         setSelectedCommunity(response.data);

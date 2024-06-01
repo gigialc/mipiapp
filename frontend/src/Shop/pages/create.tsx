@@ -151,6 +151,7 @@ return(
   <MuiForm />
   </div>
 
+  { showModal && <SignIn onSignIn={signIn} onModalClose={onModalClose} /> }
 </>
 );
 

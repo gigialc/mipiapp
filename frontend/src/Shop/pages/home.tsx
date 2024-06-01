@@ -224,7 +224,7 @@ return(
     <Typography variant="body1" style={{ color: '#ff69b4' }}>No community data available</Typography>
   )}
 
-  {showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> }
+  { showModal && <SignIn onSignIn={signIn} onModalClose={onModalClose} /> }
 
   <div style={{ paddingTop: '20px' }}> {/* Add padding here */}
   <br />

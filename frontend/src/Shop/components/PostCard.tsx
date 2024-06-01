@@ -11,7 +11,7 @@ import { UserContext } from "./Auth";
 import Grid from '@mui/material/Grid';
 
 
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+const backendURL = process.env.REACT_APP_BACKEND_URL;
 
 const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
@@ -35,7 +35,7 @@ export default function PostCard({ _id, title, description }: PostType) {
 
     const handleLike = async () => {
         try {
-          const response = await axiosClient.post(`${backendURL}/api/posts/like/${_id}`);
+          const response = await axiosClient.post(`/posts/like/${_id}`);
           // Update based on the actual response
           setIsLiked(response.data.isLiked);
           setLikesCount(response.data.likeCount);
@@ -50,7 +50,7 @@ export default function PostCard({ _id, title, description }: PostType) {
         //fetch the like status and count
         const fetchLikeStatus = async () => {
           try {
-            const response = await axiosClient.get(`${backendURL}/api/posts/like/${_id}`);
+            const response = await axiosClient.get(`/posts/like/${_id}`);
             setIsLiked(response.data.isLiked);
             setLikesCount(response.data.likeCount);
           } catch (error) {

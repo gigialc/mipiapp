@@ -55,8 +55,6 @@ export default function SocialMediaBlog(){
 
         </div>
 
-       { showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> }
-
         <MuiBottomNavigation />
     </>
   );

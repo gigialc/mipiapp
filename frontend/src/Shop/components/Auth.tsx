@@ -26,13 +26,13 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     }
 
     const signInUser = async (authResult: AuthResult) => {
-        const response = await axiosClient.post(`${backendURL}/api/user/signin`, { authResult });
+        const response = await axiosClient.post(`/user/signin`, { authResult });
         setUser(response.data.user); // Save user data to context
         return response.data.user;
     }
 
     const signOutUser = async () => {
-        await axiosClient.get(`${backendURL}/api/user/signout`);
+        await axiosClient.get(`/user/signout`);
         setUser(null);
     }
 
@@ -69,7 +69,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     useEffect(() => {
         const checkSession = async () => {
             try {
-                const response = await axiosClient.get(`${backendURL}/api/user/me`);
+                const response = await axiosClient.get(`/user/me`);
                 setUser(response.data.user);
             } catch (error) {
                 console.error("No active session found", error);

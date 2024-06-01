@@ -14,6 +14,7 @@ import Subscribed from "../components/subscribed";
 import { TextField, Button } from '@mui/material';
 import EditProfile from "../components/editProfile";
 import { ObjectId, Types } from 'mongoose';
+import SignIn from "../components/SignIn";
 
 type MyPaymentMetadata = {};
 
@@ -105,6 +106,10 @@ export default function  UserToAppPayments() {
     return axiosClient.get('/user/signout');
   }
 
+
+  const onModalClose = () => {
+    setShowModal(false);
+  }
 
   const handleTabChange = (event: SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -222,6 +227,7 @@ export default function  UserToAppPayments() {
       </div>
       </div>
       {/* Additional components like SignIn Modal and Bottom Navigation */}
+      { showModal && <SignIn onSignIn={signIn} onModalClose={onModalClose} /> }
     </>
   );
 }

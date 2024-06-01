@@ -216,7 +216,7 @@ export default function ChatCreator() {
         </div>
       </div>
   
-      {showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal} />}
+      { showModal && <SignIn onSignIn={signIn} onModalClose={onModalClose} /> }
     </>
   );
   
