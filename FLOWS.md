@@ -80,7 +80,8 @@ const signInUser = (authResult: any) => {
   app.post('/signin', async (req, res) => {
     try {
       /* verify with the user's access token */
-      const me = await axiosClient.get(`/v2/me`, { headers: { 'Authorization': `Bearer ${currentUser.accessToken}` } });
+      const me = await axios.get('https://api.minepi.com/v2/me', {headers: {'Authorization': `Bearer ${accessToken}`});
+
       console.log(me);
     }
     catch (err) {
