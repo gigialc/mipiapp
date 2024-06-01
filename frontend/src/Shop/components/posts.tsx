@@ -39,7 +39,7 @@ export default function Posts({ communityId }: { communityId: string }) {
     const [descriptionErrorMessage, setDescriptionErrorMessage] = useState<string>('');
 
 
-    const { user, showModal, saveShowModal, onModalClose, addCommunityToUser } = useContext(UserContext) as UserContextType;
+    const {user ,showModal, saveShowModal, onModalClose, addCommunityToUser } = useContext(UserContext) as UserContextType;
 
 
     const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

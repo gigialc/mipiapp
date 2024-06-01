@@ -24,7 +24,7 @@ interface HeaderProps {
 }
 
 export default function Header({ onSignIn, onSignOut, user }: HeaderProps) {
-  const [coins, setCoins] = useState(user?.coinbalance || 0);
+  const [coins, setCoins] = useState<number>(0);
 
   useEffect(() => {
     if (user) {

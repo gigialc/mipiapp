@@ -3,6 +3,7 @@
 
 import { Button, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import React from "react";
 
 /* DEVELOPER NOTE:
 * the productCard is used to create the standard output of pies
@@ -26,7 +27,7 @@ export default function ProductCard(props: Props) {
   }
 
   return (
-    <Grid container style={{ margin: 16, paddingBottom: 16, borderBottom: '1px solid pink',backgroundColor: '#FEEAEE',  }}>
+    <Grid container style={{ margin: 16, paddingBottom: 16, borderBottom: '1px solid pink',backgroundColor: '#FEEAEE' }}>
       <Grid container style={{ display: 'flex', flexDirection: 'row' }}>
         <Grid container style={{ width: "33%", marginRight: 8 }}>
         </Grid>

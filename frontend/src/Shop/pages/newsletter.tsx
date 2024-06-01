@@ -15,6 +15,7 @@ import {ObjectId, Types } from 'mongoose';
 import { useState } from "react";
 import axios from 'axios';
 import { PaymentDTO } from "../components/Types";
+import { SyntheticEvent } from 'react';
 
 /* DEVELOPER NOTE:
 * this page facilitates the purchase of pies for pi. all of the callbacks
@@ -56,6 +57,7 @@ export default function UserToAppPayments() {
   const [user, setUser] = useState<User | null>(null)
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [tabValue, setTabValue] = useState<number>(0);
 
   const handleClick = (page: string) => {
     navigate(page);
@@ -82,6 +84,9 @@ export default function UserToAppPayments() {
     return axiosClient.get('/user/signout');
   }
 
+  const handleTabChange = (event: SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
   
   const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
     if(user === null) {

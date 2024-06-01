@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
+import React from 'react';
 //for community page
 
 
@@ -19,7 +20,7 @@ interface CommunityType {
 export default function ProfileCard(props: CommunityType) {
   
   return (
-    <Grid container style={{ margin: 20, padding: 16, borderRadius: 8, boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', backgroundColor: '#fff' }}>
+    <Grid container style={{ margin: 20, padding: 16, borderRadius: 8, backgroundColor: '#fff' , boxShadow: '0px 0px 10px 0px #0000001a'}}>
       {/* Profile Details */}
       <Grid item xs={12}>
         <Typography variant="h5" style={{ marginBottom: 8 }}>{props.name}</Typography>

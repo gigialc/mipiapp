@@ -1,5 +1,6 @@
 //Created by Georgina Alacaraz
 import { Dialog, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
+import React, { CSSProperties } from 'react';
 
 /* DEVELOPER NOTE:
 * this card displays the Sign-In alert when a user is not signed in

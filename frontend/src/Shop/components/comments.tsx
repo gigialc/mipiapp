@@ -20,6 +20,7 @@ export default function Comments() {
     const [description, setDescription] = useState<string>('');
     const [descriptionError, setDescriptionError] = useState<string | null>(null);
     const { user, showModal, saveShowModal, onModalClose, addCommentToPost, addPostToCommunity } = useContext(UserContext) as UserContextType;
+
    //get the post id from the button
 
     const location = useLocation();
@@ -64,7 +65,7 @@ export default function Comments() {
         if (description !== '' ) {
             const data = {
               description: description,
-              user_id: user?.uid,
+              user_id: user,
               post_id: postId,
               likes: [],
 

@@ -61,12 +61,12 @@ interface PaymentDTO {
 
 export type User = AuthResult['user'];
 
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+const backendURL = process.env.REACT_APP_BACKEND_URL;
 
 const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
-export default function  UserToAppPayments() {
+export default function Posts() {
   const [createCommunityData, setCreateCommunityData] = useState<CommunityType[] | null>(null);
   const [selectedCommunity, setSelectedCommunity] = useState<CommunityType[] | null>(null); // Moved here
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -76,12 +76,11 @@ export default function  UserToAppPayments() {
   const [user, setUser] = useState<User | null>(null);
   const [bio, setBio] = useState("");
   const [coins, setCoins] = useState(0);
-  const [username, setUsername] = useState("");
   const [showModal, setShowModal] = useState<boolean>(false);
 
   console.log("User Data :" , userData);
   console.log("User: ", user);
-  console.log("User Data: ", username);
+  console.log("User Data: ", user?.username);
   //user bio
   console.log("Bio: ", bio);
   
@@ -161,12 +160,11 @@ export default function  UserToAppPayments() {
 
   useEffect(() => {
     console.log(user);
-  }
-  , [user]);
+  }, [user]);  // Added dependency array
 
 
   useEffect(() => {
-    if (user ){
+    if (user) {
     axiosClient.get('/user/me')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
@@ -186,10 +184,11 @@ export default function  UserToAppPayments() {
         console.error('Error fetching /user/me:', error);
       });
     }}
-  , []);
+  , [user]);
   
 
   useEffect(() => {
+    if (user){
     axiosClient.get('/user/joined')
       .then((response) => {
         console.log('Joined communities:', response.data);
@@ -197,16 +196,17 @@ export default function  UserToAppPayments() {
       })  
       .catch((error) => {
         console.error('Error fetching joined communities:', error);
-      });
-  }, []);
+      });}
+  }, [user]);
 
   
   return (
     <>
       <Header user={user} onSignIn={signIn} onSignOut={signOut}/>
+
       <div style={{ padding: '20px', marginBottom: '80px' }}>
         <Typography variant="h6" style={{ fontWeight: 'bold', color: '#E69BD1', marginBottom: '0px' }}>
-          Welcome to your profile, {user?.username} !
+          Welcome to your profile, {user?.username}! ✨
         </Typography>
         <EditProfile />
         <div style={{}}>

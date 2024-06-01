@@ -167,7 +167,7 @@ export default function  PublicProfile() {
   <Header user={user} onSignIn={signIn} onSignOut={signOut}/>
   <Paper style={{ padding: 16, margin: '16px auto', maxWidth: 600, boxShadow: 'none' }}>
     <Grid container direction="column" alignItems="center" justifyContent="center" spacing={2}>
-      {community?.user && (
+      {community.user && (
         <>
           <Grid item>
             <Avatar
