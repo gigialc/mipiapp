@@ -52,7 +52,7 @@ export default function HomePage() {
   // Make an API call to add person to the community if the payment was successful
   // if (payment.paymentCompleted === true) {
   console.log("Payment was successful");
-  axiosClient.post(`/user/addUser`)
+  axiosClient.post(`${backendURL}/user/addUser`)
     .then((response) => {
       console.log(response);
       // Redirect to the chat page
@@ -68,7 +68,7 @@ export default function HomePage() {
   }, [createCommunityData]);
 
   useEffect(() => {
-    axiosClient.get(`/user/userInfo`)
+    axiosClient.get(`${backendURL}/user/userInfo`)
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
       })
@@ -79,7 +79,7 @@ export default function HomePage() {
 
   useEffect(() => {
     // Make an API call to fetch the create community data
-    axiosClient.get(`/community/hi`)
+    axiosClient.get(`${backendURL}/community/hi`)
       .then((response) => {
         console.log(response);
         setCreateCommunityData(response.data);
@@ -91,7 +91,7 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    axiosClient.get(`/user/joined`)
+    axiosClient.get(`${backendURL}/user/joined`)
       .then((response) => {
         console.log('Joined communities:', response.data);
         setSelectedCommunity(response.data);

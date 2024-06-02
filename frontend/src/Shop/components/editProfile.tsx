@@ -42,7 +42,7 @@ export default function ProfileEdit() {
   };
 
   const handleSave = () => {
-    axiosClient.post('/user/update', {
+    axiosClient.post(`${backendURL}/user/update`, {
       username: profile.username,
       bio: profile.bio,
     })
@@ -55,9 +55,10 @@ export default function ProfileEdit() {
     });
   };
 
+
   useEffect(() => {
    if (user) {
-    axiosClient.get('/user/userInfo')
+    axiosClient.get(`${backendURL}/user/userInfo`)
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
         setProfile(response.data);

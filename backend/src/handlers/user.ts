@@ -59,7 +59,7 @@ export default function mountUserEndpoints(router: Router) {
       return res.status(401).json({ error: "No current user found" });
     }
     return res.status(200).json({ user: currentUser });
-    
+
   });
 
   router.post('/update', async (req: Request, res: Response) => {
@@ -83,6 +83,7 @@ export default function mountUserEndpoints(router: Router) {
     req.session.currentUser = updatedUser.value;
     return res.status(200).json({ message: "User updated successfully", user: updatedUser.value });
   });
+  
 
   router.get('/me', async (req: Request, res: Response) => {
     try {

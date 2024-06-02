@@ -68,7 +68,7 @@ export default function Chat() {
 
   const handleFollow = () => {
     if (isFollowing) {
-      axiosClient.post(`/users/joined`, { communityId: communityId })
+      axiosClient.post(`/user/joined`, { communityId: communityId })
         .then((response) => {
           console.log(response);
           setIsFollowing(false);

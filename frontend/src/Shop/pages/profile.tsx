@@ -72,7 +72,7 @@ export default function Posts() {
 
   useEffect(() => {
     if (user) {
-    axiosClient.get('/user/me')
+    axiosClient.get(`${backendURL}/user/me`)
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
         // If response.data is an array, we can use forEach
@@ -96,7 +96,7 @@ export default function Posts() {
 
   useEffect(() => {
     if (user){
-    axiosClient.get('/user/joined')
+    axiosClient.get(`${backendURL}/user/joined`)
       .then((response) => {
         console.log('Joined communities:', response.data);
         setSelectedCommunity(response.data);
