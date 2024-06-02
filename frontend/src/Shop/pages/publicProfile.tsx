@@ -54,7 +54,7 @@ export default function  PublicProfile() {
 
     useEffect(() => {
       if (!communityId) return;
-      axiosClient.get('/community/community/${communityId}', config)
+      axiosClient.get(`/community/community/${communityId}`, config)
         .then((response) => {
           setCommunity(response.data);
           setUserData(response.data);

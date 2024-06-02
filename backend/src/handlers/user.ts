@@ -3,33 +3,28 @@ import { Types } from 'mongoose';
 import Community, { CommunityDocument } from '../models/community';
 import platformAPIClient from "../services/platformAPIClient";
 
-
-
 export default function mountUserEndpoints(router: Router) {
   // handle the user auth accordingly
-  router.post('/signin', async (req, res) => {
+  router.post('/signin', async (req: Request, res: Response) => {
     const auth = req.body.authResult;
     const userCollection = req.app.locals.userCollection;
 
     try {
       // Verify the user's access token with the /me endpoint:
-      const me = await platformAPIClient.get('https://api.minepi.com/v2/me', { headers: { 'Authorization': 'Bearer ${auth.accessToken}' } });
+      const me = await platformAPIClient.get(`https://api.minepi.com/v2/me`, { headers: { 'Authorization': `Bearer ${auth.accessToken}` } });
       console.log(me);
     } catch (err) {
       console.log(err);
-      return res.status(401).json({error: "Invalid access token"}) 
+      return res.status(401).json({ error: "Invalid access token" });
     }
 
     let currentUser = await userCollection.findOne({ uid: auth.user?.uid });
 
     if (currentUser) {
-      await userCollection.updateOne({
-        _id: currentUser._id
-      }, {
-        $set: {
-          accessToken: auth.accessToken,
-        }
-      });
+      await userCollection.updateOne(
+        { _id: currentUser._id },
+        { $set: { accessToken: auth.accessToken } }
+      );
     } else {
       const insertResult = await userCollection.insertOne({
         username: auth.user.username,
@@ -44,7 +39,7 @@ export default function mountUserEndpoints(router: Router) {
         posts: [],
         timestamp: new Date()
       });
-      
+
       currentUser = await userCollection.findOne(insertResult.insertedId);
     }
 
@@ -53,14 +48,12 @@ export default function mountUserEndpoints(router: Router) {
     return res.status(200).json({ message: "User signed in" });
   });
 
-  // handle the user auth accordingly
-  router.get('/signout', async (req, res) => {
+  router.get('/signout', async (req: Request, res: Response) => {
     req.session.currentUser = null;
     return res.status(200).json({ message: "User signed out" });
   });
 
-
-  router.get('/userInfo', async (req, res) => {
+  router.get('/userInfo', async (req: Request, res: Response) => {
     const currentUser = req.session.currentUser;
     if (!currentUser) {
       return res.status(401).json({ error: "No current user found" });
@@ -68,7 +61,7 @@ export default function mountUserEndpoints(router: Router) {
     return res.status(200).json(currentUser);
   });
 
-  router.post('/update', async (req, res) => {
+  router.post('/update', async (req: Request, res: Response) => {
     const currentUser = req.session.currentUser;
     if (!currentUser) {
       return res.status(401).json({ error: "No current user found" });
@@ -90,7 +83,7 @@ export default function mountUserEndpoints(router: Router) {
     return res.status(200).json({ message: "User updated successfully", user: updatedUser.value });
   });
 
-  router.get('/me', async (req, res) => {
+  router.get('/me', async (req: Request, res: Response) => {
     try {
       const currentUser = req.session.currentUser;
       if (!currentUser) {
@@ -103,22 +96,21 @@ export default function mountUserEndpoints(router: Router) {
         _id: { $in: currentUser.communitiesCreated.map(id => new Types.ObjectId(id)) }
       }).toArray();
 
-      const communityMap = communities.map((community: CommunityDocument) => ({  // Explicitly define type
+      const communityMap = communities.map((community: CommunityDocument) => ({
         _id: community._id.toString(),
         name: community.name,
         description: community.description,
         posts: community.posts,
       }));
 
-        return res.status(200).json(communityMap);
-     
+      return res.status(200).json(communityMap);
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: "Internal server error" });
     }
   });
 
-  router.get('/joined', async (req, res) => {
+  router.get('/joined', async (req: Request, res: Response) => {
     try {
       const currentUser = req.session.currentUser;
       if (!currentUser) {
@@ -131,7 +123,7 @@ export default function mountUserEndpoints(router: Router) {
         _id: { $in: currentUser.communitiesJoined.map(id => new Types.ObjectId(id)) }
       }).toArray();
 
-      const communityMap = communities.map((community: CommunityDocument) => ({  // Explicitly define type
+      const communityMap = communities.map((community: CommunityDocument) => ({
         _id: community._id.toString(),
         name: community.name,
         description: community.description,
@@ -149,7 +141,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.post('/addUser', async (req, res) => {
+  router.post('/addUser', async (req: Request, res: Response) => {
     try {
       const { userId, communityId } = req.body;
       const userCollection = req.app.locals.userCollection;
@@ -171,7 +163,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.get('/username', async (req, res) => {
+  router.get('/username', async (req: Request, res: Response) => {
     const userCollection = req.app.locals.userCollection;
     const userId = req.query.user_id as string;
 
@@ -187,7 +179,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.get('/liked', async (req, res) => {
+  router.get('/liked', async (req: Request, res: Response) => {
     const userCollection = req.app.locals.userCollection;
     const userId = req.query.user_id as string;
     const postId = req.query.post_id as string;

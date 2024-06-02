@@ -17,22 +17,22 @@ const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Al
 
 export const onIncompletePaymentFound = (payment: PaymentDTO) => {
     console.log("onIncompletePaymentFound", payment);
-    return axiosClient.post('/payments/incomplete', {payment});
+    return axiosClient.post(`/payments/incomplete`, {payment});
   }
   
 export const onReadyForServerApproval = (paymentId: string) => {
     console.log("onReadyForServerApproval", paymentId);
-    axiosClient.post('/payments/approve', {paymentId}, config);
+    axiosClient.post(`/payments/approve`, {paymentId}, config);
   }
   
 export const onReadyForServerCompletion = (paymentId: string, txid: string) => {
     console.log("onReadyForServerCompletion", paymentId, txid);
-    return axiosClient.post('/payments/complete', {paymentId, txid}, config);
+    return axiosClient.post(`/payments/complete`, {paymentId, txid}, config);
   }
   
 export const onCancel = (paymentId: string) => {
     console.log("onCancel", paymentId);
-    return axiosClient.post('/payments/cancelled_payment', {paymentId});
+    return axiosClient.post(`/payments/cancelled_payment`, {paymentId});
   }
   
 export const onError = (error: Error, payment?: PaymentDTO) => {

@@ -143,7 +143,7 @@ const startServer = async () => {
     // Start the server
     app.listen(env.PORT, () => {
       console.log('App platform demo app - Backend listening on port ' + env.PORT);
-      console.log('CORS config: configured to respond to a frontend hosted on ${env.frontend_url}');
+      console.log(`CORS config: configured to respond to a frontend hosted on ${env.frontend_url}`);
     });
   } catch (err) {
     console.error('Connection to MongoDB failed: ', err);

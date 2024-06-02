@@ -11,4 +11,4 @@ export interface PostType {
     comments: Types.ObjectId[];  // Assuming comments are stored as ObjectIds
     likes: Types.ObjectId[];  // Assuming likes are stored as ObjectIds
     timestamp: Date;
- }
+}

@@ -9,7 +9,7 @@ export const UserContext = React.createContext<UserContextType | null >(null);
 const _window: WindowWithEnv = window;
 const backendURL = _window.__ENV && _window.__ENV.backendURL;
 
-const axiosClient = axios.create({ baseURL: '${backendURL}', timeout: 20000, withCredentials: true});
+const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [community, setCommunity] = React.useState<CommunityType[]>([]);
@@ -92,7 +92,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     useEffect(() => {
         const checkSession = async () => {
           try {
-            const response = await axiosClient.get('/user/me');
+            const response = await axiosClient.get(`/user/me`);
             setUser(response.data.user);
             localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user in localStorage
           } catch (error) {

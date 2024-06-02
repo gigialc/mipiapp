@@ -3,6 +3,7 @@ import { Router } from "express";
 import platformAPIClient from "../services/platformAPIClient";
 import "../types/session";
 import { ObjectId } from "mongodb";
+import { Types } from 'mongoose';
 
 export default function mountPaymentsEndpoints(router: Router) {
 
@@ -42,8 +43,8 @@ export default function mountPaymentsEndpoints(router: Router) {
     await orderCollection.updateOne({ pi_payment_id: paymentId }, { $set: { txid, paid: true } });
 
     // let Pi Servers know that the payment is completed
-    await platformAPIClient.post('/v2/payments/${paymentId}/complete', { txid });
-    return res.status(200).json({ message: 'Handled the incomplete payment ${paymentId}' });
+    await platformAPIClient.post(`/v2/payments/${paymentId}/complete`, { txid });
+    return res.status(200).json({ message: `Handled the incomplete payment ${paymentId}` });
   });
 console.log("hi2");
   // approve the current payment
@@ -57,7 +58,7 @@ console.log("hi2");
 
     const paymentId = req.body.paymentId;
     console.log("buy"); 
-    const currentPayment = await platformAPIClient.get('/v2/payments/${paymentId}');
+    const currentPayment = await platformAPIClient.get(`/v2/payments/${paymentId}`);
     console.log("high"); 
     const orderCollection = app.locals.orderCollection;
 
@@ -77,8 +78,8 @@ console.log("hi2");
     });
     console.log("hi3");
     // let Pi Servers know that you're ready
-    await platformAPIClient.post('/v2/payments/${paymentId}/approve');
-    return res.status(200).json({ message: 'Approved the payment ${paymentId}' });
+    await platformAPIClient.post(`/v2/payments/${paymentId}/approve`);
+    return res.status(200).json({ message: `Approved the payment ${paymentId}` });
   });
 
   // complete the current payment
@@ -97,11 +98,11 @@ console.log("hi2");
     await orderCollection.updateOne({ pi_payment_id: paymentId }, { $set: { txid: txid, paid: true } });
 
     // let Pi server know that the payment is completed
-    const paymentDto = await platformAPIClient.post('/v2/payments/${paymentId}/complete', { txid });
+    const paymentDto = await platformAPIClient.post(`/v2/payments/${paymentId}/complete`, { txid });
     if (paymentDto.data.status.developer_completed === true && paymentDto.data.status.transaction_verified === true) {
-      return res.status(200).json({ message: 'Completed the payment ${paymentId}' , paymentCompleted : true});}
+      return res.status(200).json({ message: `Completed the payment ${paymentId}` , paymentCompleted : true});}
     else {
-      return res.status(200).json({ message: 'Completed the payment ${paymentId}' , paymentCompleted : false});
+      return res.status(200).json({ message: `Completed the payment ${paymentId}` , paymentCompleted : false});
     }
   });
 
@@ -121,6 +122,6 @@ console.log("hi2");
     */
 
     await orderCollection.updateOne({ pi_payment_id: paymentId }, { $set: { cancelled: true } });
-    return res.status(200).json({ message: 'Cancelled the payment ${paymentId}' });
+    return res.status(200).json({ message: `Cancelled the payment ${paymentId}` });
   })
 }

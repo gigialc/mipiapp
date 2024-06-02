@@ -80,7 +80,7 @@ export default function Comments() {
                 //check if payment was successful
                 // if (payment.paymentCompleted === true){
             
-               axiosClient.post('/comments/comments', data)
+               axiosClient.post(`/comments/comments`, data)
                .then((response) => {
                  console.log(response.data);
                 //  addCommentToPost(response.data);
