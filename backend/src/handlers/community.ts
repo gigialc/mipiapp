@@ -153,7 +153,7 @@ router.get('/hi', async (req, res) => {
         const communities = await communityCollection.find({}).toArray();
 
         const filteredCommunities = communities.filter((community: CommunityType) => {
-            return community.user.uid !== creatorId;
+            return community.user?.uid !== creatorId;
         });
 
         // Send the array of filtered communities back to the client
@@ -228,10 +228,10 @@ router.get('/community/:id', async (req, res) => {
         const id = req.params.id;
         const user = req.body.user;
         const community = await communityCollection.findOne({ _id: new ObjectId(id) });
-        if (!community.members.includes(user.uid)) {
+        if (!community.members.includes(user?.uid)) {
             return res.status(200).json({ message: "User is not a member" });
         }
-        const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { members: user.uid } });
+        const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { members: user?.uid } });
         const updatedCommunity = await communityCollection.findOne({ _id: new ObjectId(id) });
         return res.status(200).json({ updatedCommunity });
     }
@@ -252,10 +252,10 @@ router.get('/community/:id', async (req, res) => {
         const id = req.params.id;
         const user = req.body.user;
         const community = await communityCollection.findOne({ _id: new ObjectId(id) });
-        if (community.admins.includes(user.uid)) {
+        if (community.admins.includes(user?.uid)) {
             return res.status(200).json({ message: "User is already an admin" });
         }
-        const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $push: { admins: user.uid } });
+        const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $push: { admins: user?.uid } });
         const updatedCommunity = await communityCollection.findOne({ _id: new ObjectId(id) });
         return res.status(200).json({ updatedCommunity });
     }
@@ -267,10 +267,10 @@ router.get('/community/:id', async (req, res) => {
         const id = req.params.id;
         const user = req.body.user;
         const community = await communityCollection.findOne({ _id: new ObjectId(id) });
-        if (!community.admins.includes(user.uid)) {
+        if (!community.admins.includes(user?.uid)) {
             return res.status(200).json({ message: "User is not an admin" });
         }
-        const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { admins: user.uid } });
+        const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { admins: user?.uid } });
         const updatedCommunity = await communityCollection.findOne({ _id: new ObjectId(id) });
         return res.status(200).json({ updatedCommunity });
     }
@@ -282,10 +282,10 @@ router.get('/community/:id', async (req, res) => {
         const id = req.params.id;
         const user = req.body.user;
         const community = await communityCollection.findOne({ _id: new ObjectId(id) });
-        if (community.invited.includes(user.uid)) {
+        if (community.invited.includes(user?.uid)) {
             return res.status(200).json({ message: "User is already invited" });
         }
-        const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $push: { invited: user.uid } });
+        const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $push: { invited: user?.uid } });
         const updatedCommunity = await communityCollection.findOne({ _id: new ObjectId(id) });
         return res.status(200).json({ updatedCommunity });
 
@@ -298,10 +298,10 @@ router.get('/community/:id', async (req, res) => {
             const id = req.params.id;
             const user = req.body.user;
             const community = await communityCollection.findOne({ _id: new ObjectId(id) });
-            if (!community.invited.includes(user.uid)) {
+            if (!community.invited.includes(user?.uid)) {
                 return res.status(200).json({ message: "User is not invited" });
             }
-            const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { invited: user.uid } });
+            const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { invited: user?.uid } });
             const updatedCommunity = await communityCollection.findOne({ _id: new ObjectId(id) });
             return res.status(200).json({ updatedCommunity });
     
@@ -314,10 +314,10 @@ router.get('/community/:id', async (req, res) => {
         const id = req.params.id;
         const user = req.body.user;
         const community = await communityCollection.findOne({ _id: new ObjectId(id) });
-        if (!community.invited.includes(user.uid)) {
+        if (!community.invited.includes(user?.uid)) {
             return res.status(200).json({ message: "User is not invited" });
         }
-        const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { invited: user.uid } });
+        const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { invited: user?.uid } });
         const updatedCommunity = await communityCollection.findOne({ _id: new ObjectId(id) });
         return res.status(200).json({ updatedCommunity });
 
@@ -330,10 +330,10 @@ router.get('/community/:id', async (req, res) => {
             const id = req.params.id;
             const user = req.body.user;
             const community = await communityCollection.findOne({ _id: new ObjectId(id) });
-            if (!community.invited.includes(user.uid)) {
+            if (!community.invited.includes(user?.uid)) {
                 return res.status(200).json({ message: "User is not invited" });
             }
-            const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { invited: user.uid } });
+            const updateResult = await communityCollection.updateOne({ _id: new ObjectId(id) }, { $pull: { invited: user?.uid } });
             const updatedCommunity = await communityCollection.findOne({ _id: new ObjectId(id) });
             return res.status(200).json({ updatedCommunity });
         }

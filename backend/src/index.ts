@@ -38,6 +38,23 @@ app.use(logger('common', {
 // Enable response bodies to be sent as JSON
 app.use(express.json());
 
+
+
+// Handle CORS
+const allowedOrigins = ['https://www.destigfemme.app'];
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
+
 // Handle CORS
 app.use(cors({
   origin: env.frontend_url,
@@ -115,33 +132,10 @@ const startServer = async () => {
     // Initialize collections only after connection is established
     const db = mongoose.connection.db;
 
-    // Check and initialize collections if they exist
-    const collections = await db.listCollections().toArray();
-    const collectionNames = collections.map(col => col.name);
-
-    if (collectionNames.includes('user')) {
-      app.locals.userCollection = db.collection<UserData>('user');
-    } else {
-      console.log('User collection does not exist');
-    }
-
-    if (collectionNames.includes('community')) {
-      app.locals.communityCollection = db.collection<CommunityType>('community');
-    } else {
-      console.log('Community collection does not exist');
-    }
-
-    if (collectionNames.includes('posts')) {
-      app.locals.postCollection = db.collection<PostType>('posts');
-    } else {
-      console.log('Posts collection does not exist');
-    }
-
-    if (collectionNames.includes('comments')) {
-      app.locals.commentCollection = db.collection<CommentType>('comments');
-    } else {
-      console.log('Comments collection does not exist');
-    }
+    app.locals.userCollection = db.collection<UserData>('user');
+    app.locals.communityCollection = db.collection<CommunityType>('community');
+    app.locals.postCollection = db.collection<PostType>('posts');
+    app.locals.commentCollection = db.collection<CommentType>('comments');
 
     console.log('Collections initialized');
     console.log('Connected to MongoDB on: ', mongoUri);

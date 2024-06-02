@@ -69,7 +69,7 @@ console.log("hi2");
     await orderCollection.insertOne({
       pi_payment_id: paymentId,
       product_id: currentPayment.data.metadata.productId,
-      user: req.session.currentUser.uid,
+      user: req.session.currentuser?.uid,
       txid: null,
       paid: false,
       cancelled: false,

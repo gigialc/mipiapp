@@ -1,9 +1,8 @@
 // Created by Georgina Alacaraz
-import { UserContextType,PostType, CommentType, CommunityType  } from "../components/Types";
+import { UserContextType, MyPaymentMetadata } from "../components/Types";
 import { onCancel, onError, onReadyForServerApproval, onReadyForServerCompletion } from "../components/Payments";
 import SignIn from "../components/SignIn";
 import Header from "../components/Header";
-import ProductCard from "../components/ProductCard";
 import Typography from "@mui/material/Typography";
 import { UserContext } from "../components/Auth";
 import React from "react";
@@ -11,42 +10,16 @@ import MuiBottomNavigation from "../../MuiBottomNavigation";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import { useNavigate } from 'react-router-dom';
-import {ObjectId, Types } from 'mongoose';
 import { useState } from "react";
 import axios from 'axios';
-import { PaymentDTO } from "../components/Types";
-import { SyntheticEvent } from 'react';
 
 /* DEVELOPER NOTE:
 * this page facilitates the purchase of pies for pi. all of the callbacks
 * can be found on the Payments.tsx file in components file. 
 */
 
-type MyPaymentMetadata = {};
-
-type AuthResult = {
-  accessToken: string,
-  user: {
-  uid: string;
-  username: string;
-  bio: string;
-  coinbalance: number;
-  communitiesCreated: Types.ObjectId[];
-  communitiesJoined: Types.ObjectId[];
-  likes: string[]; // Changed from ObjectId[] to string[]
-  comments: CommentType[]; // Assuming CommentType is defined elsewhere
-  posts: PostType[]; // Assuming PostType is defined elsewhere
-  timestamp: Date;
-  accessToken: string; // Added
-  community: CommunityType[]; // Added, assuming CommunityType is defined elsewhere
-  date: Date;
-  }
-};
-
-
-export type User = AuthResult['user'];
-
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
+;
 const axiosClient = axios.create({
   baseURL: backendURL,
   timeout: 20000,
@@ -60,45 +33,19 @@ const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Al
 
 
 export default function UserToAppPayments() {
-  const {  saveUser, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
-  const [user, setUser] = useState<User | null>(null)
+  const { user, saveUser, saveShowModal, showModal,  onModalClose } = React.useContext(UserContext) as UserContextType;
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState<boolean>(false);
   const [tabValue, setTabValue] = useState<number>(0);
 
   const handleClick = (page: string) => {
     navigate(page);
   }
 
-  const signIn = async () => {
-    const scopes = ['username', 'payments'];
-    const authResult: AuthResult = await window.Pi.authenticate(scopes, onIncompletePaymentFound);
-    signInUser(authResult);
-    setUser(authResult.user);
-  }
-
-  const signOut = () => {
-    setUser(null);
-    signOutUser();
-  }
-
-  const signInUser = (authResult: AuthResult) => {
-    axiosClient.post('/user/signin', {authResult});
-    return setShowModal(false);
-  }
-
-  const signOutUser = () => {
-    return axiosClient.get('/user/signout');
-  }
-
-  const handleTabChange = (event: SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
-  
   const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
-    if(user === null) {
-      return setShowModal(true);
+    if(user?.uid === "") {
+      return saveShowModal(true);
     }
+
     const paymentData = { amount, memo, metadata: paymentMetadata };
     const callbacks = {
       onReadyForServerApproval,
@@ -106,42 +53,15 @@ export default function UserToAppPayments() {
       onCancel,
       onError
     };
+
     const payment = await window.Pi.createPayment(paymentData, callbacks);
     console.log(payment);
-  }
-
-  const onIncompletePaymentFound = (payment: PaymentDTO) => {
-    console.log("onIncompletePaymentFound", payment);
-    return axiosClient.post('/payments/incomplete', {payment});
-  }
-
-  const onReadyForServerApproval = (paymentId: string) => {
-    console.log("onReadyForServerApproval", paymentId);
-    axiosClient.post('/payments/approve', {paymentId}, config);
-  }
-
-  const onReadyForServerCompletion = (paymentId: string, txid: string) => {
-    console.log("onReadyForServerCompletion", paymentId, txid);
-    axiosClient.post('/payments/complete', {paymentId, txid}, config);
-  }
-
-  const onCancel = (paymentId: string) => {
-    console.log("onCancel", paymentId);
-    return axiosClient.post('/payments/cancelled_payment', {paymentId});
-  }
-
-  const onError = (error: Error, payment?: PaymentDTO) => {
-    console.log("onError", error);
-    if (payment) {
-      console.log(payment);
-      // handle the error accordingly
-    }
   }
 
 
 return(
   <>
-    <Header user={user} onSignIn={signIn} onSignOut={signOut}/>
+    <Header/>
         
     <br></br>
         
@@ -380,7 +300,7 @@ return(
 
 <br />
 </div>     
-{ showModal && <SignIn onSignIn={signIn} onModalClose={onModalClose} /> }
+{ showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> }
 
         <MuiBottomNavigation />
     </>

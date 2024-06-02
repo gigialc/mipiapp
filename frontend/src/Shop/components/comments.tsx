@@ -26,7 +26,7 @@ export default function Comments() {
     const [showForm, setShowForm] = useState(false);
     const [description, setDescription] = useState<string>('');
     const [descriptionError, setDescriptionError] = useState<string | null>(null);
-    const { user, showModal, saveShowModal, onModalClose, addCommentToPost, addPostToCommunity } = useContext(UserContext) as UserContextType;
+    const { user, showModal, saveShowModal, onModalClose } = useContext(UserContext) as UserContextType;
 
    //get the post id from the button
 
@@ -83,7 +83,7 @@ export default function Comments() {
                axiosClient.post(`/comments/comments`, data)
                .then((response) => {
                  console.log(response.data);
-                 addCommentToPost(response.data);
+                //  addCommentToPost(response.data);
                  setDescription('');
                  setShowForm(false);
                })

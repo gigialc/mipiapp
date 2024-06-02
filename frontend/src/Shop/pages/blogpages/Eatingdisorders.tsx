@@ -16,7 +16,7 @@ export default function Eatingdisorders(){
     if(!user) {
       return saveShowModal(true);
     }
-    const paymentData = { amount, memo, metadata: { ...paymentMetadata, user_id: user.uid } };
+    const paymentData = { amount, memo, metadata: { ...paymentMetadata, user_id: user?.uid } };
 
     const callbacks = {
       onReadyForServerApproval,

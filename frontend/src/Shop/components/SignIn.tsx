@@ -9,16 +9,24 @@ import React, { CSSProperties } from 'react';
 interface Props {
   onSignIn: () => void,
   onModalClose: () => void,
+  showModal: boolean,
 }
 
 export default function SignIn(props: Props) {
   return (
-    <div>
-      <p style={{ fontWeight: 'bold' }}>You need to sign in first.</p>
-      <div>
-        <button onClick={props.onSignIn} style={{ marginRight: '1em' }}>Sign in</button>
-        <button onClick={props.onModalClose}>Close</button>
-      </div>
-    </div>
+    <Dialog
+    open={props.showModal}
+    onClose={props.onModalClose}
+  >
+    <DialogContent>
+      <DialogContentText>
+          You need to sign in first.
+      </DialogContentText>
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={props.onSignIn}>Sign In</Button>
+      <Button onClick={props.onModalClose}>Close</Button>
+    </DialogActions>
+  </Dialog>
   )
 }

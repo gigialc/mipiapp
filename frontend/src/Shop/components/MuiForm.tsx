@@ -9,7 +9,7 @@ import { UserContext } from "../components/Auth";
 import { UserContextType } from './Types';
 import Box from '@mui/material/Box';
 
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 const axiosClient = axios.create({
     baseURL: backendURL,

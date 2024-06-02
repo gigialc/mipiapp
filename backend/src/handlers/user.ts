@@ -3,6 +3,8 @@ import { Types } from 'mongoose';
 import Community, { CommunityDocument } from '../models/community';
 import platformAPIClient from "../services/platformAPIClient";
 
+
+
 export default function mountUserEndpoints(router: Router) {
   // handle the user auth accordingly
   router.post('/signin', async (req, res) => {
@@ -18,7 +20,7 @@ export default function mountUserEndpoints(router: Router) {
       return res.status(401).json({error: "Invalid access token"}) 
     }
 
-    let currentUser = await userCollection.findOne({ uid: auth.user.uid });
+    let currentUser = await userCollection.findOne({ uid: auth.user?.uid });
 
     if (currentUser) {
       await userCollection.updateOne({
@@ -31,7 +33,7 @@ export default function mountUserEndpoints(router: Router) {
     } else {
       const insertResult = await userCollection.insertOne({
         username: auth.user.username,
-        uid: auth.user.uid,
+        uid: auth.user?.uid,
         bio: "",
         coinBalance: 0,
         accessToken: auth.accessToken,
@@ -75,7 +77,7 @@ export default function mountUserEndpoints(router: Router) {
     const { username, bio, coinBalance } = req.body;
 
     const updatedUser = await userCollection.findOneAndUpdate(
-      { uid: currentUser.uid },
+      { uid: currentuser?.uid },
       { $set: { username, bio, coinBalance } },
       { new: true, returnDocument: 'after' }
     );

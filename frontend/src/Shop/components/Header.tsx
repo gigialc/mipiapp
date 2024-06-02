@@ -12,7 +12,7 @@ import axios from "axios";
 
 const logoImageUrl = 'df2.png'; // Replace with actual logo image URL
 
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 const axiosClient = axios.create({
   baseURL: backendURL,
@@ -24,17 +24,13 @@ const axiosClient = axios.create({
   }
 });
 
-interface props {
-  onSignIn: () => void;
-  onSignOut: () => void;
-  user: User | null;
-}
 
-export default function Header(props: props) {
+export default function Header() {
+  const { user, saveUser } = React.useContext(UserContext) as UserContextType;
   const [coins, setCoins] = useState<number>(0);
 
   useEffect(() => {
-    if (props.user) {
+    if (user) {
       axiosClient.get(`/user/userInfo`)
         .then((response) => {
           console.log('Response data for /user/me:', response.data);
@@ -56,17 +52,26 @@ export default function Header(props: props) {
             <img src={logoImageUrl} alt="Destig Femme" style={{ height: 'auto', width: '100%', objectFit: 'cover' }} />
           </Box>
 
-          {/* Adjusted Button */}
-
-          <div>
-            {props.user === null ? (
-              <button onClick={props.onSignIn}>Sign in</button>
-            ) : (
-              <div>
-                @{props.user.username} <button type="button" onClick={props.onSignOut}>Sign out</button>
-              </div>
-            )}
-          </div>
+          <IconButton
+                    size="small"
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={user?.uid === '' ? (saveUser ) : (saveUser)}
+                    color="inherit"
+                  >
+                  { user?.uid === '' ? (
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                      Sign-In
+                    </Typography>
+                    ) : (
+                  <Container>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    @{user?.username} - Sign Out
+                    </Typography>
+                  </Container>
+              )}
+              </IconButton>
 
         </Toolbar>
         <Typography component="div" sx={{ flexGrow: 1, color: 'black', textAlign: 'right', paddingRight: 4 }}>

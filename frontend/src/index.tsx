@@ -8,11 +8,9 @@ import AuthProvider from "./Shop/components/Auth";
 
 ReactDOM.render(
   <Router>
-    <AuthProvider>
     <React.StrictMode>
       <App />
     </React.StrictMode>
-    </AuthProvider>
   </Router>,
   document.getElementById('root')
 );
