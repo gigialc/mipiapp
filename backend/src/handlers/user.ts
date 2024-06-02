@@ -58,7 +58,8 @@ export default function mountUserEndpoints(router: Router) {
     if (!currentUser) {
       return res.status(401).json({ error: "No current user found" });
     }
-    return res.status(200).json(currentUser);
+    return res.status(200).json({ user: currentUser });
+    
   });
 
   router.post('/update', async (req: Request, res: Response) => {

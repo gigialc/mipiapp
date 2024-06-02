@@ -16,7 +16,7 @@ export default function mountPostEndpoints(router: Router) {
 
     router.post('/posted', async (req, res) => {
         try {
-            const postCollection = req.app.locals.postCollection as Collection<PostType>;
+           const postCollection = req.app.locals.postCollection;
             const posts = req.body;
     
             const communityId = new ObjectId(posts.community_id); // Convert to ObjectId if it's passed as a string
@@ -48,7 +48,7 @@ export default function mountPostEndpoints(router: Router) {
         }
     
         try {
-            const postCollection = req.app.locals.postCollection as Collection<PostType>;
+            const postCollection = req.app.locals.postCollection;
             const communityId = new ObjectId(req.query.community_id as string); // Cast and convert to ObjectId
     
             const posts = await postCollection.find({ communityId: communityId }).toArray();

@@ -11,50 +11,8 @@ import ListItemText from "@mui/material/ListItemText";
 import SignIn from "./components/SignIn";
 import { Types } from 'mongoose';
 
-type MyPaymentMetadata = {};
 
-type AuthResult = {
-  accessToken: string,
-  user: {
-    uid: string;
-    username: string;
-    bio: string;
-    coinbalance: number;
-    communitiesCreated: Types.ObjectId[];
-    communitiesJoined: Types.ObjectId[];
-    likes: string[]; // Changed from ObjectId[] to string[]
-    comments: CommentType[]; // Assuming CommentType is defined elsewhere
-    posts: PostType[]; // Assuming PostType is defined elsewhere
-    timestamp: Date;
-    accessToken: string; // Added
-    community: CommunityType[]; // Added, assuming CommunityType is defined elsewhere
-    date: Date;
-  }
-};
-
-interface PaymentDTO {
-  amount: number,
-  user_uid: string,
-  created_at: string,
-  identifier: string,
-  metadata: Object,
-  memo: string,
-  status: {
-    developer_approved: boolean,
-    transaction_verified: boolean,
-    developer_completed: boolean,
-    cancelled: boolean,
-    user_cancelled: boolean,
-  },
-  to_address: string,
-  transaction: null | {
-    txid: string,
-    verified: boolean,
-    _link: string,
-  },
-};
-
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 const axiosClient = axios.create({
   baseURL: backendURL,
@@ -76,7 +34,7 @@ export default function MyList() {
   useEffect(() => {
     if (user) {
       axiosClient
-        .get(`/user/me`, config)
+        .get('/user/me', config)
         .then((response) => {
           console.log("Response data for /user/me:", response.data);
           if (Array.isArray(response.data) && response.data.length > 0) {
@@ -106,7 +64,7 @@ export default function MyList() {
   useEffect(() => {
     if (user) {
       axiosClient
-        .get(`/user/joined`, config)
+        .get('/user/joined', config)
         .then((response) => {
           console.log("Joined communities:", response.data);
           if (Array.isArray(response.data) && response.data.length > 0) {

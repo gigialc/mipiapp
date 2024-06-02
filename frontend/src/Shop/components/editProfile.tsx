@@ -33,8 +33,8 @@ export default function ProfileEdit() {
   const [user, setUser] = useState<User>({ uid: '', username: '', accessToken: '',bio: '', coinbalance: 0, community: [], likes: [], comments: [], posts: [], date: new Date()}); // Add initial state
   const [userData, setUserData] = useState<UserData | null>(null);
   const [profile, setProfile] = useState({
-    username: user?.username, // Initial state, replace with user.username
-    bio: user?.bio, 
+    username: user.username, // Initial state, replace with user.username
+    bio: user.bio, 
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +42,7 @@ export default function ProfileEdit() {
   };
 
   const handleSave = () => {
-    axiosClient.post(`/user/update`, {
+    axiosClient.post('/user/update', {
       username: profile.username,
       bio: profile.bio,
     })
@@ -57,7 +57,7 @@ export default function ProfileEdit() {
 
   useEffect(() => {
    if (user) {
-    axiosClient.get(`/user/userInfo`)
+    axiosClient.get('/user/userInfo')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
         setProfile(response.data);

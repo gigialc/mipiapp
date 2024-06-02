@@ -35,14 +35,13 @@ export default function Posts() {
   const [inputValue, setInputValue] = useState("");
   const [tabValue, setTabValue] = useState(0); // Default to the first tab
   const [showUpdate, setShowUpdate] = useState(false);
-  const [bio, setBio] = useState("");
 
 
   console.log("User Data :" , userData);
   console.log("User: ", user);
   console.log("User Data: ", user?.username);
   //user bio
-  console.log("Bio: ", bio);
+  console.log("Bio: ", user?.bio);
   
   const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
     if(user?.uid === "") {
@@ -73,7 +72,7 @@ export default function Posts() {
 
   useEffect(() => {
     if (user) {
-    axiosClient.get(`/user/me`)
+    axiosClient.get('/user/me')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
         // If response.data is an array, we can use forEach
