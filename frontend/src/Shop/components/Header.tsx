@@ -28,6 +28,7 @@ const axiosClient = axios.create({
 export default function Header() {
   const { user, saveUser } = React.useContext(UserContext) as UserContextType;
   const [coins, setCoins] = useState<number>(0);
+  const [bio, setBio] = useState<string>('');
 
   useEffect(() => {
     if (user) {
@@ -36,6 +37,7 @@ export default function Header() {
           console.log('Response data for /user/me:', response.data);
           setCoins(response.data.coinbalance);
           console.log('Coins:', coins);
+          setBio(response.data.bio);
         })
         .catch((error) => {
           console.error('Error fetching /user/me:', error);
