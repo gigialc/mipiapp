@@ -71,7 +71,7 @@ export default function ChatCreator() {
     }
     // Assuming paymentMetadata needs to be defined or fetched before this call
     const paymentMetadata = {}; // Define or update this according to your actual data structure
-    axiosClient.post('/user/addUser', paymentMetadata, config)
+    axiosClient.post(`/user/addUser`, paymentMetadata, config)
       .then((response) => {
         console.log(response);
         setIsFollowing(true); // Update follow status
