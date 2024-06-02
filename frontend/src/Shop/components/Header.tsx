@@ -61,12 +61,12 @@ export default function Header() {
                     color="inherit"
                   >
                   { user?.uid === '' ? (
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 , color:"black"}}>
                       Sign-In
                     </Typography>
                     ) : (
                   <Container>
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 , color:"black"}}>
                     @{user?.username} - Sign Out
                     </Typography>
                   </Container>
