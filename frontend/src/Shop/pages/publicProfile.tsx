@@ -66,7 +66,15 @@ export type User = AuthResult['user'];
 // Make TS accept the existence of our window.__ENV object - defined in index.html:
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
-const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
+const axiosClient = axios.create({
+  baseURL: backendURL,
+  timeout: 20000,
+  withCredentials: true,
+  headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+  }
+});
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
 export default function  PublicProfile() {

@@ -7,8 +7,15 @@ export const UserContext = React.createContext<UserContextType | null>(null);
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
-const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
-const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
+const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+    }
+});
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);

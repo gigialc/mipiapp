@@ -17,8 +17,15 @@ import CommentCard from './commentsCard';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL;
 
-const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
-const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
+const axiosClient = axios.create({
+  baseURL: backendURL,
+  timeout: 20000,
+  withCredentials: true,
+  headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+  }
+});
 
 export default function CommentContent (){ 
   const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;

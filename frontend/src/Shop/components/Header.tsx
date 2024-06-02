@@ -14,8 +14,15 @@ const logoImageUrl = 'df2.png'; // Replace with actual logo image URL
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
-const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
-const config = { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } };
+const axiosClient = axios.create({
+  baseURL: backendURL,
+  timeout: 20000,
+  withCredentials: true,
+  headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+  }
+});
 
 interface props {
   onSignIn: () => void;

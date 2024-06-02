@@ -13,7 +13,15 @@ import Grid from '@mui/material/Grid';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL;
 
-const axiosClient = axios.create({ baseURL: backendURL, timeout: 20000, withCredentials: true });
+const axiosClient = axios.create({
+  baseURL: backendURL,
+  timeout: 20000,
+  withCredentials: true,
+  headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+  }
+});
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
   
 

@@ -36,7 +36,7 @@ app.use(logger('common', {
 }));
 
 // Enable response bodies to be sent as JSON
-app.use(express.json())
+app.use(express.json());
 
 // Handle CORS
 app.use(cors({
@@ -63,6 +63,11 @@ app.use(session({
     },
     collectionName: 'user_sessions'
   }),
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Set to true in production
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 1 day
+  }
 }));
 
 // Mount app endpoints
@@ -97,61 +102,46 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
 });
 
-
-
-
 // Boot up the app
 const startServer = async () => {
   try {
     // Connect to MongoDB using Mongoose
     await mongoose.connect(mongoUri, {
-    //   useNewUrlParser: true,
-    //   useUnifiedTopology: true,
       authSource: "admin",
       user: env.mongo_user,
       pass: env.mongo_password,
     });
 
+    // Initialize collections only after connection is established
+    const db = mongoose.connection.db;
 
-        // Initialize collections only after connection is established
-        const db = mongoose.connection.db;
+    // Check and initialize collections if they exist
+    const collections = await db.listCollections().toArray();
+    const collectionNames = collections.map(col => col.name);
 
-        // Check and initialize collections if they exist
-        const collections = await db.listCollections().toArray();
-        const collectionNames = collections.map(col => col.name);
-    
-        if (collectionNames.includes('user')) {
-          app.locals.userCollection = db.collection<UserData>('user');
-        } else {
-          console.log('User collection does not exist');
-        }
-    
-        if (collectionNames.includes('community')) {
-          app.locals.communityCollection = db.collection<CommunityType>('community');
-        } else {
-          console.log('Community collection does not exist');
-        }
-    
-        if (collectionNames.includes('posts')) {
-          app.locals.postCollection = db.collection<PostType>('posts');
-        } else {
-          console.log('Posts collection does not exist');
-        }
-    
-        if (collectionNames.includes('comments')) {
-          app.locals.commentCollection = db.collection<CommentType>('comments');
-        } else {
-          console.log('Comments collection does not exist');
-        }
-    
-        console.log('Collections initialized');
-        console.log('Connected to MongoDB on: ', mongoUri);
+    if (collectionNames.includes('user')) {
+      app.locals.userCollection = db.collection<UserData>('user');
+    } else {
+      console.log('User collection does not exist');
+    }
 
-    // // Initialize collections only after connection is established
-    // app.locals.userCollection = db.collection<UserData>('user');
-    // app.locals.communityCollection = db.collection<CommunityType>('community');
-    // app.locals.postCollection = db.collection<PostType>('posts');
-    // app.locals.commentCollection = db.collection<CommentType>('comments');
+    if (collectionNames.includes('community')) {
+      app.locals.communityCollection = db.collection<CommunityType>('community');
+    } else {
+      console.log('Community collection does not exist');
+    }
+
+    if (collectionNames.includes('posts')) {
+      app.locals.postCollection = db.collection<PostType>('posts');
+    } else {
+      console.log('Posts collection does not exist');
+    }
+
+    if (collectionNames.includes('comments')) {
+      app.locals.commentCollection = db.collection<CommentType>('comments');
+    } else {
+      console.log('Comments collection does not exist');
+    }
 
     console.log('Collections initialized');
     console.log('Connected to MongoDB on: ', mongoUri);
