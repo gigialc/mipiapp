@@ -43,7 +43,7 @@ export default function PostCard({ _id, title, description }: PostType) {
 
     const handleLike = async () => {
         try {
-          const response = await axiosClient.post(`/posts/like/${_id}`);
+          const response = await axiosClient.post('/posts/like/${_id}');
           // Update based on the actual response
           setIsLiked(response.data.isLiked);
           setLikesCount(response.data.likeCount);
@@ -58,7 +58,7 @@ export default function PostCard({ _id, title, description }: PostType) {
         //fetch the like status and count
         const fetchLikeStatus = async () => {
           try {
-            const response = await axiosClient.get(`/posts/like/${_id}`);
+            const response = await axiosClient.get('/posts/like/${_id}');
             setIsLiked(response.data.isLiked);
             setLikesCount(response.data.likeCount);
           } catch (error) {

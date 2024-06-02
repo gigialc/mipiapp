@@ -31,7 +31,7 @@ export default function Header() {
 
   useEffect(() => {
     if (user) {
-      axiosClient.get(`/user/userInfo`)
+      axiosClient.get('/user/userInfo')
         .then((response) => {
           console.log('Response data for /user/me:', response.data);
           setCoins(response.data.coinbalance);

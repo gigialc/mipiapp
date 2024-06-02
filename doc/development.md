@@ -7,21 +7,21 @@ The following document explains how to set up a development environment and run 
 This guides assumes you have the following two tools installed on your development machine:
 
 - a NodeJS installation (recommended version: Node v16 LTS **or lower**)
-  - if you're running with node 17 or higher, you'll need to use `yarn startNode17` to work around [this issue](https://github.com/facebook/create-react-app/issues/11562)
+  - if you're running with node 17 or higher, you'll need to use 'yarn startNode17' to work around [this issue](https://github.com/facebook/create-react-app/issues/11562)
 - a functional Docker or Mongosh installation
 
 
 ## 1. Clone the Github repo and navigate to the project directory:
 
-```sh
+'''sh
 git clone git@github.com:pi-apps/platform-demo-app.git
 cd platform-demo-app
-```
+'''
 
 
 ## 2. Register your app on the developer portal
 
-Open `develop.pi` in the Pi Browser, on your mobile phone, and go through the prerequisite steps
+Open 'develop.pi' in the Pi Browser, on your mobile phone, and go through the prerequisite steps
 (e.g verifying your email address).
 
 Create a new app by clicking the "Register an App" button.
@@ -47,7 +47,7 @@ This will bring you to the App Dashboard, from this screen you can continue the 
   - Step 4: Review this documentation and our [Community Developer Guide](https://pi-apps.github.io/community-developer-guide/) for help getting setup
   - Step 5: Configure App Development URL: the URL on which your app is running on your development environment. If your using the default
     setup for the demo app frontend, this is "http://localhost:3333. **Note:** If you need, you can change the port by specifying it in
-    `frontend/.env` file, as the value of the `PORT` environment variable.
+    'frontend/.env' file, as the value of the 'PORT' environment variable.
  
  <img title="Developer Portal App Checklist" alt="App Checklist" src="./img/app_checklist.png" style="width:300px;height:1100px;" />
  

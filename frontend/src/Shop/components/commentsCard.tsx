@@ -93,7 +93,7 @@ export default function CommentCard({ _id, content }: CommentType) {
 
     const handleLike = async () => {
         try {
-          const response = await axiosClient.post(`/comments/likeComment/${_id}`);
+          const response = await axiosClient.post('/comments/likeComment/${_id}');
           // Update based on the actual response
           setIsLiked(response.data.isLiked);
           setLikesCount(response.data.likeCount);
@@ -105,7 +105,7 @@ export default function CommentCard({ _id, content }: CommentType) {
       };
 
       const handleNavigatePublicProfile = (username: string = '') => {
-        navigate(`/profile/${username}`);
+        navigate('/profile/${username}');
     };
 
 
@@ -120,7 +120,7 @@ export default function CommentCard({ _id, content }: CommentType) {
       if (user){
         const fetchLikeStatus = async () => {
           try {
-            const response = await axiosClient.get(`/comments/likeComment/${_id}`);
+            const response = await axiosClient.get('/comments/likeComment/${_id}');
             setIsLiked(response.data.isLiked);
             console.log(response.data);
             setLikesCount(response.data.likeCount);

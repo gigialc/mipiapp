@@ -16,8 +16,8 @@ The production deployment uses docker-compose, and needs to run 4 containers:
 The following setup process was tested on Ubuntu Server 22.04.1. You may need to adapt it to your own needs
 depending on your distro (specifically, the "Install Docker" step).
 
-It assumes you're running as root. If that's not the case, prepend all commands with `sudo` or start
-a root shell with `sudo bash`.
+It assumes you're running as root. If that's not the case, prepend all commands with 'sudo' or start
+a root shell with 'sudo bash'.
 
 
 ### 1. Install Docker and docker-compose:
@@ -25,7 +25,7 @@ a root shell with `sudo bash`.
 Run the following command in order to get the latest docker version and the latest docker-compose version
 (required because of [this issue](https://github.com/datahub-project/datahub/issues/2020#issuecomment-736850314))
 
-```shell
+'''shell
 apt-get update && \
 apt-get install -y zip apt-transport-https ca-certificates curl gnupg-agent software-properties-common && \
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
@@ -34,7 +34,7 @@ apt-get update && \
 apt-get install -y docker-ce docker-ce-cli containerd.io && \
 curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && \
 chmod +x /usr/local/bin/docker-compose
-```
+'''
 
 
 ### 2. Get a server and set up your DNS
@@ -44,15 +44,15 @@ will be used for the backend app.
 
 Here is an example, assuming your domain name is mydemoapp.com and your server IP is 123.123.123.123.
 
-```DNS
+'''DNS
 A   mydemoapp.com           123.123.123.123
 A   backend.mydemoapp.com   123.123.123.123
-```
+'''
 
 
 ### 3. Register your app on the developer portal
 
-Open `develop.pi` in the Pi Browser, on your mobile phone, and go through the prerequisite steps
+Open 'develop.pi' in the Pi Browser, on your mobile phone, and go through the prerequisite steps
 (e.g verifying your email address).
 
 Two options here:
@@ -89,7 +89,7 @@ This will bring you to the App Dashboard, from this screen you can continue the 
 
 Create a .env config file in order to enable docker-compose to pick up your environmnent variables:
 
-```shell
+'''shell
 # Move to the app's directory:
 cd platform-demo-app
 
@@ -100,23 +100,23 @@ cp .env.example .env
 vi .env
 # or:
 nano .env
-```
+'''
 
 Set up the following environment variables. Using the example above:
 
-```
+'''
 FRONTEND_URL=https://mydemoapp.com
 FRONTEND_DOMAIN_NAME=mydemoapp.com
 BACKEND_URL=https://backend.mydemoapp.com
 BACKEND_DOMAIN_NAME=backend.mydemoapp.com
-```
+'''
 
 
 ### 5. Set up environment variables (2/3)
 
 Obtain the following values from the developer portal:
 
-**Domain Verification Key**: Go to the developer portal, and on your list of registered apps click on the app you are verifying.  Next click on the "App Checklist" and click on step 7. From this page you can obtain the string that needs added to your `.env` file.
+**Domain Verification Key**: Go to the developer portal, and on your list of registered apps click on the app you are verifying.  Next click on the "App Checklist" and click on step 7. From this page you can obtain the string that needs added to your '.env' file.
 
 <img title="Dev Portal Verify URL"  src="./img/domain_verification.png" style="width:400px;height:550px;" />
 
@@ -126,53 +126,53 @@ Obtain the following values from the developer portal:
 
 Then, copy-paste those values in the following two keys of your .env file:
 
-```
+'''
 # Add your Domain Validation Key here:
 DOMAIN_VALIDATION_KEY=
 
 # Add your API key here:
 PI_API_KEY=
-```
+'''
 
 
 ### 6. Set up environment variables (3/3)
 
 Configure the following environment variables:
 
-```
+'''
 # Generate a secure password for your MongoDB database and paste it here:
 MONGODB_PASSWORD=
 
 # Generate a random string (e.g 64 alphanumeric characters) and paste it here:
 SESSION_SECRET=
-```
+'''
 
 
 ### 7. Run the docker containers:
 
-**Make sure you are in the `platform-demo-app` directory before running any `docker-compose` command!**
+**Make sure you are in the 'platform-demo-app' directory before running any 'docker-compose' command!**
 
-```
+'''
 docker-compose build
 docker-compose up -d
-```
+'''
 
 You can check which containers are running using either one of the following two commands:
 
-```
+'''
 docker ps
 docker-compose ps
-```
+'''
 
 
 You can print out logs of the Docker containers using the following command:
 
-```
+'''
 docker-compose logs -f <service-name>
 
 # e.g:
 docker-compose logs -f reverse-proxy
-```
+'''
 
 
 ### 8. Verify Domain Ownership

@@ -76,7 +76,7 @@ export default function MyList() {
   useEffect(() => {
     if (user) {
       axiosClient
-        .get(`/user/me`, config)
+        .get('/user/me', config)
         .then((response) => {
           console.log("Response data for /user/me:", response.data);
           if (Array.isArray(response.data) && response.data.length > 0) {
@@ -106,7 +106,7 @@ export default function MyList() {
   useEffect(() => {
     if (user) {
       axiosClient
-        .get(`/user/joined`, config)
+        .get('/user/joined', config)
         .then((response) => {
           console.log("Joined communities:", response.data);
           if (Array.isArray(response.data) && response.data.length > 0) {
@@ -155,7 +155,8 @@ export default function MyList() {
                 boxShadow: `
                 0 -2px 4px rgba(255, 182, 193, 0.2), 
                 0 2px 4px rgba(255, 182, 193, 0.2),
-                0 2px 4px rgba(0,0,0,0.1)`,
+                0 2px 4px rgba(0,0,0,0.1)',
+                `
               }}
             >
               <ListItemText primary={community.name} secondary={community.description} />
@@ -179,8 +180,10 @@ export default function MyList() {
                 boxShadow: `
                 0 -2px 4px rgba(255, 182, 193, 0.2), 
                 0 2px 4px rgba(255, 182, 193, 0.2),
-                0 2px 4px rgba(0,0,0,0.1)`,
+                0 2px 4px rgba(0,0,0,0.1)',
+                `
               }}
+              
             >
               <ListItemText primary={community.name} secondary={community.description} />
             </ListItem>

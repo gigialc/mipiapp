@@ -83,7 +83,7 @@ export default function  UserToAppPayments() {
 
   useEffect(() => {
     if (user){
-    axiosClient.get(`/user/me`)
+    axiosClient.get('/user/me')
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
         // If response.data is an array, we can use forEach
@@ -107,7 +107,7 @@ export default function  UserToAppPayments() {
 
 
   useEffect(() => {
-    axiosClient.get(`/user/joined`)
+    axiosClient.get('/user/joined')
       .then((response) => {
         console.log('Joined communities:', response.data);
         setSelectedCommunity(response.data);
@@ -128,7 +128,8 @@ export default function  UserToAppPayments() {
                     <ListItem key={community._id} onClick={() => handleCommunityClick1(community)} style={{ backgroundColor: '#efc9e4', marginBottom: '10px', borderRadius: '4px',boxShadow: `
                     0 -2px 4px rgba(255, 182, 193, 0.2), /* Top shadow */
                     0 2px 4px rgba(255, 182, 193, 0.2), /* Bottom shadow */
-                    0 2px 4px rgba(0,0,0,0.1)` /* Additional bottom shadow for depth */
+                    0 2px 4px rgba(0,0,0,0.1)' /* Additional bottom shadow for depth */
+                    `
                   }}>
                       <ListItemText primary={community.name} secondary={community.description}/>
                     </ListItem>

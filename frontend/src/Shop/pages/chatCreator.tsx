@@ -55,7 +55,7 @@ export default function ChatCreator() {
   
   useEffect(() => {
     if (!communityId) return;
-    axiosClient.get(`/community/community/${communityId}`)
+    axiosClient.get('/community/community/${communityId}')
       .then((response) => {
         setCommunity(response.data);
       })

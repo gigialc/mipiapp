@@ -146,14 +146,14 @@ router.get('/hi', async (req, res) => {
             return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
         }
         const communityCollection = req.app.locals.communityCollection;
-        const creatorId = req.session.currentUser?.uid;
+        const creatorId = req.session.currentUser.uid;
         const userCollection = req.app.locals.userCollection;
 
         // Find all community documents in the collection
         const communities = await communityCollection.find({}).toArray();
 
         const filteredCommunities = communities.filter((community: CommunityType) => {
-            return community.user?.uid !== creatorId;
+            return community.user.uid !== creatorId;
         });
 
         // Send the array of filtered communities back to the client
