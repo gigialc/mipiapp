@@ -11,15 +11,6 @@ import Box from '@mui/material/Box';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
-const axiosClient = axios.create({
-    baseURL: backendURL,
-    timeout: 20000,
-    withCredentials: true,
-    headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-    }
-});
 
 export default function MuiForm() {
 
@@ -37,6 +28,16 @@ export default function MuiForm() {
 
     const { user, showModal, saveShowModal, onModalClose, addCommunityToUser } = useContext(UserContext) as UserContextType;
 
+    const axiosClient = axios.create({
+        baseURL: backendURL,
+        timeout: 20000,
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'user': user? user.accessToken : ''
+        }
+    });
     
     const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
@@ -85,18 +86,18 @@ export default function MuiForm() {
              // Add null check for user
             };
 
-            axiosClient
-                .post(`/community/create`, data)
-                .then((response) => {
-                    console.log(response);
-                    saveShowModal(true);
-                     if (addCommunityToUser) { // Add null check for addCommunityToUser
-                         addCommunityToUser(response.data);
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+    axiosClient
+        .post(`/community/create`, data)
+            .then((response) => {
+                console.log(response);
+                saveShowModal(true);
+            if (addCommunityToUser) { // Add null check for addCommunityToUser
+                addCommunityToUser(response.data);
+                }
+        })
+            .catch((error) => {
+                console.log(error);
+            });
         }
     };
 

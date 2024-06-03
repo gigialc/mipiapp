@@ -54,24 +54,32 @@ export default function mountUserEndpoints(router: Router) {
   });
 
   router.get('/userInfo', async (req: Request, res: Response) => {
-    const currentUser = req.session.currentUser;
-    if (!currentUser) {
-      return res.status(401).json({ error: "No current user found" });
-    }
-    return res.status(200).json({ user: currentUser });
-
-  });
-
-  router.post('/update', async (req: Request, res: Response) => {
-    const currentUser = req.session.currentUser;
+    const currentUser = req.headers.user;
+    //get user from database and return username and bio
     if (!currentUser) {
       return res.status(401).json({ error: "No current user found" });
     }
     const userCollection = req.app.locals.userCollection;
-    const { username, bio, coinBalance } = req.body;
+
+    const user = await userCollection.findOne({ accessToken: currentUser });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json({ username: user.username, bio: user.bio, coinBalance: user.coinBalance }); 
+
+  });
+
+  router.post('/update', async (req: Request, res: Response) => {
+    const { username, bio, coinBalance } = req.body;   
+    const currentUser = req.headers.user;
+    if (!currentUser) {
+      return res.status(401).json({ error: "No current user found" });
+    }
+    const userCollection = req.app.locals.userCollection;
 
     const updatedUser = await userCollection.findOneAndUpdate(
-      { uid: currentUser.uid },
+      { accessToken: currentUser },
       { $set: { username, bio, coinBalance } },
       { new: true, returnDocument: 'after' }
     );
@@ -80,13 +88,14 @@ export default function mountUserEndpoints(router: Router) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    req.session.currentUser = updatedUser.value;
     return res.status(200).json({ message: "User updated successfully", user: updatedUser.value });
   });
-  
+
 
   router.get('/me', async (req: Request, res: Response) => {
     try {
+
+      console.log(req.session);
       const currentUser = req.session.currentUser;
       if (!currentUser) {
         return res.status(401).json({ error: "No current user found" });
@@ -132,7 +141,7 @@ export default function mountUserEndpoints(router: Router) {
         posts: community.posts,
       }));
 
-      if (communityMap.length > 0) {
+      if (!(communityMap === null)) {
         return res.status(200).json(communityMap);
       } else {
         return res.status(404).json({ error: "User has not joined any communities" });

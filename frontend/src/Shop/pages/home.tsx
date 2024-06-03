@@ -13,16 +13,6 @@ import axios from 'axios';
 
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
-
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-  }
-});
 const config = { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } };
 
 export default function HomePage() {
@@ -31,6 +21,16 @@ export default function HomePage() {
   const [selectedCommunity, setSelectedCommunity] = useState<CommunityType | null>(null);
   const navigate = useNavigate();
 
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'user': user? user.accessToken : ''
+    }
+  });
 
   const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
     if(user?.uid === "") {
@@ -52,7 +52,7 @@ export default function HomePage() {
   // Make an API call to add person to the community if the payment was successful
   // if (payment.paymentCompleted === true) {
   console.log("Payment was successful");
-  axiosClient.post(`${backendURL}/user/addUser`)
+  axiosClient.post(`/user/addUser`)
     .then((response) => {
       console.log(response);
       // Redirect to the chat page
@@ -68,7 +68,7 @@ export default function HomePage() {
   }, [createCommunityData]);
 
   useEffect(() => {
-    axiosClient.get(`${backendURL}/user/userInfo`)
+    axiosClient.get(`/user/userInfo`)
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
       })
@@ -79,7 +79,7 @@ export default function HomePage() {
 
   useEffect(() => {
     // Make an API call to fetch the create community data
-    axiosClient.get(`${backendURL}/community/hi`)
+    axiosClient.get(`/community/hi`)
       .then((response) => {
         console.log(response);
         setCreateCommunityData(response.data);
@@ -91,7 +91,7 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    axiosClient.get(`${backendURL}/user/joined`)
+    axiosClient.get(`/user/joined`)
       .then((response) => {
         console.log('Joined communities:', response.data);
         setSelectedCommunity(response.data);

@@ -18,15 +18,6 @@ import {User } from './Types';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-  }
-});
 
 export default function ProfileEdit() {
   const [editMode, setEditMode] = useState(false);
@@ -37,14 +28,25 @@ export default function ProfileEdit() {
     bio: user.bio, 
   });
 
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'user': user? user.accessToken : ''
+    }
+  });
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setProfile({ ...profile, [event.target.name]: event.target.value });
   };
 
   const handleSave = () => {
-    axiosClient.post(`${backendURL}/user/update`, {
+    axiosClient.post(`/user/update`, {
       username: profile.username,
-      bio: profile.bio,
+      bio: profile.bio
     })
     .then((response) => {
       console.log('Response data for /user/update:', response.data);
@@ -58,7 +60,7 @@ export default function ProfileEdit() {
 
   useEffect(() => {
    if (user) {
-    axiosClient.get(`${backendURL}/user/userInfo`)
+    axiosClient.get(`/user/userInfo`)
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
         setProfile(response.data);

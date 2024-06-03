@@ -6,24 +6,15 @@ import { UserContextType } from './Types';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
+
 // Make TS accept the existence of our window.__ENV object - defined in index.html:
 
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
-const axiosClient = axios.create({
-    baseURL: backendURL,
-    timeout: 20000,
-    withCredentials: true,
-    headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-    }
-});
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
-
 export default function Posts({ communityId }: { communityId: string }) {
-
+    const {user ,showModal, saveShowModal, onModalClose, addCommunityToUser } = useContext(UserContext) as UserContextType;
     const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => {
@@ -47,8 +38,6 @@ export default function Posts({ communityId }: { communityId: string }) {
     const [descriptionErrorMessage, setDescriptionErrorMessage] = useState<string>('');
 
 
-    const {user ,showModal, saveShowModal, onModalClose, addCommunityToUser } = useContext(UserContext) as UserContextType;
-
 
     const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
@@ -57,6 +46,17 @@ export default function Posts({ communityId }: { communityId: string }) {
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(event.target.value);
     };
+
+    const axiosClient = axios.create({
+        baseURL: backendURL,
+        timeout: 20000,
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'user': user? user.accessToken : ''
+        }
+    });
     
     
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

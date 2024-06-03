@@ -22,17 +22,7 @@ import Comments from "./components/comments";
 import PublicProfile from "./pages/publicProfile";
 import axios from 'axios';
 
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
-
-const axiosClient = axios.create({
-    baseURL: backendURL,
-    timeout: 20000,
-    withCredentials: true,
-    headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-    }
-});
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 function App() {
     const user = null;

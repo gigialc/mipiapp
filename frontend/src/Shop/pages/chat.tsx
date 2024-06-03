@@ -12,22 +12,22 @@ import SignIn from "../components/SignIn";
 
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
-
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-  }
-});
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
 export default function Chat() {
   const { user, saveUser, saveShowModal, showModal,  onModalClose } = React.useContext(UserContext) as UserContextType;
   const [community, setCommunity] = useState<any>(null);
   const [isFollowing, setIsFollowing] = useState(false);
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'user': user? user.accessToken : ''
+    }
+  });
   
   const navigate = useNavigate();
   const location = useLocation();

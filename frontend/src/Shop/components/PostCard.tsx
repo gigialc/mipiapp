@@ -9,21 +9,9 @@ import HeartIcon from '@mui/icons-material/Favorite';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import { UserContext } from "./Auth";
 import Grid from '@mui/material/Grid';
+import { UserContextType } from './Types';
 
-
-const backendURL = process.env.REACT_APP_BACKEND_URL;
-
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-  }
-});
-const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
-  
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 interface PostType {
     _id: string,
@@ -34,12 +22,24 @@ interface PostType {
 // Define the PostCard component    
 
 export default function PostCard({ _id, title, description }: PostType) {
+    const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
     const navigate = useNavigate();
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikesCount] = useState(0);
     const location = useLocation();
     const postId = location.state.postId;
     console.log(postId);
+
+    const axiosClient = axios.create({
+      baseURL: backendURL,
+      timeout: 20000,
+      withCredentials: true,
+      headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'user': user? user.accessToken : ''
+      }
+  });
 
     const handleLike = async () => {
         try {

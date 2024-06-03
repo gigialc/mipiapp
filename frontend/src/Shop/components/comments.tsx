@@ -10,29 +10,28 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CommentContent from './CommentContent';
 import Box from '@mui/material/Box';
 
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-  }
-});
 
 export default function Comments() {
     const [showForm, setShowForm] = useState(false);
     const [description, setDescription] = useState<string>('');
     const [descriptionError, setDescriptionError] = useState<string | null>(null);
     const { user, showModal, saveShowModal, onModalClose } = useContext(UserContext) as UserContextType;
-
-   //get the post id from the button
-
     const location = useLocation();
     const postId = location.state.postId;
     console.log(postId);
+
+    const axiosClient = axios.create({
+      baseURL: backendURL,
+      timeout: 20000,
+      withCredentials: true,
+      headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'user': user? user.accessToken : ''
+      }
+    });
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -41,13 +40,11 @@ export default function Comments() {
             setDescriptionError('Description is required');
             return;
         }
-
         if(!user) {
           
             saveShowModal(true);
             return; // Exit if user is not signed in
-        }
-        
+        }   
         orderProduct('Comment', 1, { postId }); // Call orderProduct with postId
     };
 

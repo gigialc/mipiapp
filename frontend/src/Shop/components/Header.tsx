@@ -14,22 +14,24 @@ const logoImageUrl = 'df2.png'; // Replace with actual logo image URL
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-  }
-});
-
 
 export default function Header() {
   const { user, saveUser } = React.useContext(UserContext) as UserContextType;
   const [coins, setCoins] = useState<number>(0);
   const [bio, setBio] = useState<string>('');
 
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'user': user? user.accessToken : ''
+    }
+  });
+
+  //define the axios call to send the user info to the backend
   useEffect(() => {
     if (user) {
       axiosClient.get(`/user/userInfo`)

@@ -13,18 +13,7 @@ import Subscribed from "../components/subscribed";
 import EditProfile from "../components/editProfile";
 import SignIn from "../components/SignIn";
 
-
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
-
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-  }
-});
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
 export default function Posts() {
@@ -36,6 +25,16 @@ export default function Posts() {
   const [tabValue, setTabValue] = useState(0); // Default to the first tab
   const [showUpdate, setShowUpdate] = useState(false);
 
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'user': user? user.accessToken : ''
+    }
+  });
 
   console.log("User Data :" , userData);
   console.log("User: ", user);
@@ -72,7 +71,7 @@ export default function Posts() {
 
   useEffect(() => {
     if (user) {
-    axiosClient.get(`${backendURL}/user/me`)
+    axiosClient.get(`/user/me`)
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
         // If response.data is an array, we can use forEach
@@ -96,7 +95,7 @@ export default function Posts() {
 
   useEffect(() => {
     if (user){
-    axiosClient.get(`${backendURL}/user/joined`)
+    axiosClient.get(`/user/joined`)
       .then((response) => {
         console.log('Joined communities:', response.data);
         setSelectedCommunity(response.data);

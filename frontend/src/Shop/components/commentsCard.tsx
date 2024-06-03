@@ -9,64 +9,9 @@ import HeartIcon from '@mui/icons-material/Favorite';
 import { UserContext } from "./Auth";
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import Types from 'mongoose';
+import { UserContextType } from './Types';
 
-type MyPaymentMetadata = {};
-
-type AuthResult = {
-  accessToken: string,
-  user: {
-  uid: string;
-  username: string;
-  bio: string;
-  coinbalance: number;
-  communitiesCreated: Types.ObjectId[];
-  communitiesJoined: Types.ObjectId[];
-  likes: string[]; // Changed from ObjectId[] to string[]
-  comments: CommentType[]; // Assuming CommentType is defined elsewhere
-  posts: PostType[]; // Assuming PostType is defined elsewhere
-  timestamp: Date;
-  accessToken: string; // Added
-  community: CommunityType[]; // Added, assuming CommunityType is defined elsewhere
-  date: Date;
-  }
-};
-
-interface PaymentDTO {
-  amount: number,
-  user_uid: string,
-  created_at: string,
-  identifier: string,
-  metadata: Object,
-  memo: string,
-  status: {
-    developer_approved: boolean,
-    transaction_verified: boolean,
-    developer_completed: boolean,
-    cancelled: boolean,
-    user_cancelled: boolean,
-  },
-  to_address: string,
-  transaction: null | {
-    txid: string,
-    verified: boolean,
-    _link: string,
-  },
-};
-
-export type User = AuthResult['user'];
-
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
-
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-  }
-});
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 interface CommentType {
     _id: string,
@@ -77,19 +22,27 @@ interface CommentType {
 
 }
 
-// Define the PostCard component    
-
 export default function CommentCard({ _id, content }: CommentType) {
+    const { user, saveUser, saveShowModal, showModal,  onModalClose } = React.useContext(UserContext) as UserContextType;
     const navigate = useNavigate();
     const [isLiked, setIsLiked] = useState(false);
     const [likeCount, setLikesCount] = useState(0);
     const location = useLocation();
     const [comment, setComment] = useState<CommentType | null>(null);
-    const [user, setUser] = useState<User | null>(null);
     const [commentId, setCommentId] = useState<string | null>(null);
     const postId = location.state.postId;
     console.log(commentId);
 
+    const axiosClient = axios.create({
+      baseURL: backendURL,
+      timeout: 20000,
+      withCredentials: true,
+      headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'user': user? user.accessToken : ''
+      }
+    });
 
     const handleLike = async () => {
         try {

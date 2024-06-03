@@ -14,15 +14,6 @@ import { Types } from 'mongoose';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
-  }
-});
 const config = { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } };
 
 export default function MyList() {
@@ -30,6 +21,17 @@ export default function MyList() {
   const [createCommunityData, setCreateCommunityData] = useState<CommunityType[]>([]);
   const [selectedCommunity, setSelectedCommunity] = useState<CommunityType[]>([]);
   const navigate = useNavigate();
+
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'user': user? user.accessToken : ''
+    }
+});
  
   useEffect(() => {
     if (user) {

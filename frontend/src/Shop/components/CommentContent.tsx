@@ -15,17 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { PostType } from './Types';
 import CommentCard from './commentsCard';
 
-const backendURL = process.env.REACT_APP_BACKEND_URL;
-
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-  }
-});
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 export default function CommentContent (){ 
   const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
@@ -38,32 +28,42 @@ export default function CommentContent (){
   const postId = location.state.postId;
   console.log(postId);
 
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'user': user? user.accessToken : ''
+    }
+  });
 
-      //return comments from this postID
-      useEffect(() => {
-        const fetchComments = async () => {
-          try {
-            const response = await axiosClient.get(`/comments/fetch/${postId}`);
-            console.log(response.data.comments);
-            setComments(response.data.comments || []);
-          } catch (error) {
-            console.error("Failed to fetch comments: ", error);
-          }
-        };
+    useEffect(() => {
+      const fetchComments = async () => {
+        try {
+          const response = await axiosClient.get(`/comments/fetch/${postId}`);
+          console.log(response.data.comments);
+          setComments(response.data.comments || []);
+        } catch (error) {
+          console.error("Failed to fetch comments: ", error);
+        }
+      };
         fetchComments();
-        const fetchLikeStatus = async () => {
-          try {
-            const response = await axiosClient.get(`/comments/likeComment/${postId}`);
-            setIsLiked(response.data.isLiked);
-            console.log(response.data);
-            setLikesCount(response.data.likeCount);
-          } catch (error) {
-            console.error("Failed to fetch like status: ", error);
-          }
-        };
+
+      const fetchLikeStatus = async () => {
+        try {
+          const response = await axiosClient.get(`/comments/likeComment/${postId}`);
+          setIsLiked(response.data.isLiked);
+          console.log(response.data);
+          setLikesCount(response.data.likeCount);
+        } catch (error) {
+          console.error("Failed to fetch like status: ", error);
+        }
+      };
        fetchLikeStatus();
 
-       const fetchPost = async () => {
+      const fetchPost = async () => {
         try {
           const response = await axiosClient.get(`/posts/${postId}`);
           console.log(response.data);

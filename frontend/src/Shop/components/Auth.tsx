@@ -9,8 +9,6 @@ export const UserContext = React.createContext<UserContextType | null >(null);
 const _window: WindowWithEnv = window;
 const backendURL = _window.__ENV && _window.__ENV.backendURL;
 
-const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
-
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [community, setCommunity] = React.useState<CommunityType[]>([]);
     const [post, setPost] = React.useState<CommunityType[]>([]);
@@ -28,6 +26,17 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         date: new Date()
     });
     const [showModal, setShowModal] = React.useState<boolean>(false);
+
+    const axiosClient = axios.create({
+        baseURL: backendURL,
+        timeout: 20000,
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'user': user? user.accessToken : ''
+        }
+    });
  
     const signIn = async () => {
       const scopes = ['username', 'payments', 'wallet_address'];

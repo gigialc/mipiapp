@@ -10,16 +10,6 @@ import PostCard from "./PostCard";
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
 
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-  }
-});
-const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
 export default function PostContent({ communityId }: { communityId: string }) {
   const { user, saveUser, showModal, saveShowModal, onModalClose } = useContext(UserContext) as UserContextType;
@@ -31,7 +21,17 @@ export default function PostContent({ communityId }: { communityId: string }) {
   const location = useLocation();
   const postId = location.state.postId;
   console.log(postId);
- 
+
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'user': user? user.accessToken : ''
+    }
+  });
   
   // get the posts that have the same community id as the current session
   useEffect(() => {

@@ -22,19 +22,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { Tabs, Tab, Box } from "@mui/material";
 import MyList from "../mylist";
 
-
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
-
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  withCredentials: true,
-  headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-  }
-});
-const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 export default function  UserToAppPayments() {
   const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
@@ -43,6 +31,17 @@ export default function  UserToAppPayments() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [openFormModal, setOpenFormModal] = useState(false);
   const [tabValue, setTabValue] = useState(0); // Default to the first tab
+
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    withCredentials: true,
+    headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'user': user? user.accessToken : ''
+    }
+});
 
   console.log("User Data :" , userData);
   const navigate = useNavigate();
