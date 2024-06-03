@@ -65,9 +65,7 @@ export default function mountUserEndpoints(router: Router) {
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-
     return res.status(200).json({ username: user.username, bio: user.bio, coinBalance: user.coinBalance }); 
-
   });
 
   router.post('/update', async (req: Request, res: Response) => {
@@ -94,17 +92,17 @@ export default function mountUserEndpoints(router: Router) {
 
   router.get('/me', async (req: Request, res: Response) => {
     try {
-
       console.log(req.session);
-      const currentUser = req.session.currentUser;
-      if (!currentUser) {
+      const currentUser = req.headers.user;
+      const userCollection = req.app.locals.userCollection;
+      const user = await userCollection.findOne({ accessToken: currentUser });
+      if (!user) {
         return res.status(401).json({ error: "No current user found" });
       }
-
       const communityCollection = req.app.locals.communityCollection;
 
       const communities = await communityCollection.find({
-        _id: { $in: currentUser.communitiesCreated.map(id => new Types.ObjectId(id)) }
+        _id: { $in: user.communitiesCreated.map((id: string) => new Types.ObjectId(id)) }
       }).toArray();
 
       const communityMap = communities.map((community: CommunityDocument) => ({
@@ -123,15 +121,17 @@ export default function mountUserEndpoints(router: Router) {
 
   router.get('/joined', async (req: Request, res: Response) => {
     try {
-      const currentUser = req.session.currentUser;
-      if (!currentUser) {
+      const currentUser = req.headers.user;
+      const userCollection = req.app.locals.userCollection;
+      const user = await userCollection.findOne({ accessToken: currentUser });
+      if (!user) {
         return res.status(401).json({ error: "No current user found" });
       }
 
       const communityCollection = req.app.locals.communityCollection;
 
       const communities = await communityCollection.find({
-        _id: { $in: currentUser.communitiesJoined.map(id => new Types.ObjectId(id)) }
+        _id: { $in: user.communitiesJoined.map((id: string) => new Types.ObjectId(id)) }
       }).toArray();
 
       const communityMap = communities.map((community: CommunityDocument) => ({

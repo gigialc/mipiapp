@@ -49,8 +49,11 @@ export default function mountPaymentsEndpoints(router: Router) {
 console.log("hi2");
   // approve the current payment
   router.post('/approve', async (req, res) => {
-    console.log(req.session.currentUser);
-    if (!req.session.currentUser) {
+    const currentUser = req.headers.user;
+    const userCollection = req.app.locals.userCollection;
+    const user = await userCollection.findOne({ accessToken: currentUser });
+    console.log(user);
+    if (!user) {
       return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
     }
 
@@ -70,7 +73,7 @@ console.log("hi2");
     await orderCollection.insertOne({
       pi_payment_id: paymentId,
       product_id: currentPayment.data.metadata.productId,
-      user: req.session.currentUser.uid,
+      user: user.uid,
       txid: null,
       paid: false,
       cancelled: false,

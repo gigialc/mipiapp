@@ -23,7 +23,10 @@ export default function mountCommunityEndpoints(router: Router) {
 
     router.post('/create', async (req, res) => {
         try {
-            const creatorId = req.session.currentUser?.uid;
+            const currentUser = req.headers.user;
+            const userCollection = req.app.locals.userCollection;
+            const user = await userCollection.findOne({ accessToken: currentUser });
+            const creatorId = user?.uid;
             const community = req.body;
 
             if (!creatorId) {
@@ -58,8 +61,8 @@ export default function mountCommunityEndpoints(router: Router) {
                 { $push: { communitiesCreated: newCommunity._id } }
             );
 
-            // Optionally, update the session's currentUser with the latest user data
-            req.session.currentUser = await User.findById(creatorData._id).exec();
+            // // Optionally, update the session's currentUser with the latest user data
+            // user = await User.findById(creatorData._id).exec();
 
             return res.status(200).json({ newCommunity });
         } catch (error) {
@@ -96,7 +99,10 @@ export default function mountCommunityEndpoints(router: Router) {
 
     // Get the array of posts from a community
     router.get('/posts', async (req, res) => {
-        if (!req.session.currentUser) {
+        const currentUser = req.headers.user;
+        const userCollection = req.app.locals.userCollection;
+        const user = await userCollection.findOne({ accessToken: currentUser });
+        if (!user) {
             return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
         }
 
@@ -121,12 +127,15 @@ export default function mountCommunityEndpoints(router: Router) {
     });
 
     router.get('/hi', async (req, res) => {
+        const currentUser = req.headers.user;
+        const userCollection = req.app.locals.userCollection;
+        const user = await userCollection.findOne({ accessToken: currentUser });
         try {
-            if (!req.session.currentUser) {
+            if (!user) {
                 return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
             }
 
-            const creatorId = req.session.currentUser?.uid;
+            const creatorId = user?.uid;
             const communities = await Community.find({}).exec();
 
             const filteredCommunities = communities.filter((community: CommunityType) => {

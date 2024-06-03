@@ -1,14 +1,10 @@
 import { Router } from "express";
 import { UserData } from "../types/user";
-import "../types/session";
-import platformAPIClient from "../services/platformAPIClient";
-import { PostDocument } from "../models/posts";  // Import the PostDocument type if it's defined
-import { CommentDocument } from "../models/comments";  // Import the CommentDocument type if it's defined
+import "../types/session"; // Import the CommentDocument type if it's defined
 import { PostType } from "../types/posts";
 import { CommentType } from "../types/comments";
 import { Collection } from 'mongoose';
 import mongoose from "mongoose";
-import { Types } from 'mongoose';
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -20,12 +16,14 @@ export default function mountPostEndpoints(router: Router) {
             const posts = req.body;
     
             const communityId = new ObjectId(posts.community_id); // Convert to ObjectId if it's passed as a string
-    
+            const currentUser = req.headers.user;
+            const  userCollection = req.app.locals.userCollection;
+            const user = await userCollection.findOne({ accessToken: currentUser });
             const postData : PostType = {
                 _id: new ObjectId(),
                 title: posts.title,
                 description: posts.description,
-                user: new ObjectId(req.session.currentUser?._id),
+                user: new ObjectId(user._id),
                 communityId: communityId,
                 comments: [],
                 likes: [],
@@ -43,7 +41,10 @@ export default function mountPostEndpoints(router: Router) {
     });
     
     router.get('/posts1', async (req, res) => {
-        if (!req.session.currentUser) {
+        const userCollection = req.app.locals.userCollection as Collection<UserData>;
+        const currentUser = req.headers.user;
+        const user = await userCollection.findOne({ accessToken: currentUser });
+        if (!user) {
             return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
         }
     
@@ -61,7 +62,10 @@ export default function mountPostEndpoints(router: Router) {
     });
 
     router.post('/comments', async (req, res) => {
-        if (!req.session.currentUser) {
+        const userCollection = req.app.locals.userCollection as Collection<UserData>;
+        const currentUser = req.headers.user;
+        const user = await userCollection.findOne({ accessToken: currentUser });
+        if (!user) {
             return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
         }
         try {
@@ -75,7 +79,7 @@ export default function mountPostEndpoints(router: Router) {
             const commentData: CommentType = {
                 _id: commentId,
                 content: content,
-                user: new ObjectId(req.session.currentUser._id),
+                user: new ObjectId(user._id),
                 posts: postId,
                 likes: [],
                 timestamp: new Date()
@@ -120,7 +124,9 @@ export default function mountPostEndpoints(router: Router) {
         const postCollection = req.app.locals.postCollection as Collection<PostType>;
         const postId = new ObjectId(req.params.id);
         const userCollection = req.app.locals.userCollection as Collection<UserData>;
-        const userId = new ObjectId(req.session.currentUser?._id);
+        const currentUser = req.headers.user;
+        const user = await userCollection.findOne({ accessToken: currentUser });
+        const userId = new ObjectId(user?._id);
         console.log("postId:", postId);
         console.log("userId:", userId);
 
@@ -163,7 +169,10 @@ export default function mountPostEndpoints(router: Router) {
     router.get('/like/:id', async (req, res) => {
         const postCollection = req.app.locals.postCollection as Collection<PostType>;
         const postId = new ObjectId(req.params.id);
-        const userId = new ObjectId(req.session.currentUser?._id);
+        const userCollection = req.app.locals.userCollection as Collection<UserData>;
+        const currentUser = req.headers.user;
+        const user = await userCollection.findOne({ accessToken: currentUser });
+        const userId = new ObjectId(user?._id);
     
         try {
             const post = await postCollection.findOne({ _id: postId, likes: userId });

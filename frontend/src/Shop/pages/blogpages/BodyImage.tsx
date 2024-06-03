@@ -33,9 +33,6 @@ export default function BodyImage(){
 
         </div>
 
-       
-      
-
         <MuiBottomNavigation />
     </>
   );

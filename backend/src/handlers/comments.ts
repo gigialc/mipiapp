@@ -38,7 +38,10 @@ export default function mountCommentEndpoints(router: Router) {
     // Like a comment
     router.post('/likeComment/:id', async (req: Request, res: Response) => {
         const commentId = req.params.id;
-        const userId = req.session.currentUser?._id;
+        const currentUser = req.headers.user;
+        const userCollection = req.app.locals.userCollection;
+        const user = await userCollection.findOne({ accessToken: currentUser });
+        const userId = user?._id;
 
         try {
             const comment = await Comment.findOne({ _id: new Types.ObjectId(commentId), "likes.uid": new Types.ObjectId(userId) }).exec();
@@ -81,7 +84,10 @@ export default function mountCommentEndpoints(router: Router) {
     // Fetch like status for a comment
     router.get('/likeComment/:id', async (req: Request, res: Response) => {
         const commentId = req.params.id;
-        const userId = req.session.currentUser?._id;
+        const currentUser = req.headers.user;
+        const userCollection = req.app.locals.userCollection;
+        const user = await userCollection.findOne({ accessToken: currentUser });
+        const userId = user?._id;
 
         try {
             const comment = await Comment.findOne({ _id: new Types.ObjectId(commentId), "likes.uid": new Types.ObjectId(userId) }).exec();
