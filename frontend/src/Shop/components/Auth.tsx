@@ -34,7 +34,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'user': user? user.accessToken : ''
+            'Authorization': `Bearer ${user?.accessToken || ''}`,
         }
     });
  
@@ -48,11 +48,17 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     }
 
     const signInUser = async (authResult: AuthResult) => {
-        await axiosClient.post('/user/signin', {authResult});
-        return setShowModal(false);
+        const response = await axiosClient.post('/user/signin', { authResult });
+        if (response.status === 200) {
+            localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user in localStorage
+            setUser(response.data.user);
+            setShowModal(false);
+        } else {
+            console.error("Sign in failed");
+        }
     }
-    
-    const signOutUser = async() =>{
+
+     const signOutUser = async() =>{
         const nullUser: User = {
             uid: '',
             username: '',
@@ -66,6 +72,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
             date: new Date()
           };
       setUser(nullUser);
+      localStorage.removeItem("user");
     }
 
     const saveUser = () =>{
@@ -101,23 +108,24 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     useEffect(() => {
         const checkSession = async () => {
           try {
-            const response = await axiosClient.get(`/user/me`);
-            setUser(response.data.user);
-            localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user in localStorage
+            const storedUser = localStorage.getItem("user");
+            if (storedUser) {
+              setUser(JSON.parse(storedUser));
+            } else {
+              const response = await axiosClient.get(`/user/me`, {
+                headers: {
+                  Authorization: `Bearer ${user?.accessToken}`,
+                },
+              });
+              setUser(response.data.user);
+              localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user in localStorage
+            }
           } catch (error) {
             console.error("No active session found", error);
           }
         };
     
         checkSession();
-      }, []);
-
-    
-      useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
       }, []);
 
 

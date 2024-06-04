@@ -28,7 +28,7 @@ export default function ChatCreator() {
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'user': user? user.accessToken : ''
+        'Authorization': `Bearer ${user?.accessToken || ''}`,
     }
 });
 

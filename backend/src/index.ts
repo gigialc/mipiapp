@@ -38,8 +38,6 @@ app.use(logger('common', {
 // Enable response bodies to be sent as JSON
 app.use(express.json());
 
-
-
 // Handle CORS
 const allowedOrigins = ['https://www.destigfemme.app'];
 app.use(cors({
@@ -58,7 +56,7 @@ app.use(cors({
 // Handle CORS
 app.use(cors({
   origin: env.frontend_url,
-  credentials: true
+  credentials: true,
 }));
 
 // Handle cookies

@@ -16,8 +16,7 @@ import { UserData } from './Types';
 import {User } from './Types';
 
 
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
-
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 export default function ProfileEdit() {
   const [editMode, setEditMode] = useState(false);
@@ -35,7 +34,7 @@ export default function ProfileEdit() {
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'user': user? user.accessToken : ''
+        'Authorization': `Bearer ${user?.accessToken || ''}`,
     }
   });
 
