@@ -21,6 +21,7 @@ const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d
 export default function ProfileEdit() {
   const [editMode, setEditMode] = useState(false);
   const [user, setUser] = useState<User>({ uid: '', username: '', accessToken: '',bio: '', coinbalance: 0, community: [], likes: [], comments: [], posts: [], date: new Date()}); // Add initial state
+  const { user: contextUser } = useContext(UserContext) as UserContextType;
   const [userData, setUserData] = useState<UserData | null>(null);
   const [profile, setProfile] = useState({
     username: user.username, // Initial state, replace with user.username
@@ -34,7 +35,7 @@ export default function ProfileEdit() {
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'user': user? user.accessToken : ''
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
   });
 
@@ -58,19 +59,20 @@ export default function ProfileEdit() {
 
 
   useEffect(() => {
-   if (user) {
-    axiosClient.get(`/user/userInfo`)
-      .then((response) => {
-        console.log('Response data for /user/me:', response.data);
-        setProfile(response.data);
-      })  
-      .catch((error) => {
-        console.error('Error fetching /user/me:', error);
-      });
-
-    }}
-
-  , [user]);
+    if (contextUser) {
+      axiosClient.get(`/user/userInfo`)
+        .then((response) => {
+          console.log('Response data for /user/userInfo:', response.data);
+          setProfile({
+            username: response.data.username,
+            bio: response.data.bio,
+          });
+        })  
+        .catch((error) => {
+          console.error('Error fetching /user/userInfo:', error);
+        });
+    }
+  }, [contextUser]);
 
 
   return (
