@@ -73,6 +73,7 @@ export default function mountUserEndpoints(router: Router) {
   router.post('/update', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     const { username, bio, coinBalance } = req.body;
     const userCollection = req.app.locals.userCollection;
+    const user = req.user;
 
     const updatedUser = await userCollection.findOneAndUpdate(
       { _id: new Types.ObjectId(req.user.id) },

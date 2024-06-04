@@ -1,31 +1,17 @@
-// Date: 09/08/2021
-// Description: This is the main page for the Add page. It will display the header, the form, and the bottom navigation bar.
-// Created by Georgina Alacaraz
-import React, { CSSProperties, useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextField, Button, Stack, colors, FormControl } from '@mui/material';
+import { TextField, Button, Grid, Typography, Card, CardContent } from '@mui/material';
 import { UserContext } from "../components/Auth";
-import { UserContextType } from './Types';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import { useEffect } from 'react';
-import { UserData } from './Types';
-import {User } from './Types';
-
+import { UserContextType, User, UserData } from './Types';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 export default function ProfileEdit() {
   const [editMode, setEditMode] = useState(false);
-  const [user, setUser] = useState<User>({ uid: '', username: '', accessToken: '',bio: '', coinbalance: 0, community: [], likes: [], comments: [], posts: [], date: new Date()}); // Add initial state
   const { user: contextUser } = useContext(UserContext) as UserContextType;
-  const [userData, setUserData] = useState<UserData | null>(null);
   const [profile, setProfile] = useState({
-    username: user.username, // Initial state, replace with user.username
-    bio: user.bio, 
+    username: '',
+    bio: ''
   });
 
   const axiosClient = axios.create({
@@ -33,9 +19,9 @@ export default function ProfileEdit() {
     timeout: 20000,
     withCredentials: true,
     headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
   });
 
@@ -44,19 +30,19 @@ export default function ProfileEdit() {
   };
 
   const handleSave = () => {
+    console.log('Profile state before saving:', profile);
     axiosClient.post(`/user/update`, {
       username: profile.username,
       bio: profile.bio
     })
-    .then((response) => {
-      console.log('Response data for /user/update:', response.data);
-      setEditMode(false); 
-    })  
-    .catch((error) => {
-      console.error('Error fetching /user/update:', error);
-    });
+      .then((response) => {
+        console.log('Response data for /user/update:', response.data);
+        setEditMode(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching /user/update:', error);
+      });
   };
-
 
   useEffect(() => {
     if (contextUser) {
@@ -67,13 +53,12 @@ export default function ProfileEdit() {
             username: response.data.username,
             bio: response.data.bio,
           });
-        })  
+        })
         .catch((error) => {
           console.error('Error fetching /user/userInfo:', error);
         });
     }
   }, [contextUser]);
-
 
   return (
     <Card style={{ maxWidth: "100%", margin: 'auto', marginTop: 0, boxShadow: 'none', border: 'none' }}>
@@ -90,7 +75,7 @@ export default function ProfileEdit() {
                 onChange={handleChange}
               />
             ) : (
-                <Typography>
+              <Typography>
                 <span style={{ fontWeight: 'bold' }}>@</span>{profile.username}
               </Typography>
             )}
@@ -108,13 +93,13 @@ export default function ProfileEdit() {
                 onChange={handleChange}
               />
             ) : (
-                <Typography>
+              <Typography>
                 <span style={{ fontWeight: 'bold' }}></span> {profile.bio}
               </Typography>
             )}
           </Grid>
           <Grid item xs={5}>
-          <Button
+            <Button
               variant="contained"
               color="secondary"
               onClick={() => {
@@ -124,7 +109,7 @@ export default function ProfileEdit() {
                   setEditMode(true);
                 }
               }}
-              style={{ padding: '6px 5px', height: '25px', textTransform: 'none'}}
+              style={{ padding: '6px 5px', height: '25px', textTransform: 'none' }}
             >
               {editMode ? 'Save' : 'Edit'}
             </Button>
@@ -134,4 +119,3 @@ export default function ProfileEdit() {
     </Card>
   );
 }
-
