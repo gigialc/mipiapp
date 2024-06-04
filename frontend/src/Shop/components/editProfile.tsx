@@ -117,8 +117,13 @@ export default function ProfileEdit() {
           <Button
               variant="contained"
               color="secondary"
-              onClick={() => setEditMode(!editMode)}
-              onSubmit={handleSave}
+              onClick={() => {
+                if (editMode) {
+                  handleSave();
+                } else {
+                  setEditMode(true);
+                }
+              }}
               style={{ padding: '6px 5px', height: '25px', textTransform: 'none'}}
             >
               {editMode ? 'Save' : 'Edit'}

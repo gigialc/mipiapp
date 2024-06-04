@@ -4,6 +4,8 @@ import Community, { CommunityDocument } from '../models/community';
 import platformAPIClient from "../services/platformAPIClient";
 import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
+import { Collection } from 'mongodb';
+import { UserData } from '../types/user';
 
 const router = Router();
 const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
@@ -71,10 +73,9 @@ export default function mountUserEndpoints(router: Router) {
   router.post('/update', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     const { username, bio, coinBalance } = req.body;
     const userCollection = req.app.locals.userCollection;
-    const currentUser = req.user;
 
     const updatedUser = await userCollection.findOneAndUpdate(
-      { uid: currentUser.uid },
+      { _id: new Types.ObjectId(req.user.id) },
       { $set: { username, bio, coinBalance } },
       { new: true, returnDocument: 'after' }
     );
