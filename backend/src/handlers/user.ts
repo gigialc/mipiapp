@@ -76,16 +76,16 @@ export default function mountUserEndpoints(router: Router) {
     const user = req.user;
 
     const updatedUser = await userCollection.findOneAndUpdate(
-      { _id: new Types.ObjectId(req.user.id) },
+      { _id: new Types.ObjectId(user.id) },
       { $set: { username, bio, coinBalance } },
       { new: true, returnDocument: 'after' }
     );
 
-    if (!updatedUser.value) {
+    if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    return res.status(200).json({ message: "User updated successfully", user: updatedUser.value });
+    return res.status(200).json({ message: "User updated successfully", user: updatedUser });
   });
 
 
