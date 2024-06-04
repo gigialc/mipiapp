@@ -5,29 +5,25 @@ import { PostType } from "../types/posts";
 import { CommentType } from "../types/comments";
 import { Collection } from 'mongoose';
 import mongoose from "mongoose";
-import authenticate from "./authenticate";
-import { Request, Response, NextFunction } from 'express';
 
 const ObjectId = mongoose.Types.ObjectId;
 
-interface AuthenticatedRequest extends Request {
-    user?: UserData;
-}
-
 export default function mountPostEndpoints(router: Router) {
 
-    router.post('/posted', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+    router.post('/posted', async (req, res) => {
         try {
            const postCollection = req.app.locals.postCollection;
             const posts = req.body;
+    
             const communityId = new ObjectId(posts.community_id); // Convert to ObjectId if it's passed as a string
-            const user = req.user;
-
+            const currentUser = req.headers.user;
+            const  userCollection = req.app.locals.userCollection;
+            const user = await userCollection.findOne({ accessToken: currentUser });
             const postData : PostType = {
                 _id: new ObjectId(),
                 title: posts.title,
                 description: posts.description,
-                user: new ObjectId(user?._id),
+                user: new ObjectId(user._id),
                 communityId: communityId,
                 comments: [],
                 likes: [],

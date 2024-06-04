@@ -28,7 +28,7 @@ export default function HomePage() {
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Authorization': `Bearer ${user?.accessToken || ''}`,
+        'user': user? user.accessToken : ''
     }
   });
 

@@ -29,7 +29,7 @@ export default function Comments() {
       headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
-          'Authorization': `Bearer ${user?.accessToken || ''}`,
+          'user': user? user.accessToken : ''
       }
     });
 

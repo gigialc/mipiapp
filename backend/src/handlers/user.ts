@@ -2,15 +2,11 @@ import { Router, Request, Response } from 'express';
 import { Types } from 'mongoose';
 import Community, { CommunityDocument } from '../models/community';
 import platformAPIClient from "../services/platformAPIClient";
-import authenticate from "./authenticate";
-import { UserData } from "../types/user";
-
-interface AuthenticatedRequest extends Request {
-  user?: UserData;
-}
 
 export default function mountUserEndpoints(router: Router) {
-  router.post('/signin', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+
+  // handle the user auth accordingly
+  router.post('/signin', async (req: Request, res: Response) => {
     const auth = req.body.authResult;
     const userCollection = req.app.locals.userCollection;
 
@@ -53,16 +49,15 @@ export default function mountUserEndpoints(router: Router) {
     return res.status(200).json({ message: "User signed in" });
   });
 
-  router.get('/signout', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+  router.get('/signout', async (req: Request, res: Response) => {
     req.session.currentUser = null;
     return res.status(200).json({ message: "User signed out" });
   });
 
-  router.get('/userInfo', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+  router.get('/userInfo', async (req: Request, res: Response) => {
     const userCollection = req.app.locals.userCollection;
-    // const currentUser = req.headers.user;
-    // const user = await userCollection.findOne({ accessToken: currentUser });
-    const user = req.user;
+    const currentUser = req.headers.user;
+    const user = await userCollection.findOne({ accessToken: currentUser });
     //get user from database and return username and bio
     if (!user) {
       return res.status(401).json({ error: "No current user found" });
@@ -75,17 +70,17 @@ export default function mountUserEndpoints(router: Router) {
     return res.status(200).json({ username: user.username, bio: user.bio, coinBalance: user.coinBalance }); 
   });
 
-  router.post('/update', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+  router.post('/update',  async (req: Request, res: Response) => {
     const { username, bio, coinBalance } = req.body;   
-    // const currentUser = req.headers.user;
-    const currentUser = req.user;
-    if (!currentUser) {
+    const currentUser = req.headers.user;
+    const userCollection = req.app.locals.userCollection;
+    const user = await userCollection.findOne({ accessToken: currentUser });
+    if (!user) {
       return res.status(401).json({ error: "No current user found" });
     }
-    const userCollection = req.app.locals.userCollection;
 
     const updatedUser = await userCollection.findOneAndUpdate(
-      { accessToken: currentUser },
+      { accessToken: user },
       { $set: { username, bio, coinBalance } },
       { new: true, returnDocument: 'after' }
     );
@@ -98,7 +93,7 @@ export default function mountUserEndpoints(router: Router) {
   });
 
 
-  router.get('/me', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+  router.get('/me', async (req: Request, res: Response) => {
     try {
       console.log(req.session);
       const currentUser = req.headers.user;
@@ -127,7 +122,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.get('/joined', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+  router.get('/joined', async (req: Request, res: Response) => {
     try {
       const currentUser = req.headers.user;
       const userCollection = req.app.locals.userCollection;
@@ -160,7 +155,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.post('/addUser', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+  router.post('/addUser',  async (req: Request, res: Response) => {
     try {
       const { userId, communityId } = req.body;
       const userCollection = req.app.locals.userCollection;
@@ -182,7 +177,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.get('/username', authenticate, async (req: Request, res: Response) => {
+  router.get('/username', async (req: Request, res: Response) => {
     const userCollection = req.app.locals.userCollection;
     const userId = req.query.user_id as string;
 
@@ -198,7 +193,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.get('/liked', authenticate, async (req: Request, res: Response) => {
+  router.get('/liked', async (req: Request, res: Response) => {
     const userCollection = req.app.locals.userCollection;
     const userId = req.query.user_id as string;
     const postId = req.query.post_id as string;

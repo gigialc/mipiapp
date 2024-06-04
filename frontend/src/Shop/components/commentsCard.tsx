@@ -40,7 +40,7 @@ export default function CommentCard({ _id, content }: CommentType) {
       headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
-          'Authorization': `Bearer ${user?.accessToken || ''}`,
+          'user': user? user.accessToken : ''
       }
     });
 

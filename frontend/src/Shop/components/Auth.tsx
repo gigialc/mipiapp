@@ -9,6 +9,8 @@ export const UserContext = React.createContext<UserContextType | null >(null);
 const _window: WindowWithEnv = window;
 const backendURL = _window.__ENV && _window.__ENV.backendURL;
 
+const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
+
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [community, setCommunity] = React.useState<CommunityType[]>([]);
     const [post, setPost] = React.useState<CommunityType[]>([]);
@@ -34,7 +36,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'Authorization': `Bearer ${user?.accessToken || ''}`,
+            'user': user? user.accessToken : ''
         }
     });
  
@@ -48,17 +50,11 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     }
 
     const signInUser = async (authResult: AuthResult) => {
-        const response = await axiosClient.post('/user/signin', { authResult });
-        if (response.status === 200) {
-            localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user in localStorage
-            setUser(response.data.user);
-            setShowModal(false);
-        } else {
-            console.error("Sign in failed");
-        }
+        await axiosClient.post('/user/signin', {authResult});
+        return setShowModal(false);
     }
-
-     const signOutUser = async() =>{
+    
+    const signOutUser = async() =>{
         const nullUser: User = {
             uid: '',
             username: '',
@@ -72,7 +68,6 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
             date: new Date()
           };
       setUser(nullUser);
-      localStorage.removeItem("user");
     }
 
     const saveUser = () =>{
@@ -108,24 +103,23 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     useEffect(() => {
         const checkSession = async () => {
           try {
-            const storedUser = localStorage.getItem("user");
-            if (storedUser) {
-              setUser(JSON.parse(storedUser));
-            } else {
-              const response = await axiosClient.get(`/user/me`, {
-                headers: {
-                  Authorization: `Bearer ${user?.accessToken}`,
-                },
-              });
-              setUser(response.data.user);
-              localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user in localStorage
-            }
+            const response = await axiosClient.get(`/user/me`);
+            setUser(response.data.user);
+            localStorage.setItem("user", JSON.stringify(response.data.user)); // Store user in localStorage
           } catch (error) {
             console.error("No active session found", error);
           }
         };
     
         checkSession();
+      }, []);
+
+    
+      useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        }
       }, []);
 
 
