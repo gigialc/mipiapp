@@ -9,8 +9,6 @@ export const UserContext = React.createContext<UserContextType | null >(null);
 const _window: WindowWithEnv = window;
 const backendURL = _window.__ENV && _window.__ENV.backendURL;
 
-const axiosClient = axios.create({ baseURL: `${backendURL}`, timeout: 20000, withCredentials: true});
-
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [community, setCommunity] = React.useState<CommunityType[]>([]);
     const [post, setPost] = React.useState<CommunityType[]>([]);
@@ -36,7 +34,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         headers: {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
-            'user': user? user.accessToken : ''
+            'Authorization': `Bearer ${localStorage.getItem('token')}` // Retrieve the token from localStorage
         }
     });
  
@@ -50,8 +48,10 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     }
 
     const signInUser = async (authResult: AuthResult) => {
-        await axiosClient.post('/user/signin', {authResult});
-        return setShowModal(false);
+        const response = await axiosClient.post('/auth/signin', {authResult});
+        const { token } = response.data;
+        localStorage.setItem('token', token); // Store token in localStorage
+        setShowModal(false);
     }
     
     const signOutUser = async() =>{
@@ -67,7 +67,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
             posts: [],
             date: new Date()
           };
-      setUser(nullUser);
+          setUser(nullUser);
+          localStorage.removeItem('token'); // Remove the token from localStorage
     }
 
     const saveUser = () =>{

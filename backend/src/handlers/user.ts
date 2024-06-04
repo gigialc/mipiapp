@@ -2,9 +2,15 @@ import { Router, Request, Response } from 'express';
 import { Types } from 'mongoose';
 import Community, { CommunityDocument } from '../models/community';
 import platformAPIClient from "../services/platformAPIClient";
+import jwt from 'jsonwebtoken';
+import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
+
+const router = Router();
+const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
+
+
 
 export default function mountUserEndpoints(router: Router) {
-
   // handle the user auth accordingly
   router.post('/signin', async (req: Request, res: Response) => {
     const auth = req.body.authResult;
@@ -44,9 +50,8 @@ export default function mountUserEndpoints(router: Router) {
       currentUser = await userCollection.findOne(insertResult.insertedId);
     }
 
-    req.session.currentUser = currentUser;
-
-    return res.status(200).json({ message: "User signed in" });
+    const token = jwt.sign({ uid: currentUser.uid, username: currentUser.username }, JWT_SECRET, { expiresIn: '1h' });
+    return res.status(200).json({ message: "User signed in", token });
   });
 
   router.get('/signout', async (req: Request, res: Response) => {
@@ -54,33 +59,24 @@ export default function mountUserEndpoints(router: Router) {
     return res.status(200).json({ message: "User signed out" });
   });
 
-  router.get('/userInfo', async (req: Request, res: Response) => {
+  router.get('/userInfo', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     const userCollection = req.app.locals.userCollection;
-    const currentUser = req.headers.user;
-    const user = await userCollection.findOne({ accessToken: currentUser });
-    //get user from database and return username and bio
+    const currentUser = req.user;
+
+    const user = await userCollection.findOne({ uid: currentUser.uid });
     if (!user) {
       return res.status(401).json({ error: "No current user found" });
     }
-
-    // const user = await userCollection.findOne({ accessToken: currentUser });
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    return res.status(200).json({ username: user.username, bio: user.bio, coinBalance: user.coinBalance }); 
+    return res.status(200).json({ username: user.username, bio: user.bio, coinBalance: user.coinBalance });
   });
 
-  router.post('/update',  async (req: Request, res: Response) => {
-    const { username, bio, coinBalance } = req.body;   
-    const currentUser = req.headers.user;
+  router.post('/update', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+    const { username, bio, coinBalance } = req.body;
     const userCollection = req.app.locals.userCollection;
-    const user = await userCollection.findOne({ accessToken: currentUser });
-    if (!user) {
-      return res.status(401).json({ error: "No current user found" });
-    }
+    const currentUser = req.user;
 
     const updatedUser = await userCollection.findOneAndUpdate(
-      { accessToken: user },
+      { uid: currentUser.uid },
       { $set: { username, bio, coinBalance } },
       { new: true, returnDocument: 'after' }
     );
