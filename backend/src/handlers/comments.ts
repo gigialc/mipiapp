@@ -4,11 +4,19 @@ import Comment from "../models/comments"; // Import the Comment model
 import Post from "../models/posts"; // Import the Post model
 import User from "../models/user"; // Import the User model
 import "../types/session"; // Ensure session types are imported
+import jwt from 'jsonwebtoken';
+import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
+import mongoose from "mongoose";
+
+const router = Router();
+const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
+
+const ObjectId = mongoose.Types.ObjectId;
 
 export default function mountCommentEndpoints(router: Router) {
 
     // Add a comment to a post
-    router.post('/comments', async (req: Request, res: Response) => {
+    router.post('/comments', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const { post_id, user_id, content } = req.body;
         const comment = {
             _id: new Types.ObjectId(),
@@ -36,12 +44,11 @@ export default function mountCommentEndpoints(router: Router) {
     });
 
     // Like a comment
-    router.post('/likeComment/:id', async (req: Request, res: Response) => {
+    router.post('/likeComment/:id',authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const commentId = req.params.id;
-        const currentUser = req.headers.user;
         const userCollection = req.app.locals.userCollection;
-        const user = await userCollection.findOne({ accessToken: currentUser });
-        const userId = user?._id;
+        const currentUser = req.user;
+        const userId = currentUser?._id;
 
         try {
             const comment = await Comment.findOne({ _id: new Types.ObjectId(commentId), "likes.uid": new Types.ObjectId(userId) }).exec();
@@ -82,12 +89,11 @@ export default function mountCommentEndpoints(router: Router) {
     });
 
     // Fetch like status for a comment
-    router.get('/likeComment/:id', async (req: Request, res: Response) => {
+    router.get('/likeComment/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const commentId = req.params.id;
-        const currentUser = req.headers.user;
+        const currentUser = req.user;
         const userCollection = req.app.locals.userCollection;
-        const user = await userCollection.findOne({ accessToken: currentUser });
-        const userId = user?._id;
+        const userId = currentUser?._id;
 
         try {
             const comment = await Comment.findOne({ _id: new Types.ObjectId(commentId), "likes.uid": new Types.ObjectId(userId) }).exec();
@@ -105,7 +111,7 @@ export default function mountCommentEndpoints(router: Router) {
     });
 
     // Fetch comments for a post
-    router.get('/fetch/:id', async (req: Request, res: Response) => {
+    router.get('/fetch/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const postId = req.params.id;
 
         try {

@@ -28,7 +28,7 @@ export default function HomePage() {
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'user': user? user.accessToken : ''
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
     }
   });
 

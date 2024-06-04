@@ -5,25 +5,29 @@ import { PostType } from "../types/posts";
 import { CommentType } from "../types/comments";
 import { Collection } from 'mongoose';
 import mongoose from "mongoose";
+import jwt from 'jsonwebtoken';
+import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
+import { Response } from 'express';
+
+const router = Router();
+const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
 
 const ObjectId = mongoose.Types.ObjectId;
 
 export default function mountPostEndpoints(router: Router) {
 
-    router.post('/posted', async (req, res) => {
+    router.post('/posted', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         try {
            const postCollection = req.app.locals.postCollection;
             const posts = req.body;
     
             const communityId = new ObjectId(posts.community_id); // Convert to ObjectId if it's passed as a string
-            const currentUser = req.headers.user;
-            const  userCollection = req.app.locals.userCollection;
-            const user = await userCollection.findOne({ accessToken: currentUser });
+            const currentUser = req.user;
             const postData : PostType = {
                 _id: new ObjectId(),
                 title: posts.title,
                 description: posts.description,
-                user: new ObjectId(user._id),
+                user: new ObjectId(currentUser._id),
                 communityId: communityId,
                 comments: [],
                 likes: [],
@@ -40,11 +44,10 @@ export default function mountPostEndpoints(router: Router) {
         }
     });
     
-    router.get('/posts1', async (req, res) => {
+    router.get('/posts1', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const userCollection = req.app.locals.userCollection as Collection<UserData>;
-        const currentUser = req.headers.user;
-        const user = await userCollection.findOne({ accessToken: currentUser });
-        if (!user) {
+        const currentUser = req.user;
+        if (!currentUser) {
             return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
         }
     
@@ -61,11 +64,10 @@ export default function mountPostEndpoints(router: Router) {
         }
     });
 
-    router.post('/comments', async (req, res) => {
+    router.post('/comments', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const userCollection = req.app.locals.userCollection as Collection<UserData>;
-        const currentUser = req.headers.user;
-        const user = await userCollection.findOne({ accessToken: currentUser });
-        if (!user) {
+        const currentUser = req.user;
+        if (!currentUser) {
             return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
         }
         try {
@@ -79,7 +81,7 @@ export default function mountPostEndpoints(router: Router) {
             const commentData: CommentType = {
                 _id: commentId,
                 content: content,
-                user: new ObjectId(user._id),
+                user: new ObjectId(currentUser._id),
                 posts: postId,
                 likes: [],
                 timestamp: new Date()
@@ -103,9 +105,10 @@ export default function mountPostEndpoints(router: Router) {
         }
     });
 
-    router.get('/:id', async (req, res) => {
+    router.get('/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const postCollection = req.app.locals.postCollection as Collection<PostType>;
         const id = req.params.id; // Make sure to require ObjectId from mongodb
+        const currentUser = req.user;
         try {
           const post = await postCollection.findOne({ _id: new ObjectId(id) });
           if (!post) {
@@ -120,27 +123,25 @@ export default function mountPostEndpoints(router: Router) {
         }
     });
 
-    router.post('/like/:id', async (req, res) => {
+    router.post('/like/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const postCollection = req.app.locals.postCollection as Collection<PostType>;
         const postId = new ObjectId(req.params.id);
         const userCollection = req.app.locals.userCollection as Collection<UserData>;
-        const currentUser = req.headers.user;
-        const user = await userCollection.findOne({ accessToken: currentUser });
-        const userId = new ObjectId(user?._id);
+        const currentUser = req.user;
         console.log("postId:", postId);
-        console.log("userId:", userId);
+        console.log("userId:", currentUser.userId);
 
         try {
-            const post = await postCollection.findOne({ _id: postId, likes: userId });
+            const post = await postCollection.findOne({ _id: postId, likes: currentUser.userId });
             
             if (!post) {
                 await postCollection.updateOne(
                     { _id: postId },
-                    { $push: { likes: userId } }
+                    { $push: { likes: currentUser.userId } }
                 );
     
                 await userCollection.updateOne(
-                    { _id: userId },
+                    { _id: currentUser.userId },
                     { $push: { likes: postId } }
                 );
                 const likeCount = await postCollection.findOne({ _id: postId });
@@ -149,11 +150,11 @@ export default function mountPostEndpoints(router: Router) {
             } else {
                 await postCollection.updateOne(
                     { _id: postId },
-                    { $pull: { likes: userId } }
+                    { $pull: { likes: currentUser.userId } }
                 );
     
                 await userCollection.updateOne(
-                    { _id: userId },
+                    { _id: currentUser.userId },
                     { $pull: { likes: postId } }
                 );
                 const likeCount = await postCollection.findOne({ _id: postId });
@@ -166,13 +167,12 @@ export default function mountPostEndpoints(router: Router) {
         }
     });
 
-    router.get('/like/:id', async (req, res) => {
+    router.get('/like/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const postCollection = req.app.locals.postCollection as Collection<PostType>;
         const postId = new ObjectId(req.params.id);
         const userCollection = req.app.locals.userCollection as Collection<UserData>;
-        const currentUser = req.headers.user;
-        const user = await userCollection.findOne({ accessToken: currentUser });
-        const userId = new ObjectId(user?._id);
+        const currentUser = req.user;
+        const userId = new ObjectId(currentUser?._id);
     
         try {
             const post = await postCollection.findOne({ _id: postId, likes: userId });
@@ -189,9 +189,10 @@ export default function mountPostEndpoints(router: Router) {
         }
     });
 
-    router.get('/username', async (req, res) => {
+    router.get('/username', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const userCollection = req.app.locals.userCollection as Collection<UserData>;
         const commentUserId = new ObjectId(req.query.user_id as string);
+        const currentUser = req.user;
 
         try {
             const userObject = await userCollection.findOne({ _id: commentUserId });

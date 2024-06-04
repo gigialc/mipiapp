@@ -2,12 +2,20 @@ import axios from "axios";
 import { Router } from "express";
 import platformAPIClient from "../services/platformAPIClient";
 import "../types/session";
-import { ObjectId } from "mongodb";
 import { Types } from 'mongoose';
+import mongoose from "mongoose";
+import jwt from 'jsonwebtoken';
+import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
+import { Response } from 'express';
+
+const router = Router();
+const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
+
+const ObjectId = mongoose.Types.ObjectId;
 
 export default function mountPaymentsEndpoints(router: Router) {
 
-  router.post('/incomplete', async (req, res) => {
+  router.post('/incomplete', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     const payment = req.body.payment;
     const paymentId = payment.identifier;
     const txid = payment.transaction && payment.transaction.txid;
@@ -48,12 +56,11 @@ export default function mountPaymentsEndpoints(router: Router) {
   });
 console.log("hi2");
   // approve the current payment
-  router.post('/approve', async (req, res) => {
-    const currentUser = req.headers.user;
+  router.post('/approve', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     const userCollection = req.app.locals.userCollection;
-    const user = await userCollection.findOne({ accessToken: currentUser });
-    console.log(user);
-    if (!user) {
+    const currentUser = req.user;
+    console.log(currentUser);
+    if (!currentUser) {
       return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
     }
 
@@ -73,7 +80,7 @@ console.log("hi2");
     await orderCollection.insertOne({
       pi_payment_id: paymentId,
       product_id: currentPayment.data.metadata.productId,
-      user: user.uid,
+      user: currentUser.uid,
       txid: null,
       paid: false,
       cancelled: false,

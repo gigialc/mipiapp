@@ -8,8 +8,6 @@ import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
 const router = Router();
 const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
 
-
-
 export default function mountUserEndpoints(router: Router) {
   // handle the user auth accordingly
   router.post('/signin', async (req: Request, res: Response) => {
@@ -89,7 +87,7 @@ export default function mountUserEndpoints(router: Router) {
   });
 
 
-  router.get('/me', async (req: Request, res: Response) => {
+  router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       console.log(req.session);
       const currentUser = req.headers.user;
@@ -118,7 +116,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.get('/joined', async (req: Request, res: Response) => {
+  router.get('/joined',authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const currentUser = req.headers.user;
       const userCollection = req.app.locals.userCollection;
@@ -151,7 +149,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.post('/addUser',  async (req: Request, res: Response) => {
+  router.post('/addUser', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { userId, communityId } = req.body;
       const userCollection = req.app.locals.userCollection;
@@ -173,7 +171,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.get('/username', async (req: Request, res: Response) => {
+  router.get('/username',authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     const userCollection = req.app.locals.userCollection;
     const userId = req.query.user_id as string;
 

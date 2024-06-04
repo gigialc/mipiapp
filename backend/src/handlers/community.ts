@@ -9,9 +9,18 @@ import Community from "../models/community"; // Import the Community model
 import User from "../models/user"; // Import the User model
 import "../types/session"; // Ensure session types are imported
 import { CommunityType } from "../types/community"; // Import the CommunityType
+import jwt from 'jsonwebtoken';
+import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
+import mongoose from "mongoose";
+import { Response } from 'express';
+
+const router = Router();
+const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
+
+const ObjectId = mongoose.Types.ObjectId;
 
 export default function mountCommunityEndpoints(router: Router) {
-    router.get('/create', async (req, res) => {
+    router.get('/create', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         try {
             const communities = await Community.find({}, 'name description').exec(); // Fetch only needed fields
             return res.status(200).json({ communities });
@@ -21,12 +30,11 @@ export default function mountCommunityEndpoints(router: Router) {
         }
     });
 
-    router.post('/create', async (req, res) => {
+    router.post('/create', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         try {
-            const currentUser = req.headers.user;
+            const currentUser = req.user;
             const userCollection = req.app.locals.userCollection;
-            const user = await userCollection.findOne({ accessToken: currentUser });
-            const creatorId = user?.uid;
+            const creatorId = currentUser?.uid;
             const community = req.body;
 
             if (!creatorId) {
@@ -72,7 +80,7 @@ export default function mountCommunityEndpoints(router: Router) {
     });
 
     // Adding an array of posts to a community
-    router.post('/posts', async (req, res) => {
+    router.post('/posts', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const { community_id, post } = req.body;
 
         if (!community_id || !post) {
@@ -98,11 +106,10 @@ export default function mountCommunityEndpoints(router: Router) {
     });
 
     // Get the array of posts from a community
-    router.get('/posts', async (req, res) => {
-        const currentUser = req.headers.user;
+    router.get('/posts', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+        const currentUser = req.user;
         const userCollection = req.app.locals.userCollection;
-        const user = await userCollection.findOne({ accessToken: currentUser });
-        if (!user) {
+        if (!currentUser) {
             return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
         }
 
@@ -126,16 +133,15 @@ export default function mountCommunityEndpoints(router: Router) {
         }
     });
 
-    router.get('/hi', async (req, res) => {
-        const currentUser = req.headers.user;
+    router.get('/hi', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+        const currentUser = req.user;
         const userCollection = req.app.locals.userCollection;
-        const user = await userCollection.findOne({ accessToken: currentUser });
         try {
-            if (!user) {
+            if (!currentUser) {
                 return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
             }
 
-            const creatorId = user?.uid;
+            const creatorId = currentUser?.uid;
             const communities = await Community.find({}).exec();
 
             const filteredCommunities = communities.filter((community: CommunityType) => {
@@ -149,7 +155,7 @@ export default function mountCommunityEndpoints(router: Router) {
         }
     });
 
-    router.get('/username', async (req, res) => {
+    router.get('/username', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         try {
             const communities = await Community.find({}).exec();
             const userId = communities.map(community => community.user.username); // Assuming `user` is populated
@@ -160,7 +166,7 @@ export default function mountCommunityEndpoints(router: Router) {
         }
     });
 
-    router.get('/community/:id', async (req, res) => {
+    router.get('/community/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         try {
             const community = await Community.findById(req.params.id).exec();
             if (!community) {
@@ -173,7 +179,7 @@ export default function mountCommunityEndpoints(router: Router) {
         }
     });
 
-    router.put('/community/:id', async (req, res) => {
+    router.put('/community/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         try {
             const updatedCommunity = await Community.findByIdAndUpdate(
                 req.params.id,
@@ -187,7 +193,7 @@ export default function mountCommunityEndpoints(router: Router) {
         }
     });
 
-    router.delete('/community/:id', async (req, res) => {
+    router.delete('/community/:id',authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         try {
             const deleteResult = await Community.findByIdAndDelete(req.params.id).exec();
             return res.status(200).json({ deleteResult });
@@ -198,8 +204,10 @@ export default function mountCommunityEndpoints(router: Router) {
     });
 
     // Adding user to a community
-    router.post('/community/:id/addUser', async (req, res) => {
-        const { community_id, user_id } = req.body;
+    router.post('/community/:id/addUser', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+        const currentUser = req.user;
+        const user_id = currentUser?.uid;
+        const { community_id } = req.params;
         try {
             const community = await Community.findById(community_id).exec();
             if (!community) {
@@ -217,7 +225,7 @@ export default function mountCommunityEndpoints(router: Router) {
         }
     });
 
-    router.post('/community/:id/leave', async (req, res) => {
+    router.post('/community/:id/leave', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const { user } = req.body;
         try {
             const community = await Community.findById(req.params.id).exec();
@@ -237,7 +245,7 @@ export default function mountCommunityEndpoints(router: Router) {
         }
     });
 
-    router.post('/community/:id/post', async (req, res) => {
+    router.post('/community/:id/post', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const { post } = req.body;
         try {
             const updatedCommunity = await Community.findByIdAndUpdate(
