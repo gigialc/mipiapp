@@ -36,7 +36,7 @@ export default function MyList() {
   useEffect(() => {
     if (user) {
       axiosClient
-        .get('/user/me', config)
+        .get('/user/me')
         .then((response) => {
           console.log("Response data for /user/me:", response.data);
           if (Array.isArray(response.data) && response.data.length > 0) {

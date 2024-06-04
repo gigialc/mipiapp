@@ -4,8 +4,7 @@
 
 // Community endpoints under /community
 import { Router } from "express";
-import { Types } from "mongoose";
-import Community from "../models/community"; // Import the Community model
+import { Types , Collection} from "mongoose";
 import User from "../models/user"; // Import the User model
 import "../types/session"; // Ensure session types are imported
 import { CommunityType } from "../types/community"; // Import the CommunityType
@@ -13,6 +12,7 @@ import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
 import mongoose from "mongoose";
 import { Response } from 'express';
+import Community, { CommunityDocument } from '../models/community';
 
 const router = Router();
 const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
@@ -31,53 +31,34 @@ export default function mountCommunityEndpoints(router: Router) {
     });
 
     router.post('/create', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+        const { title, description, price } = req.body;
+        const currentUser = req.user;
+        const communityCollection = req.app.locals.communityCollection as Collection<CommunityType>;
+    
+        // Log the request body
+        console.log('Request Body:', req.body);
+    
         try {
-            const currentUser = req.user;
-            const userCollection = req.app.locals.userCollection;
-            const creatorId = currentUser?.uid;
-            const community = req.body;
-
-            if (!creatorId) {
-                return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
-            }
-
-            const creatorData = await User.findOne({ uid: creatorId }).exec();
-            if (!creatorData) {
-                return res.status(404).json({ error: 'User not found', message: "The user does not exist in the database" });
-            }
-
-            const communityData = new Community({
-                name: community.name,
-                description: community.description,
-                user: creatorData._id,
-                price: community.price,
-                moderators: community.moderators,
-                members: community.members,
-                invited: community.invited,
-                posts: community.posts,
-                rules: community.rules,
-                tags: community.tags,
-                createdAt: new Date(),
-                updatedAt: new Date()
+            const newCommunity = await communityCollection.insertOne({
+                _id: new Types.ObjectId(),
+                title: title,
+                description: description,
+                price: price,
+                creator: currentUser, // Use the ObjectId for user reference
+                members: [],
+                posts: [],
+                comments: [],
+                timestamp: new Date()
             });
 
-            const newCommunity = await communityData.save();
-
-            // Update the user's document to include this new community's ID in their list of created communities
-            await User.updateOne(
-                { _id: creatorData._id },
-                { $push: { communitiesCreated: newCommunity._id } }
-            );
-
-            // // Optionally, update the session's currentUser with the latest user data
-            // user = await User.findById(creatorData._id).exec();
-
-            return res.status(200).json({ newCommunity });
+            return res.status(200).json({ newCommunity, message: "Community created successfully" });
+    
         } catch (error) {
-            console.error(error);
-            return res.status(400).json({ message: "Error creating community", error });
+            console.error('Error creating community:', error);
+           return res.status(500).json({ message: "Error creating community", error });
         }
     });
+
 
     // Adding an array of posts to a community
     router.post('/posts', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
@@ -135,22 +116,26 @@ export default function mountCommunityEndpoints(router: Router) {
 
     router.get('/hi', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const currentUser = req.user;
-        const userCollection = req.app.locals.userCollection;
+    
+        if (!currentUser) {
+            return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
+        }
+    
         try {
-            if (!currentUser) {
-                return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
+            const userId = new Types.ObjectId(currentUser.uid);
+            console.log('Converted user ID to ObjectId:', userId);
+
+            const communityCollection = req.app.locals.communityCollection as Collection<CommunityType>;
+    
+            const communities: CommunityDocument[] = await Community.find({ creator: { $ne: userId } }).exec();
+
+            if (communities.length === 0) {
+                return res.status(204).json({ message: 'No communities found' });
             }
+            console.log('Communities fetched:', communities.length);
 
-            const creatorId = currentUser?.uid;
-            const communities = await Community.find({}).exec();
-
-            const filteredCommunities = communities.filter((community: CommunityType) => {
-                return community.user?.uid !== creatorId;
-            });
-
-            return res.status(200).json(filteredCommunities);
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching communities:', error);
             return res.status(500).json({ message: "Error fetching communities", error });
         }
     });
@@ -158,7 +143,7 @@ export default function mountCommunityEndpoints(router: Router) {
     router.get('/username', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         try {
             const communities = await Community.find({}).exec();
-            const userId = communities.map(community => community.user.username); // Assuming `user` is populated
+            const userId = communities.map(community => community.creator.username); // Assuming `user` is populated
             return res.status(200).json({ communities, userId });
         } catch (error) {
             console.error(error);

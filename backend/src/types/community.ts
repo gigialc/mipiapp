@@ -5,9 +5,9 @@ import { UserData } from './user';
 
 export interface CommunityType {
   _id: Types.ObjectId;  // Use Types.ObjectId from mongoose for consistency
-  name: string;
+  title: string;
   description: string;
-  user: UserData;  // Assuming UserData is correctly typed
+  creator: UserData;  // Assuming UserData is correctly typed
   price: number;
   members: Array<Types.ObjectId>;
   posts: Array<Types.ObjectId>;

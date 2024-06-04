@@ -49,6 +49,10 @@ export default function HomePage() {
     console.log(payment);
   }
 
+  useEffect(() => {
+    console.log(createCommunityData);
+  }, [createCommunityData]);
+
   // Make an API call to add person to the community if the payment was successful
   // if (payment.paymentCompleted === true) {
   console.log("Payment was successful");
@@ -64,10 +68,6 @@ export default function HomePage() {
   // }
 
   useEffect(() => {
-    console.log(createCommunityData);
-  }, [createCommunityData]);
-
-  useEffect(() => {
     axiosClient.get(`/user/userInfo`)
       .then((response) => {
         console.log('Response data for /user/me:', response.data);
@@ -81,12 +81,11 @@ export default function HomePage() {
     // Make an API call to fetch the create community data
     axiosClient.get(`/community/hi`)
       .then((response) => {
-        console.log(response);
+        console.log('Response data for /community/hi:', response.data);
         setCreateCommunityData(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
-        console.log(error);
+        console.error('Error fetching /community/hi:', error);
       });
   }, []);
 

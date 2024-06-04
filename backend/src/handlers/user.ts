@@ -75,11 +75,13 @@ export default function mountUserEndpoints(router: Router) {
     const userCollection = req.app.locals.userCollection;
     const user = req.user;
 
-    const updatedUser = await userCollection.findOneAndUpdate(
-      { _id: new Types.ObjectId(user.id) },
-      { $set: { username, bio, coinBalance } },
-      { new: true, returnDocument: 'after' }
-    );
+   //find the user and update the user in the database with new bio and username 
+    const updatedUser = await userCollection
+      .findOneAndUpdate(
+        { uid: user.uid },
+        { $set: { username, bio, coinBalance } },
+        { returnDocument: 'after' }
+      );     
 
     if (!updatedUser) {
       return res.status(404).json({ error: "User not found" });
@@ -91,51 +93,62 @@ export default function mountUserEndpoints(router: Router) {
 
   router.get('/me', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      console.log(req.session);
-      const currentUser = req.headers.user;
-      const userCollection = req.app.locals.userCollection;
-      const user = await userCollection.findOne({ accessToken: currentUser });
-      if (!user) {
-        return res.status(401).json({ error: "No current user found" });
+      const currentUser = req.user;
+      console.log('Current user:', currentUser);
+
+      if (!currentUser) {
+          console.log('No current user found');
+          return res.status(401).json({ error: "No current user found" });
       }
+
       const communityCollection = req.app.locals.communityCollection;
+      console.log('communityCollection:', communityCollection);
+
+      const communityIds = currentUser.communitiesCreated.map((id: string) => {
+          console.log('Mapping community ID:', id);
+          return new Types.ObjectId(id);
+      });
+      console.log('Community IDs:', communityIds);
 
       const communities = await communityCollection.find({
-        _id: { $in: user.communitiesCreated.map((id: string) => new Types.ObjectId(id)) }
+          _id: { $in: communityIds }
       }).toArray();
 
+      console.log('Communities fetched:', communities);
+
       const communityMap = communities.map((community: CommunityDocument) => ({
-        _id: community._id.toString(),
-        name: community.name,
-        description: community.description,
-        posts: community.posts,
+          _id: community._id.toString(),
+          title: community.title,
+          description: community.description,
+          posts: community.posts,
       }));
+      console.log('Community map:', communityMap);
 
       return res.status(200).json(communityMap);
-    } catch (err) {
-      console.error(err);
+  } catch (err) {
+      console.error('Error in /me route:', err);
       return res.status(500).json({ error: "Internal server error" });
-    }
+  }
   });
+
 
   router.get('/joined',authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const currentUser = req.headers.user;
+      const currentUser = req.user;
       const userCollection = req.app.locals.userCollection;
-      const user = await userCollection.findOne({ accessToken: currentUser });
-      if (!user) {
+      if (!currentUser) {
         return res.status(401).json({ error: "No current user found" });
       }
 
       const communityCollection = req.app.locals.communityCollection;
 
       const communities = await communityCollection.find({
-        _id: { $in: user.communitiesJoined.map((id: string) => new Types.ObjectId(id)) }
+        _id: { $in: currentUser.communitiesJoined.map((id: string) => new Types.ObjectId(id)) }
       }).toArray();
 
       const communityMap = communities.map((community: CommunityDocument) => ({
         _id: community._id.toString(),
-        name: community.name,
+        name: community.title,
         description: community.description,
         posts: community.posts,
       }));
