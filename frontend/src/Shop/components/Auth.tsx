@@ -48,7 +48,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     }
 
     const signInUser = async (authResult: AuthResult) => {
-        const response = await axiosClient.post('/signin', {authResult});
+        const response = await axiosClient.post('/user/signin', {authResult});
         const { token } = response.data;
         localStorage.setItem('token', token); // Store token in localStorage
         setShowModal(false);
