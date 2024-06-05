@@ -1,5 +1,4 @@
 //Created by Georgina Alacaraz
-
 import { Button, Grid } from '@mui/material';
 import { StringDecoder } from 'string_decoder';
 import { UserContextType } from './Types';
@@ -17,8 +16,8 @@ import { useLocation } from 'react-router-dom';
 interface Props {
   title: string,
   description: string,
+  creator: string,
   price: number,
-  owner: string,
   community: CommunityType,
 }
 
@@ -57,7 +56,7 @@ export default function ProductCard(props: Props) {
               }}
               onClick={() => handleNavigatePublicProfile(props.community)}
             >
-              @{props.owner}
+              @{props.creator}
             </Button>
           </Grid>
         </Grid>

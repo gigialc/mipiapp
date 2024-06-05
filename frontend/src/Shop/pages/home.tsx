@@ -116,7 +116,7 @@ export default function HomePage() {
               title={community.title}
               description={community.description}
               price={community.price}
-              owner={community.creator && (community.creator as any).username} // Ensure owner is correctly referenced
+              creator={community.creator && (community.creator as any).username} // Ensure owner is correctly referenced
               community={community}
             />
           );
