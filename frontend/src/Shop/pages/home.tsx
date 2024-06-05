@@ -116,7 +116,7 @@ export default function HomePage() {
               title={community.title}
               description={community.description}
               price={community.price}
-              creator={community.creator as UserData}
+              // creator={community.creator as UserData}
               community={community}
             />
           );
