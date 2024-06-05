@@ -120,6 +120,7 @@ export default function mountUserEndpoints(router: Router) {
           _id: community._id.toString(),
           title: community.title,
           description: community.description,
+          creator: community.creator,
           posts: community.posts,
       }));
       console.log('Community map:', communityMap);
@@ -150,6 +151,7 @@ export default function mountUserEndpoints(router: Router) {
         _id: community._id.toString(),
         name: community.title,
         description: community.description,
+        creator: community.creator,
         posts: community.posts,
       }));
 

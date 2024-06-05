@@ -16,7 +16,7 @@ import { UserData } from './Types';
 interface Props {
   title: string,
   description: string,
-  creator: UserData,
+  // creator: UserData,
   price: number,
   community: CommunityType,
 }
@@ -56,7 +56,7 @@ export default function ProductCard(props: Props) {
               }}
               onClick={() => handleNavigatePublicProfile(props.community)}
             >
-              @{props.creator.username}
+              {/* @{props.creator.username} */}
             </Button>
           </Grid>
         </Grid>
