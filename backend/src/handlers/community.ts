@@ -128,7 +128,9 @@ export default function mountCommunityEndpoints(router: Router) {
             const userId = currentUser.uid; // Use directly if UUID
             console.log('User ID:', userId);
     
-            const communities: CommunityDocument[] = await Community.find({ "creator.uid": { $ne: userId } }).exec();
+            const communities: CommunityDocument[] = await Community.find({ "creator.uid": { $ne: userId } })
+                .populate('creator', 'username') // Populate creator's username
+                .exec();
     
             console.log('Communities fetched:', communities.length);
             console.log('Communities data:', communities);
@@ -137,8 +139,10 @@ export default function mountCommunityEndpoints(router: Router) {
                 console.log('No communities found');
                 return res.status(204).send(); // Send 204 without content
             }
+
     
             return res.status(200).json(communities);
+
         } catch (error) {
             console.error('Error fetching communities:', error);
             return res.status(500).json({ message: "Error fetching communities", error });
@@ -148,8 +152,8 @@ export default function mountCommunityEndpoints(router: Router) {
     router.get('/username', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         try {
             const communities = await Community.find({}).exec();
-            const userId = communities.map(community => community.creator.username); // Assuming `user` is populated
-            return res.status(200).json({ communities, userId });
+            const creator = communities.map(community => community.creator.username); // Assuming `user` is populated
+            return res.status(200).json({ communities, creator });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: "Error fetching communities", error });

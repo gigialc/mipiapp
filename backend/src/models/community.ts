@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 import { UserData } from '../types/user';
+import { UserDocument } from './user';
 
 const communitySchema: Schema = new Schema({
     _id: { type: Schema.Types.ObjectId, required: true, auto: true },
@@ -17,7 +18,7 @@ export interface CommunityDocument extends Document {
     _id: Types.ObjectId;
     title: string;
     description: string;
-    creator: UserData;  // Assuming UserData is correctly typed
+    creator: UserDocument; 
     price: number;
     members: Array<Types.ObjectId>;
     posts: Array<Types.ObjectId>;

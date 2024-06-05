@@ -11,15 +11,12 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import CardActions from '@mui/material/CardActions';
-import { useLocation } from 'react-router-dom';
+import { UserData } from './Types';
 
 interface Props {
   title: string,
   description: string,
-  creator: 
-  {
-    username: string
-  },
+  creator: UserData,
   price: number,
   community: CommunityType,
 }

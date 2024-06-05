@@ -116,7 +116,7 @@ export default function HomePage() {
               title={community.title}
               description={community.description}
               price={community.price}
-              creator={{ username: (community.creator as any).username }} // Fixing the lint error by casting community.creator as any
+              creator={community.creator as UserData}
               community={community}
             />
           );
