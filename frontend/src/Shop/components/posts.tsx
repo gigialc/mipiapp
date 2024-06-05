@@ -63,31 +63,14 @@ export default function Posts({ communityId }: { communityId: string }) {
         //get the community id and make it a current session
         event.preventDefault();
 
-        if (title === '') {
-            setTitleError(true);
-            setTitleErrorMessage('Title is required');
-        } else {
-            setTitleError(false);
-            setTitleErrorMessage('');
-        } 
-
-        if (description === '') {
-            setDescriptionError(true);
-            setDescriptionErrorMessage('Description is required');
-        } else {
-            setDescriptionError(false);
-            setDescriptionErrorMessage('');
-        }
-
-
-        if (title !== '' && description !== '') {
+        if (title && description) {
             const data = {
                 title,
                 description,
                 community_id: communityId,
                 user_id: user?.uid
             };
-
+            
             axiosClient
                 .post(`/posts/posted`,data, config)
                 .then((response) => {

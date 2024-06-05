@@ -83,14 +83,14 @@ export default function ChatCreator() {
 
   return (
     <>
-       <Header />
+      <Header />
       <div style={{ padding: '15px' }}>
         <div style={{ marginBottom: '20px' }}>
           {community ? (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-                  🩷 {community.name}
+                  🩷 {community.title}
                 </Typography>
                 {/* <Button
                   variant="contained"

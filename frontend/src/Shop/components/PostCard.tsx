@@ -116,7 +116,7 @@ export default function PostCard({ _id, title, description }: PostType) {
 
                     </Card>
                 );
-                };
+            };
 
 
             

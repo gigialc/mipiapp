@@ -8,7 +8,7 @@ import { Box, Grid, Typography, Card, CardContent } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import PostCard from "./PostCard";
 
-const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://api.destigfemme.com';
+const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 
 export default function PostContent({ communityId }: { communityId: string }) {
@@ -53,6 +53,7 @@ export default function PostContent({ communityId }: { communityId: string }) {
     <div>
       {posts.map((post) => (
         <PostCard
+        key={post._id}
         _id={post._id}
         title={post.title}
         description={post.description}
