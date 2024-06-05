@@ -118,22 +118,27 @@ export default function mountCommunityEndpoints(router: Router) {
         const currentUser = req.user;
     
         if (!currentUser) {
+            console.log('No current user found');
             return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
         }
     
         try {
-            const userId = new Types.ObjectId(currentUser.uid);
-            console.log('Converted user ID to ObjectId:', userId);
+            console.log('Current user:', currentUser);
 
-            const communityCollection = req.app.locals.communityCollection as Collection<CommunityType>;
+            const userId = currentUser.uid; // Use directly if UUID
+            console.log('User ID:', userId);
     
-            const communities: CommunityDocument[] = await Community.find({ creator: { $ne: userId } }).exec();
-
-            if (communities.length === 0) {
-                return res.status(204).json({ message: 'No communities found' });
-            }
+            const communities: CommunityDocument[] = await Community.find({ "creator.uid": { $ne: userId } }).exec();
+    
             console.log('Communities fetched:', communities.length);
-
+            console.log('Communities data:', communities);
+    
+            if (communities.length === 0) {
+                console.log('No communities found');
+                return res.status(204).send(); // Send 204 without content
+            }
+    
+            return res.status(200).json(communities);
         } catch (error) {
             console.error('Error fetching communities:', error);
             return res.status(500).json({ message: "Error fetching communities", error });

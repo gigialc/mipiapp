@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Types } from 'mongoose';
 import { UserData } from '../types/user';
 
 const communitySchema: Schema = new Schema({
-    _id: { type: Schema.Types.ObjectId, required: true },
+    _id: { type: Schema.Types.ObjectId, required: true, auto: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
     creator: { type: Schema.Types.ObjectId, ref: 'user' },
@@ -14,7 +14,7 @@ const communitySchema: Schema = new Schema({
 },{ collection: 'community' }); // Explicitly specify the collection name
 
 export interface CommunityDocument extends Document {
-    _id: Types.ObjectId;  // Use Types.ObjectId from mongoose for consistency
+    _id: Types.ObjectId;
     title: string;
     description: string;
     creator: UserData;  // Assuming UserData is correctly typed

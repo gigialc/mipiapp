@@ -129,7 +129,7 @@ export default function  UserToAppPayments() {
                     0 2px 4px rgba(255, 182, 193, 0.2), /* Bottom shadow */
                     0 2px 4px rgba(0,0,0,0.1)` /* Additional bottom shadow for depth */
                   }}>
-                      <ListItemText primary={community.name} secondary={community.description}/>
+                      <ListItemText primary={community.title} secondary={community.description}/>
                     </ListItem>
                   ))
                 ) : (

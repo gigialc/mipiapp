@@ -10,6 +10,7 @@ import { UserContext } from "../components/Auth";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { UserData } from "../components/Types";
 
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
@@ -53,29 +54,29 @@ export default function HomePage() {
     console.log(createCommunityData);
   }, [createCommunityData]);
 
-  // Make an API call to add person to the community if the payment was successful
-  // if (payment.paymentCompleted === true) {
-  console.log("Payment was successful");
-  axiosClient.post(`/user/addUser`)
-    .then((response) => {
-      console.log(response);
-      // Redirect to the chat page
-      navigate("/Chat", { state: { communityId: selectedCommunity?._id } });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-  // }
+  // // Make an API call to add person to the community if the payment was successful
+  // // if (payment.paymentCompleted === true) {
+  // console.log("Payment was successful");
+  // axiosClient.post(`/user/addUser`)
+  //   .then((response) => {
+  //     console.log(response);
+  //     // Redirect to the chat page
+  //     navigate("/Chat", { state: { communityId: selectedCommunity?._id } });
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
+  // // }
 
-  useEffect(() => {
-    axiosClient.get(`/user/userInfo`)
-      .then((response) => {
-        console.log('Response data for /user/me:', response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching /user/me:', error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axiosClient.get(`/user/userInfo`)
+  //     .then((response) => {
+  //       console.log('Response data for /user/me:', response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error fetching /user/me:', error);
+  //     });
+  // }, []);
 
   useEffect(() => {
     // Make an API call to fetch the create community data
@@ -89,16 +90,16 @@ export default function HomePage() {
       });
   }, []);
 
-  useEffect(() => {
-    axiosClient.get(`/user/joined`)
-      .then((response) => {
-        console.log('Joined communities:', response.data);
-        setSelectedCommunity(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching joined communities:', error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axiosClient.get(`/user/joined`)
+  //     .then((response) => {
+  //       console.log('Joined communities:', response.data);
+  //       setSelectedCommunity(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error fetching joined communities:', error);
+  //     });
+  // }, []);
 
   return (
     <>
@@ -112,10 +113,10 @@ export default function HomePage() {
           return (
             <ProductCard
               key={community._id} // Make sure to include a unique key prop for each element in the array
-              name={community.name}
+              title={community.title}
               description={community.description}
               price={community.price}
-              owner={community.user && (community.user as any).username} // Ensure owner is correctly referenced
+              owner={community.creator && (community.creator as any).username} // Ensure owner is correctly referenced
               community={community}
             />
           );

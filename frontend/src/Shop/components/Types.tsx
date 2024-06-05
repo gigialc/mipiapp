@@ -21,13 +21,14 @@ export type AuthResult = {
 
     export type CommunityType = {
       _id: string,
-      name: string,
-      user: Object,
+      title: string,
       description: string,
+      creator: Object,
+      members: User[],
       price: number,
-      user_uid: string,
       posts: PostType[],
       comments: CommentType[],
+      timestamp: Date,
 
     };
     

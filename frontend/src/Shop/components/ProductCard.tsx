@@ -15,7 +15,7 @@ import CardActions from '@mui/material/CardActions';
 import { useLocation } from 'react-router-dom';
 
 interface Props {
-  name: string,
+  title: string,
   description: string,
   price: number,
   owner: string,
@@ -44,7 +44,7 @@ export default function ProductCard(props: Props) {
         <Grid container justifyContent="space-between" alignItems="center">
           <Grid item>
             <Typography variant="h6" gutterBottom style={{ fontWeight: 'bold' }}>
-              {props.name}
+              {props.title}
             </Typography>
           </Grid>
           <Grid item>

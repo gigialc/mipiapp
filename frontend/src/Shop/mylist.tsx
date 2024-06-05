@@ -118,7 +118,7 @@ export default function MyList() {
                 0 2px 4px rgba(0,0,0,0.1)`,
               }}
             >
-              <ListItemText primary={community.name} secondary={community.description} />
+              <ListItemText primary={community.title} secondary={community.description} />
             </ListItem>
           ))
         ) : (
@@ -142,7 +142,7 @@ export default function MyList() {
                 0 2px 4px rgba(0,0,0,0.1)`,
               }}
             >
-              <ListItemText primary={community.name} secondary={community.description} />
+              <ListItemText primary={community.title} secondary={community.description} />
             </ListItem>
           ))
         ) : (
