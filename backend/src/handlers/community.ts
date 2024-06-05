@@ -13,6 +13,7 @@ import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
 import mongoose from "mongoose";
 import { Response } from 'express';
 import Community, { CommunityDocument } from '../models/community';
+import { UserData } from "../types/user";
 
 const router = Router();
 const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
@@ -34,6 +35,7 @@ export default function mountCommunityEndpoints(router: Router) {
         const { title, description, price } = req.body;
         const currentUser = req.user;
         const communityCollection = req.app.locals.communityCollection as Collection<CommunityType>;
+        const userCollection = req.app.locals.userCollection as Collection<UserData>;
     
         // Log the request body
         console.log('Request Body:', req.body);
@@ -44,12 +46,21 @@ export default function mountCommunityEndpoints(router: Router) {
                 title: title,
                 description: description,
                 price: price,
-                creator: currentUser, // Use the ObjectId for user reference
+                creator: currentUser.uid, // Use the ObjectId for user reference
                 members: [],
                 posts: [],
                 comments: [],
                 timestamp: new Date()
             });
+
+            const updatedUser = await userCollection.updateOne(
+                { uid: currentUser.uid },
+                { $push: { communitiesCreated: newCommunity.insertedId } }
+            );
+    
+            if (updatedUser.matchedCount === 0) {
+                throw new Error('User not found');
+            }
 
             return res.status(200).json({ newCommunity, message: "Community created successfully" });
     
@@ -128,7 +139,7 @@ export default function mountCommunityEndpoints(router: Router) {
             const userId = currentUser.uid; // Use directly if UUID
             console.log('User ID:', userId);
     
-            const communities: CommunityDocument[] = await Community.find({ "creator.uid": { $ne: userId } }).exec();
+            const communities: CommunityDocument[] = await Community.find({ creator: { $ne: userId } }).exec();
             //return the username of the community creator in the list of communities
     
             console.log('Communities fetched:', communities.length);
@@ -151,7 +162,7 @@ export default function mountCommunityEndpoints(router: Router) {
     router.get('/username', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         try {
             const communities = await Community.find({}).exec();
-            const creator = communities.map(community => community.creator.username); // Assuming `user` is populated
+            const creator = communities.map(community => community.creator); // Assuming `user` is populated
             return res.status(200).json({ communities, creator });
         } catch (error) {
             console.error(error);

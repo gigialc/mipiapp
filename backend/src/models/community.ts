@@ -6,7 +6,7 @@ const communitySchema: Schema = new Schema({
     _id: { type: Schema.Types.ObjectId, required: true, auto: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
-    creator: { type: Schema.Types.ObjectId, ref: 'user' },
+    creator: { type: String, required: true }, // Store creator as a string (UUID)
     price: { type: Number, required: true },
     members: { type: [Schema.Types.ObjectId], ref: 'user' },
     posts: { type: [Schema.Types.ObjectId], ref: 'posts' },
@@ -18,7 +18,7 @@ export interface CommunityDocument extends Document {
     _id: Types.ObjectId;
     title: string;
     description: string;
-    creator: UserDocument; 
+    creator: string; 
     price: number;
     members: Array<Types.ObjectId>;
     posts: Array<Types.ObjectId>;

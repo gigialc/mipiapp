@@ -7,7 +7,7 @@ export interface CommunityType {
   _id: Types.ObjectId;  // Use Types.ObjectId from mongoose for consistency
   title: string;
   description: string;
-  creator: UserData;  // Assuming UserData is correctly typed
+  creator: string;  // Assuming UserData is correctly typed
   price: number;
   members: Array<Types.ObjectId>;
   posts: Array<Types.ObjectId>;
