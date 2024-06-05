@@ -115,7 +115,7 @@ export default function HomePage() {
               key={community._id} // Make sure to include a unique key prop for each element in the array
               title={community.title}
               description={community.description}
-              creator={community.creator as string}
+              creator={community.creator as any}
               price={community.price}
               community={community}
             />

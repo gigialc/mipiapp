@@ -46,7 +46,7 @@ export default function mountCommunityEndpoints(router: Router) {
                 title: title,
                 description: description,
                 price: price,
-                creator: currentUser.uid, // Use the ObjectId for user reference
+                creator: currentUser, // Use the ObjectId for user reference
                 members: [],
                 posts: [],
                 comments: [],
@@ -57,7 +57,7 @@ export default function mountCommunityEndpoints(router: Router) {
                 { uid: currentUser.uid },
                 { $push: { communitiesCreated: newCommunity.insertedId } }
             );
-    
+
             if (updatedUser.matchedCount === 0) {
                 throw new Error('User not found');
             }
@@ -127,6 +127,7 @@ export default function mountCommunityEndpoints(router: Router) {
 
     router.get('/hi', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const currentUser = req.user;
+        const userCollection = req.app.locals.userCollection;
     
         if (!currentUser) {
             console.log('No current user found');
@@ -140,8 +141,10 @@ export default function mountCommunityEndpoints(router: Router) {
             console.log('User ID:', userId);
     
             const communities: CommunityDocument[] = await Community.find({ creator: { $ne: userId } }).exec();
+
+
             //return the username of the community creator in the list of communities
-    
+
             console.log('Communities fetched:', communities.length);
             console.log('Communities data:', communities);
     

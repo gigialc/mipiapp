@@ -95,41 +95,50 @@ export default function mountUserEndpoints(router: Router) {
     try {
       const currentUser = req.user;
       console.log('Current user:', currentUser);
+      //find the user in the database that matches the currentUser uid
+      const userCollection = req.app.locals.userCollection;
+      const user = await userCollection.findOne({ uid: currentUser.uid });
 
       if (!currentUser) {
-          console.log('No current user found');
-          return res.status(401).json({ error: "No current user found" });
+        console.log('No current user found');
+        return res.status(401).json({ error: "No current user found" });
       }
-
+  
       const communityCollection = req.app.locals.communityCollection;
       console.log('communityCollection:', communityCollection);
-
-      const communityIds = currentUser.communitiesCreated.map((id: string) => {
-          console.log('Mapping community ID:', id);
-          return new Types.ObjectId(id);
+  
+      // Ensure communitiesCreated exists and is an array
+      if (!Array.isArray(user.communitiesCreated)) {
+        console.log('communitiesCreated is not an array or is undefined:', currentUser.communitiesCreated);
+        return res.status(400).json({ error: "Invalid communitiesCreated format" });
+      }
+  
+      const communityIds = user.communitiesCreated.map((id: string) => {
+        console.log('Mapping community ID:', id);
+        return new Types.ObjectId(id);
       });
       console.log('Community IDs:', communityIds);
-
+  
       const communities = await communityCollection.find({
-          _id: { $in: communityIds }
+        _id: { $in: communityIds }
       }).toArray();
-
+  
       console.log('Communities fetched:', communities);
-
+  
       const communityMap = communities.map((community: CommunityDocument) => ({
-          _id: community._id.toString(),
-          title: community.title,
-          description: community.description,
-          creator: community.creator,
-          posts: community.posts,
+        _id: community._id.toString(),
+        title: community.title,
+        description: community.description,
+        creator: community.creator,
+        posts: community.posts,
       }));
       console.log('Community map:', communityMap);
-
+  
       return res.status(200).json(communityMap);
-  } catch (err) {
+    } catch (err) {
       console.error('Error in /me route:', err);
       return res.status(500).json({ error: "Internal server error" });
-  }
+    }
   });
 
 
