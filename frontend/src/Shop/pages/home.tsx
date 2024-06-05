@@ -116,7 +116,7 @@ export default function HomePage() {
               title={community.title}
               description={community.description}
               price={community.price}
-              creator={community.creator && (community.creator as any).username} // Ensure owner is correctly referenced
+              creator={{ username: (community.creator as any).username }} // Fixing the lint error by casting community.creator as any
               community={community}
             />
           );

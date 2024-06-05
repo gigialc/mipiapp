@@ -16,7 +16,10 @@ import { useLocation } from 'react-router-dom';
 interface Props {
   title: string,
   description: string,
-  creator: string,
+  creator: 
+  {
+    username: string
+  },
   price: number,
   community: CommunityType,
 }
@@ -56,7 +59,7 @@ export default function ProductCard(props: Props) {
               }}
               onClick={() => handleNavigatePublicProfile(props.community)}
             >
-              @{props.creator}
+              @{props.creator.username}
             </Button>
           </Grid>
         </Grid>
