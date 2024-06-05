@@ -14,7 +14,8 @@ export default function Blogilates(){
 
   return(
     <>
-         {/* <Header user={user} onSignIn={signIn} onSignOut={signOut}/>    */}
+    <Header/>
+    
         <div style={{ overflowY: 'auto', height: '150vh',marginLeft: '20px' }}>  
 
         <h2>What I’d look like if I had the “perfect” body throughout history…</h2>

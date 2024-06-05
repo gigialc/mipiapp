@@ -25,8 +25,7 @@ export default function Sexed() {
 
 return(
     <>
-         {/* <Header user={user} onSignIn={signIn} onSignOut={signOut}/> */}
-
+    <Header/>
     <Typography variant="h5" margin={2} color="pink">
       Sex Education
     </Typography>

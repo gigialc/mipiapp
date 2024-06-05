@@ -30,8 +30,7 @@ export default function Eatingdisorders(){
   }
   return(
     <>
-         {/* <Header user={user} onSignIn={signIn} onSignOut={signOut}/>      */}
-
+    <Header/>
         <h2>The negative side of social media and how we can avoid it</h2>
     
         

@@ -14,7 +14,7 @@ export default function SocialMediaBlog(){
 
   return(
     <>
-         {/* <Header user={user} onSignIn={signIn} onSignOut={signOut}/>      */}
+        <Header/>
 
         <div style={{ overflowY: 'auto', height: '150vh',marginLeft: '20px' }}>
 
