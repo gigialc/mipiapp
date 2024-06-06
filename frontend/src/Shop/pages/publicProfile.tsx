@@ -70,28 +70,28 @@ export default function  PublicProfile() {
   <Header/>
   <Paper style={{ padding: 16, margin: '16px auto', maxWidth: 600, boxShadow: 'none' }}>
     <Grid container direction="column" alignItems="center" justifyContent="center" spacing={2}>
-      {community.user && (
+      {community.creator && (
         <>
           <Grid item>
             <Avatar
-              alt={community.user.username}
+              alt={community.creator.username}
               // src={community.user.avatarUrl} // Uncomment and use the actual path to the avatar image
               sx={{ width: 100, height: 100 }} // Adjust size as needed
             />
           </Grid>
           <Grid item>
             <Typography variant="h5" component="h1" color="black" gutterBottom>
-              @{community.user.username}
+              @{community.creator.username}
             </Typography>
           </Grid>
           <Grid item>
             <Typography variant="body1" color="textSecondary">
-              {community.user.coinbalance} 💎
+              {community.creator.coinbalance} 💎
             </Typography>
           </Grid>
           <Grid item>
             <Typography variant="body1">
-              {community.user.bio || 'Bio not available.'}
+              {community.creator.bio || 'Bio not available.'}
             </Typography>
           </Grid>
 
