@@ -65,10 +65,9 @@ export default function Chat() {
         console.error(error);
       });
   }, [communityId]);
-  
+
 
   const handleFollow = () => {
-    if (isFollowing) {
       axiosClient.post(`/user/joined`, { communityId: communityId })
         .then((response) => {
           console.log(response);
@@ -79,7 +78,7 @@ export default function Chat() {
         });
 
       return;
-    }
+    
   
   }
 
