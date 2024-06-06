@@ -59,6 +59,7 @@ console.log("hi2");
   router.post('/approve', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     const userCollection = req.app.locals.userCollection;
     const currentUser = req.user;
+    
     console.log(currentUser);
     if (!currentUser) {
       return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
