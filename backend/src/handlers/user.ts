@@ -160,10 +160,6 @@ export default function mountUserEndpoints(router: Router) {
         { $addToSet: { members: new Types.ObjectId(user._id) } }
       );
 
-      if (!updatedUser.value) {
-        return res.status(404).json({ error: "User not found" });
-      }
-
       return res.status(200).json({ message: "Community added to joined communities successfully" });
     } catch (error) {
       console.error(error);
@@ -171,7 +167,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.post('/leaveCommunity/', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  router.post('/leaveCommunity', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { communityId } = req.body;
       const userCollection = req.app.locals.userCollection;
@@ -188,10 +184,6 @@ export default function mountUserEndpoints(router: Router) {
         { _id: new Types.ObjectId(communityId) },
         { $pull: { members: new Types.ObjectId(user._id) } }
       );
-
-      if (!updatedUser.value) {
-        return res.status(404).json({ error: "User not found" });
-      }
 
       return res.status(200).json({ message: "Community removed from joined communities successfully" });
     } catch (error) {
@@ -238,7 +230,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.get('/isFollowingCommunity', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  router.get('/isFollowingCommunity/:communityId', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { communityId } = req.body;
       const currentUser = req.user;
