@@ -65,6 +65,7 @@ export default function Chat() {
         console.error(error);
       });
   }, [communityId]);
+  
 
   const handleFollow = () => {
     if (isFollowing) {
@@ -80,22 +81,6 @@ export default function Chat() {
       return;
     }
   
-    // Ensure this matches what your backend expects
-    const data = {
-      userId: user,
-      communityId: communityId, 
-    };
-  
-    axiosClient.post(`/user/addUser`, data)
-      .then((response) => {
-        console.log('Response:', response);
-        setIsFollowing(true); // Update following state based on response
-        // Optionally, refresh or update the community data to reflect the new state
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-
   }
 
   return (

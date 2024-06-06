@@ -11,10 +11,10 @@ import React from 'react';
 
 interface CommunityType {
   _id: string; // Make sure _id is defined in the CommunityType interface
-  name: string;
+  title: string;
   description: string;
   price: number,
-  user: Object,
+  creator: Object,
 }
 
 export default function ProfileCard(props: CommunityType) {
@@ -23,7 +23,7 @@ export default function ProfileCard(props: CommunityType) {
     <Grid container style={{ margin: 20, padding: 16, borderRadius: 8, backgroundColor: '#fff' , boxShadow: '0px 0px 10px 0px #0000001a'}}>
       {/* Profile Details */}
       <Grid item xs={12}>
-        <Typography variant="h5" style={{ marginBottom: 8 }}>{props.name}</Typography>
+        <Typography variant="h5" style={{ marginBottom: 8 }}>{props.title}</Typography>
         <Typography variant="body1" style={{ color: '#666', marginBottom: 16 }}>{props.description}</Typography>
         {/* Social Links */}
         <div style={{ display: 'flex', alignItems: 'center' }}>
