@@ -114,7 +114,7 @@ export default function Chat() {
                   onClick={handleFollow}
                   style={{ borderRadius: 20, backgroundColor: isFollowing ? '#D3D3D3' : '#9E4291', color: 'white', textTransform: 'none' }}
                 >
-                  {isFollowing ? 'Unfollow' : 'Follow'}
+                  {isFollowing ? 'Unsubscribe' : 'Subscribe'}
                 </Button>
               </div>
               <Typography variant="subtitle1" style={{ marginTop: '0px' }}>

@@ -217,14 +217,10 @@ export default function mountUserEndpoints(router: Router) {
       const updatedUser = await userCollection.findOneAndUpdate(
         { uid: userId },
         { $addToSet: { communitiesJoined: new Types.ObjectId(communityId) } },
-        { new: true, returnDocument: 'after' }
       );
 
-      if (!updatedUser.value) {
-        return res.status(404).json({ error: "User not found" });
-      }
+      return res.status(200).json({updatedUser});
 
-      return res.status(200).json({ message: "Community added to joined communities successfully" });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: "Internal server error" });
