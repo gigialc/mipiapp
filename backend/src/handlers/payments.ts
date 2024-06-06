@@ -57,41 +57,61 @@ export default function mountPaymentsEndpoints(router: Router) {
 console.log("hi2");
   // approve the current payment
   router.post('/approve', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
-    const userCollection = req.app.locals.userCollection;
-    const currentUser = req.user;
-    
-    console.log(currentUser);
-    if (!currentUser) {
-      return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
+    try {
+        const userCollection = req.app.locals.userCollection;
+        const currentUser = req.user;
+        
+        if (!currentUser) {
+            console.error('Unauthorized access attempt');
+            return res.status(401).json({ error: 'unauthorized', message: "User needs to sign in first" });
+        }
+
+        console.log('Current User:', currentUser);
+
+        const paymentId = req.body.paymentId;
+        if (!paymentId) {
+            console.error('Payment ID is missing');
+            return res.status(400).json({ error: 'invalid_request', message: 'Payment ID is required' });
+        }
+
+        console.log('Payment ID:', paymentId);
+
+        const app = req.app;
+        const orderCollection = app.locals.orderCollection;
+
+        console.log('Fetching payment details from platform API');
+        const currentPayment = await platformAPIClient.get(`/v2/payments/${paymentId}`);
+
+        if (!currentPayment.data || !currentPayment.data.metadata || !currentPayment.data.metadata.productId) {
+            console.error('Invalid payment data:', currentPayment.data);
+            return res.status(400).json({ error: 'invalid_payment', message: 'Payment data is invalid' });
+        }
+
+        console.log('Payment details fetched:', currentPayment.data);
+
+        await orderCollection.insertOne({
+            pi_payment_id: paymentId,
+            product_id: currentPayment.data.metadata.productId,
+            user: currentUser.uid,
+            txid: null,
+            paid: false,
+            cancelled: false,
+            created_at: new Date()
+        });
+
+        console.log('Order record created successfully');
+
+        // Let Pi Servers know that you're ready
+        await platformAPIClient.post(`/v2/payments/${paymentId}/approve`);
+
+        console.log(`Approved the payment ${paymentId}`);
+        return res.status(200).json({ message: `Approved the payment ${paymentId}` });
+    } catch (error) {
+        console.error('Error processing payment approval:', error);
+        return res.status(500).json({ error: 'internal_server_error', message: 'An error occurred while processing the payment approval' });
     }
-
-    const app = req.app;
-
-    const paymentId = req.body.paymentId;
-    console.log("buy"); 
-    const currentPayment = await platformAPIClient.get(`/v2/payments/${paymentId}`);
-    console.log("high"); 
-    const orderCollection = app.locals.orderCollection;
-
-    /* 
-      implement your logic here 
-      e.g. creating an order record, reserve an item if the quantity is limited, etc...
-    */
-
-    await orderCollection.insertOne({
-      pi_payment_id: paymentId,
-      product_id: currentPayment.data.metadata.productId,
-      user: currentUser.uid,
-      txid: null,
-      paid: false,
-      cancelled: false,
-      created_at: new Date()
-    });
-    console.log("hi3");
-    // let Pi Servers know that you're ready
-    await platformAPIClient.post(`/v2/payments/${paymentId}/approve`);
-    return res.status(200).json({ message: `Approved the payment ${paymentId}` });
   });
+
 
   // complete the current payment
   router.post('/complete', async (req, res) => {
