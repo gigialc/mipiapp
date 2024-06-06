@@ -5,7 +5,7 @@ import { UserContext } from "../components/Auth";
 import { UserContextType } from './Types';
 import { useLocation } from 'react-router-dom';
 import { MyPaymentMetadata, WindowWithEnv } from './Types';
-import { onReadyForServerApproval, onReadyForServerCompletion } from './Payments';
+import { onReadyForServerApproval, onReadyForServerCompletion, onCancel, onError } from './Payments';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CommentContent from './CommentContent';
 import Box from '@mui/material/Box';
@@ -57,10 +57,10 @@ export default function Comments() {
         const callbacks = {
           onReadyForServerApproval,
           onReadyForServerCompletion,
-          //onCancel,
-          //onError
+          onCancel,
+          onError
         }
-              
+
         //make a payment
         try {
           //make a payment
