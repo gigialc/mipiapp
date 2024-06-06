@@ -141,11 +141,45 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
+  router.post('/joined', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { communityId } = req.body;
+      const userCollection = req.app.locals.userCollection;
+      const currentUser = req.user;
+      const user = await userCollection.findOne({ uid: currentUser.uid });
+
+      const updatedUser = await userCollection.findOneAndUpdate(
+        { uid: user.uid },
+        { $addToSet: { communitiesJoined: new Types.ObjectId(communityId) } },
+        { new: true, returnDocument: 'after' }
+      );
+
+      const communityCollection = req.app.locals.communityCollection;
+      //add the user ot the members array in the community
+      await communityCollection.findOneAndUpdate(
+        { _id: new Types.ObjectId(communityId) },
+        { $addToSet: { members: new Types.ObjectId(user._id) } }
+      );
+
+      if (!updatedUser.value) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      return res.status(200).json({ message: "Community added to joined communities successfully" });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+  );
 
   router.get('/joined',authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const currentUser = req.user;
+      //get the community if from the req body
       const userCollection = req.app.locals.userCollection;
+      const user = await userCollection.findOne({ uid: currentUser.uid });
+
       if (!currentUser) {
         return res.status(401).json({ error: "No current user found" });
       }
@@ -153,7 +187,7 @@ export default function mountUserEndpoints(router: Router) {
       const communityCollection = req.app.locals.communityCollection;
 
       const communities = await communityCollection.find({
-        _id: { $in: currentUser.communitiesJoined.map((id: string) => new Types.ObjectId(id)) }
+        _id: { $in: user.communitiesJoined.map((id: string) => new Types.ObjectId(id)) }
       }).toArray();
 
       const communityMap = communities.map((community: CommunityDocument) => ({
