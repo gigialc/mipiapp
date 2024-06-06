@@ -12,7 +12,6 @@ import Box from '@mui/material/Box';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
-
 export default function Comments() {
     const [showForm, setShowForm] = useState(false);
     const [description, setDescription] = useState<string>('');

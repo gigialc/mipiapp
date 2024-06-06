@@ -11,8 +11,6 @@ import Fab from '@mui/material/Fab';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
-const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
-
 export default function Posts({ communityId }: { communityId: string }) {
     const {user ,showModal, saveShowModal, onModalClose, addCommunityToUser } = useContext(UserContext) as UserContextType;
     const [open, setOpen] = useState(false);
@@ -25,19 +23,14 @@ export default function Posts({ communityId }: { communityId: string }) {
     setOpen(false);
     }; 
     
-
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
 
-    
     const [titleError, setTitleError] = useState<boolean>(false);
     const [descriptionError, setDescriptionError] = useState<boolean>(false);
 
-    
     const [titleErrorMessage, setTitleErrorMessage] = useState<string>('');
     const [descriptionErrorMessage, setDescriptionErrorMessage] = useState<string>('');
-
-
 
     const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
@@ -57,8 +50,7 @@ export default function Posts({ communityId }: { communityId: string }) {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
     });
-    
-    
+       
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         //get the community id and make it a current session
         event.preventDefault();
@@ -80,9 +72,9 @@ export default function Posts({ communityId }: { communityId: string }) {
                     console.log(error);
     
                 }
-                );
-    };
-}
+            );
+        };
+    }
 
     const modalStyle: CSSProperties = {
         backgroundColor: '#FEEAEE', 
@@ -97,11 +89,12 @@ export default function Posts({ communityId }: { communityId: string }) {
         flexDirection: 'column', 
         justifyContent: 'center' 
     };
+
     const inputStyle = {
         backgroundColor: "white",
         margin: "8px 0",
         borderRadius: "4px"
-      };
+    };
       
 
       return (
@@ -118,7 +111,8 @@ export default function Posts({ communityId }: { communityId: string }) {
                 }}
                 onClick={handleClickOpen}
             >
-                <AddIcon />
+            <AddIcon />
+            
             </Fab>
             <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Add a post</DialogTitle>

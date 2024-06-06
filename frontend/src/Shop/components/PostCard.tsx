@@ -98,7 +98,6 @@ export default function PostCard({ _id, title, description }: PostType) {
                     <HeartIcon
                     style={{
                         fontSize: '16px',
-                        // Change the color based on the like status
                         fill: isLiked ? 'red' : 'none',
                         stroke: 'black',
                         strokeWidth: '2px',

@@ -126,22 +126,23 @@ export default function mountPostEndpoints(router: Router) {
     router.post('/like/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const postCollection = req.app.locals.postCollection as Collection<PostType>;
         const postId = new ObjectId(req.params.id);
-        const userCollection = req.app.locals.userCollection as Collection<UserData>;
         const currentUser = req.user;
+        const userCollection = req.app.locals.userCollection;
+        const user = await userCollection.findOne({ uid: currentUser.uid });
         console.log("postId:", postId);
-        console.log("userId:", currentUser.userId);
+        console.log("userId:", user.userId);
 
         try {
-            const post = await postCollection.findOne({ _id: postId, likes: currentUser.userId });
+            const post = await postCollection.findOne({ _id: postId, likes: user.userId });
             
             if (!post) {
                 await postCollection.updateOne(
                     { _id: postId },
-                    { $push: { likes: currentUser.userId } }
+                    { $push: { likes: user.userId } }
                 );
-    
+
                 await userCollection.updateOne(
-                    { _id: currentUser.userId },
+                    { _id: user.userId },
                     { $push: { likes: postId } }
                 );
                 const likeCount = await postCollection.findOne({ _id: postId });
@@ -150,11 +151,11 @@ export default function mountPostEndpoints(router: Router) {
             } else {
                 await postCollection.updateOne(
                     { _id: postId },
-                    { $pull: { likes: currentUser.userId } }
+                    { $pull: { likes: user.userId } }
                 );
     
                 await userCollection.updateOne(
-                    { _id: currentUser.userId },
+                    { _id: user.userId },
                     { $pull: { likes: postId } }
                 );
                 const likeCount = await postCollection.findOne({ _id: postId });
@@ -170,9 +171,9 @@ export default function mountPostEndpoints(router: Router) {
     router.get('/like/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const postCollection = req.app.locals.postCollection as Collection<PostType>;
         const postId = new ObjectId(req.params.id);
-        const userCollection = req.app.locals.userCollection as Collection<UserData>;
+        const userCollection = req.app.locals.userCollection;
         const currentUser = req.user;
-        const userId = new ObjectId(currentUser?._id);
+        const userId = new ObjectId(currentUser?.uid);
     
         try {
             const post = await postCollection.findOne({ _id: postId, likes: userId });
