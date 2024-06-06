@@ -107,7 +107,7 @@ export default function Chat() {
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h5" style={{ fontWeight: 'bold' }}>
-                {community.name}
+                {community.title}
                 </Typography>
                 {/* <Button
                   variant="contained"
@@ -128,7 +128,7 @@ export default function Chat() {
                   }}
                   onClick={() => handleNavigatePublicProfile(communityId)}
                 >
-                  @{community.user.username}
+                  @{community.creator.username}
                 </Button>
 
               </Typography>
