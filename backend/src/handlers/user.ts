@@ -141,7 +141,7 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.post('/joined', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  router.post('/joinCommunity', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { communityId } = req.body;
       const userCollection = req.app.locals.userCollection;
@@ -151,7 +151,6 @@ export default function mountUserEndpoints(router: Router) {
       const updatedUser = await userCollection.findOneAndUpdate(
         { uid: user.uid },
         { $addToSet: { communitiesJoined: new Types.ObjectId(communityId) } },
-        { new: true, returnDocument: 'after' }
       );
 
       const communityCollection = req.app.locals.communityCollection;
@@ -170,8 +169,38 @@ export default function mountUserEndpoints(router: Router) {
       console.error(error);
       return res.status(500).json({ error: "Internal server error" });
     }
+  });
+
+  router.post('/leaveCommunity/', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { communityId } = req.body;
+      const userCollection = req.app.locals.userCollection;
+      const currentUser = req.user;
+      const user = await userCollection.findOne({ uid: currentUser.uid });
+
+      const updatedUser = await userCollection.findOneAndUpdate(
+        { uid: user.uid },
+        { $pull: { communitiesJoined: new Types.ObjectId(communityId) } },
+      );
+  
+      const communityCollection = req.app.locals.communityCollection;
+      await communityCollection.findOneAndUpdate(
+        { _id: new Types.ObjectId(communityId) },
+        { $pull: { members: new Types.ObjectId(user._id) } }
+      );
+
+      if (!updatedUser.value) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      return res.status(200).json({ message: "Community removed from joined communities successfully" });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
   }
   );
+
 
   router.get('/joined',authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {

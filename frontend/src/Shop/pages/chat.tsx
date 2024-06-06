@@ -68,18 +68,25 @@ export default function Chat() {
 
 
   const handleFollow = () => {
-      axiosClient.post(`/user/joined`, { communityId: communityId })
+    if (!isFollowing) {
+      axiosClient.post(`/user/joinCommunity`, { communityId: communityId })
         .then((response) => {
           console.log(response);
-          setIsFollowing(false);
+          setIsFollowing(true);
         })
         .catch((error) => {
           console.error(error);
         });
-
-      return;
-    
-  
+      } else {
+        axiosClient.post(`/user/leaveCommunity`, { communityId: communityId })
+          .then((response) => {
+            console.log(response);
+            setIsFollowing(false);
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
   }
 
   return (
