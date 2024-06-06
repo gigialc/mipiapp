@@ -80,7 +80,7 @@ console.log("hi2");
         const orderCollection = app.locals.orderCollection;
 
         console.log('Fetching payment details from platform API');
-        const currentPayment = await platformAPIClient.get(`/v2/payments/${paymentId}`);
+        const currentPayment = await platformAPIClient.get(`https://api.minepi.com/v2/payments/${paymentId}`);
 
         if (!currentPayment.data || !currentPayment.data.metadata || !currentPayment.data.metadata.productId) {
             console.error('Invalid payment data:', currentPayment.data);
@@ -102,7 +102,7 @@ console.log("hi2");
         console.log('Order record created successfully');
 
         // Let Pi Servers know that you're ready
-        await platformAPIClient.post(`/v2/payments/${paymentId}/approve`);
+        await platformAPIClient.post(`https://api.minepi.com/v2/payments/${paymentId}/approve`);
 
         console.log(`Approved the payment ${paymentId}`);
         return res.status(200).json({ message: `Approved the payment ${paymentId}` });
