@@ -5,6 +5,7 @@ const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d
 
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
+const token = localStorage.getItem('token');
 const axiosClient = axios.create({
   baseURL: backendURL,
   timeout: 20000,
@@ -17,29 +18,70 @@ const axiosClient = axios.create({
 });
 
 export const onIncompletePaymentFound = (payment: PaymentDTO) => {
-    console.log("onIncompletePaymentFound", payment);
-    return axiosClient.post(`/payments/incomplete`, {payment});
+  console.log("onIncompletePaymentFound", payment);
+  return axiosClient.post(`/payments/incomplete`, { payment })
+    .then(response => {
+      console.log('Payment incomplete response:', response);
+      return response.data;
+    })
+    .catch(error => {
+      console.error('Error in incomplete payment:', error);
+      throw error;
+    });
 }
-  
+
 export const onReadyForServerApproval = (paymentId: string) => {
-    console.log("onReadyForServerApproval", paymentId);
-    axiosClient.post(`/payments/approve`, {paymentId}, config);
+  console.log("onReadyForServerApproval", paymentId);
+  axiosClient.post(`/payments/approve`, { paymentId }, config)
+    .then(response => {
+      console.log('Payment approval response:', response);
+    })
+    .catch(error => {
+      console.error('Error in payment approval:', error.message);
+      console.error('Stack Trace:', error.stack);
+      throw error;
+    });
 }
-  
+
 export const onReadyForServerCompletion = (paymentId: string, txid: string) => {
-    console.log("onReadyForServerCompletion", paymentId, txid);
-    return axiosClient.post(`/payments/complete`, {paymentId, txid}, config);
+  console.log("onReadyForServerCompletion", paymentId, txid);
+  return axiosClient.post(`/payments/complete`, { paymentId, txid }, config)
+    .then(response => {
+      console.log('Payment completion response:', response);
+      return response.data;
+    })
+    .catch(error => {
+      console.error('Error in payment completion:', error);
+      throw error;
+    });
 }
-  
+
 export const onCancel = (paymentId: string) => {
-    console.log("onCancel", paymentId);
-    return axiosClient.post(`/payments/cancelled_payment`, {paymentId});
+  console.log("onCancel", paymentId);
+  return axiosClient.post(`/payments/cancelled_payment`, { paymentId })
+    .then(response => {
+      console.log('Payment cancellation response:', response);
+      return response.data;
+    })
+    .catch(error => {
+      console.error('Error in payment cancellation:', error);
+      throw error;
+    });
 }
   
 export const onError = (error: Error, payment?: PaymentDTO) => {
   console.error("onError", error);
   if (payment) {
       console.log(payment);
-      // handle the error accordingly
+      return axiosClient.post(`/payments/error`, { error, payment })
+        .then(response => {
+          console.log('Payment error response:', response);
+          return response.data;
+        })
+        .catch(error => {
+          console.error('Error in payment error:', error);
+          throw error;
+        });
+
     }
 }

@@ -25,7 +25,7 @@ export default function UserToAppPayments() {
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        'user': user? user.accessToken : ''
     }
   });
   const navigate = useNavigate();
@@ -56,29 +56,29 @@ return(
     <>
       <Header />
 
-    <Typography variant="h5" margin={2} color="#9E4291">
-      Body Image
-    </Typography>
+      <Typography variant="h5" margin={2} color="#9E4291">
+        Body Image
+      </Typography>
 
-    {/* Replace Mybodycard components with buttons */}
-    <Button variant='contained'sx={{ marginBottom: '16px', width: '100%',backgroundColor: '#ffe6ff', color: 'black', padding: '12px', margin: '12px',borderRadius: '30px' }} onClick={() => handleClick('/socialmediaBlog')}>
-      Why are so many people on social media so perfect?
-    </Button>
+      {/* Replace Mybodycard components with buttons */}
+      <Button variant='contained'sx={{ marginBottom: '16px', width: '100%',backgroundColor: '#ffe6ff', color: 'black', padding: '12px', margin: '12px',borderRadius: '30px' }} onClick={() => handleClick('/socialmediaBlog')}>
+        Why are so many people on social media so perfect?
+      </Button>
 
-    <Button variant='contained' color='secondary'sx={{ marginBottom: '16px', width: '100%',backgroundColor: '#ffe6ff', color: 'black', padding: '12px', margin: '12px',borderRadius: "30px" }} onClick={() => handleClick('/BodyImage')}>
-    "Perfect" Body Image Stereotypes in Society
-    </Button>
+      <Button variant='contained' color='secondary'sx={{ marginBottom: '16px', width: '100%',backgroundColor: '#ffe6ff', color: 'black', padding: '12px', margin: '12px',borderRadius: "30px" }} onClick={() => handleClick('/BodyImage')}>
+      "Perfect" Body Image Stereotypes in Society
+      </Button>
 
-    <Button variant='contained' color='secondary'sx={{ marginBottom: '16px', width: '100%',backgroundColor: '#ffe6ff', color: 'black', padding: '12px', margin: '12px',borderRadius: "30px" }} onClick={() => handleClick('/Blogilates')}>
-      Blogilates on Body Image 
-    </Button>
+      <Button variant='contained' color='secondary'sx={{ marginBottom: '16px', width: '100%',backgroundColor: '#ffe6ff', color: 'black', padding: '12px', margin: '12px',borderRadius: "30px" }} onClick={() => handleClick('/Blogilates')}>
+        Blogilates on Body Image 
+      </Button>
 
-    <Button variant='contained' color='secondary'sx={{marginBottom: '16px', width: '100%',backgroundColor: '#ffe6ff', color: 'black', padding: '12px', margin: '12px',borderRadius: "30px" }} onClick={() => handleClick('/Eatingdisorders')}>
-      Social Media Use and Body Image Disorders
-    </Button>
-    {/* Remove the Mybodycard components */}
+      <Button variant='contained' color='secondary'sx={{marginBottom: '16px', width: '100%',backgroundColor: '#ffe6ff', color: 'black', padding: '12px', margin: '12px',borderRadius: "30px" }} onClick={() => handleClick('/Eatingdisorders')}>
+        Social Media Use and Body Image Disorders
+      </Button>
+      {/* Remove the Mybodycard components */}
 
-    { showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> }
+      { showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> }
 
     <MuiBottomNavigation />
     </>

@@ -1,17 +1,10 @@
 //Created by Georgina Alacaraz
-import { Button, Grid } from '@mui/material';
-import { StringDecoder } from 'string_decoder';
 import { UserContextType } from './Types';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { UserContext } from './Auth';
-import { Paper } from '@mui/material';
 import { Card, CardContent, Typography } from '@mui/material';
-import { IconButton } from '@mui/material';
-import HeartIcon from '@mui/icons-material/Favorite';
-import Box from '@mui/material/Box';
-import { useNavigate } from 'react-router-dom';
 import { PostType } from './Types';
 import CommentCard from './commentsCard';
 

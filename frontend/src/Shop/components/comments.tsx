@@ -62,34 +62,35 @@ export default function Comments() {
         }
               
         //make a payment
-        const payment = await window.Pi.createPayment(paymentData, callbacks);
-        console.log(payment);
+        try {
+          //make a payment
+          const payment = await window.Pi.createPayment(paymentData, callbacks);
+          console.log('Payment:', payment);
 
-        // Make an API call to add person to the community if the payment was successful
-        if (description !== '' ) {
-            const data = {
-              description: description,
-              user_id: user,
-              post_id: postId,
-              likes: [],
+          // Make an API call to add person to the community if the payment was successful
+          if (description !== '' && payment.paymentCompleted) {
+              const data = {
+                description: description,
+                user_id: user.uid, // Ensure you're sending user ID correctly
+                post_id: postId,
+                likes: [],
+              };
+          
+              axiosClient.post(`/comments/comments`, data)
+              .then((response) => {
+                  console.log('Comment response:', response.data);
+                  setDescription('');
+                  setShowForm(false);
+              })
+              .catch((error) => {
+                  console.error('Error posting comment:', error);
+              });
+          }
+      } catch (error) {
+          console.error('Payment error:', error);
+      }
+  };
 
-            };
-                //check if payment was successful
-                // if (payment.paymentCompleted === true){
-            
-               axiosClient.post(`/comments/comments`, data)
-               .then((response) => {
-                 console.log(response.data);
-                //  addCommentToPost(response.data);
-                 setDescription('');
-                 setShowForm(false);
-               })
-               .catch((error) => {
-                 console.log(error);
-               });
-        }
-        
-    };
 
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(event.target.value);
