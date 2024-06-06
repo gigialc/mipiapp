@@ -78,7 +78,7 @@ export default function ProductCard(props: Props) {
           style={{ textTransform: 'none', height: '25px', fontSize: '12px'}}
           onClick={() => handleNavigateToChat(props.community)}
         >
-          Join
+          Enter
         </Button>
       </CardActions>
     </Card>

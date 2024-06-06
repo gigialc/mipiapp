@@ -17,7 +17,7 @@ const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Al
 export default function Chat() {
   const { user, saveUser, saveShowModal, showModal,  onModalClose } = React.useContext(UserContext) as UserContextType;
   const [community, setCommunity] = useState<any>(null);
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
   const axiosClient = axios.create({
     baseURL: backendURL,
     timeout: 20000,
@@ -65,6 +65,21 @@ export default function Chat() {
         console.error(error);
       });
   }, [communityId]);
+
+  //set the isFollowing state
+  useEffect(() => {
+    if (!communityId) return;
+    axiosClient.get(`/user/isFollowingCommunity/${communityId}`)
+      .then((response) => {
+        setIsFollowing(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+  , [communityId]);
+  
+
 
 
   const handleFollow = () => {

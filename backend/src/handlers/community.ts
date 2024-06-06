@@ -140,7 +140,7 @@ export default function mountCommunityEndpoints(router: Router) {
             const userId = currentUser.uid; // Use directly if UUID
             console.log('User ID:', userId);
     
-            const communities: CommunityDocument[] = await Community.find({ creator: { $ne: userId } }).exec();
+            const communities: CommunityDocument[] = await Community.find({ "creator.uid": { $ne: userId } }).exec();
 
 
             //return the username of the community creator in the list of communities

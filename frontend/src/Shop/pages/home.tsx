@@ -90,17 +90,7 @@ export default function HomePage() {
       });
   }, []);
 
-  // useEffect(() => {
-  //   axiosClient.get(`/user/joined`)
-  //     .then((response) => {
-  //       console.log('Joined communities:', response.data);
-  //       setSelectedCommunity(response.data);
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error fetching joined communities:', error);
-  //     });
-  // }, []);
-
+  
   return (
     <>
       <Header  />

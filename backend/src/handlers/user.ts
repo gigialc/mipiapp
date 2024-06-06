@@ -238,6 +238,30 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
+  router.get('/isFollowingCommunity', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const { communityId } = req.body;
+      const currentUser = req.user;
+      const userCollection = req.app.locals.userCollection;
+      const user = await userCollection.findOne({ uid: currentUser.uid });
+
+      if (!currentUser) {
+        return res.status(401).json({ error: "No current user found" });
+      }
+
+      if (user.communitiesJoined.includes(communityId)) {
+        return res.status(200).json({ isFollowing: true });
+      }
+
+      return res.status(200).json({ isFollowing: false });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+  );
+
+
   router.post('/addUser', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { userId, communityId } = req.body;
