@@ -221,7 +221,7 @@ export default function mountUserEndpoints(router: Router) {
 
       const communityMap = communities.map((community: CommunityDocument) => ({
         _id: community._id.toString(),
-        name: community.title,
+        title: community.title,
         description: community.description,
         creator: community.creator,
         posts: community.posts,

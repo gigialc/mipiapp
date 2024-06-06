@@ -63,30 +63,6 @@ export default function MyList() {
     }
   }, [user]);
 
-  useEffect(() => {
-    if (user) {
-      axiosClient
-        .get('/user/joined', config)
-        .then((response) => {
-          console.log("Joined communities:", response.data);
-          if (Array.isArray(response.data) && response.data.length > 0) {
-            setSelectedCommunity(response.data);
-          } else {
-            console.error("Expected an array for /user/joined response data, but got:", response.data);
-            setSelectedCommunity([]);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching joined communities:", error);
-          setSelectedCommunity([]);
-          if (error.response && error.response.data) {
-            console.error("Error response data:", error.response.data);
-          } else {
-            console.error("Error response:", error.response);
-          }
-        });
-    }
-  }, [user]);
 
   const handleCommunityClick = (community: CommunityType) => {
     console.log(community._id);
@@ -126,29 +102,6 @@ export default function MyList() {
         )}
       </List>
 
-      <List>
-        {selectedCommunity.length > 0 ? (
-          selectedCommunity.map((community) => (
-            <ListItem
-              key={community._id}
-              onClick={() => handleCommunityClick1(community)}
-              style={{
-                backgroundColor: "#efc9e4",
-                marginBottom: "10px",
-                borderRadius: "4px",
-                boxShadow: `
-                0 -2px 4px rgba(255, 182, 193, 0.2), 
-                0 2px 4px rgba(255, 182, 193, 0.2),
-                0 2px 4px rgba(0,0,0,0.1)`,
-              }}
-            >
-              <ListItemText primary={community.title} secondary={community.description} />
-            </ListItem>
-          ))
-        ) : (
-          <Typography variant="body1">No joined community data available</Typography>
-        )}
-      </List>
       { showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> }
     </div>
   );
