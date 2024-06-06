@@ -70,9 +70,9 @@ export default function Posts({ communityId }: { communityId: string }) {
                 community_id: communityId,
                 user_id: user?.uid
             };
-            
+
             axiosClient
-                .post(`/posts/posted`,data, config)
+                .post(`/posts/posted`,data)
                 .then((response) => {
                     console.log(response);
                 })

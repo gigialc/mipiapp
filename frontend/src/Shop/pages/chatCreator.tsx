@@ -111,7 +111,7 @@ export default function ChatCreator() {
                   }}
                   onClick={() => handleNavigatePublicProfile(communityId)}
                 >
-                  @{community.user.username}
+                  @{community.creator.username}
                 </Button>
               </Typography>
               <Typography variant="subtitle1" style={{ marginTop: '10px' }}>

@@ -53,7 +53,6 @@ export default function PostContent({ communityId }: { communityId: string }) {
     <div>
       {posts.map((post) => (
         <PostCard
-        key={post._id}
         _id={post._id}
         title={post.title}
         description={post.description}
