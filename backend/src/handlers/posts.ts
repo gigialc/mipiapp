@@ -130,19 +130,19 @@ export default function mountPostEndpoints(router: Router) {
         const userCollection = req.app.locals.userCollection;
         const user = await userCollection.findOne({ uid: currentUser.uid });
         console.log("postId:", postId);
-        console.log("userId:", user.userId);
+        console.log("userId:", user.uid);
 
         try {
-            const post = await postCollection.findOne({ _id: postId, likes: user.userId });
+            const post = await postCollection.findOne({ _id: postId, likes: user._id });
             
             if (!post) {
                 await postCollection.updateOne(
                     { _id: postId },
-                    { $push: { likes: user.userId } }
+                    { $push: { likes: user._id } }
                 );
 
                 await userCollection.updateOne(
-                    { _id: user.userId },
+                    { _id: user._id },
                     { $push: { likes: postId } }
                 );
                 const likeCount = await postCollection.findOne({ _id: postId });
@@ -151,11 +151,11 @@ export default function mountPostEndpoints(router: Router) {
             } else {
                 await postCollection.updateOne(
                     { _id: postId },
-                    { $pull: { likes: user.userId } }
+                    { $pull: { likes: user._id } }
                 );
     
                 await userCollection.updateOne(
-                    { _id: user.userId },
+                    { _id: user._id },
                     { $pull: { likes: postId } }
                 );
                 const likeCount = await postCollection.findOne({ _id: postId });
@@ -173,10 +173,10 @@ export default function mountPostEndpoints(router: Router) {
         const postId = new ObjectId(req.params.id);
         const userCollection = req.app.locals.userCollection;
         const currentUser = req.user;
-        const userId = new ObjectId(currentUser?.uid);
+        const user = await userCollection.findOne({ uid: currentUser.uid });
     
         try {
-            const post = await postCollection.findOne({ _id: postId, likes: userId });
+            const post = await postCollection.findOne({ _id: postId, likes: user._id });
             const likeCount = await postCollection.findOne({ _id: postId });
     
             if (post) {
