@@ -80,7 +80,6 @@ export default function Chat() {
   }, [communityId]);
 
   const handleFollow = () => {
-    if (isFollowing === undefined) return;
     if (!isFollowing) {
       axiosClient.post(`/user/joinCommunity`, { communityId: communityId })
         .then((response) => {
