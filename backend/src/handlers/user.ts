@@ -230,9 +230,9 @@ export default function mountUserEndpoints(router: Router) {
     }
   });
 
-  router.get('/isFollowingCommunity/', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  router.get('/isFollowingCommunity/:communityId', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const { communityId } = req.body; 
+      const { communityId } = req.params; 
       const currentUser = req.user;
       const userCollection = req.app.locals.userCollection;
       const user = await userCollection.findOne({ uid: currentUser.uid });
