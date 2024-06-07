@@ -1,13 +1,11 @@
 import { Router, Request, Response } from 'express';
+const mongoose = require('mongoose'); // Ensure this is at the top
 import { Types } from 'mongoose';
 import Community, { CommunityDocument } from '../models/community';
 import platformAPIClient from "../services/platformAPIClient";
 import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
-import { Collection } from 'mongodb';
-import { UserData } from '../types/user';
 const ObjectId = mongoose.Types.ObjectId;
-import mongoose from "mongoose";
 
 const router = Router();
 const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';

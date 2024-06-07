@@ -4,10 +4,10 @@ import "../types/session"; // Import the CommentDocument type if it's defined
 import { PostType } from "../types/posts";
 import { CommentType } from "../types/comments";
 import { Collection } from 'mongoose';
-import mongoose from "mongoose";
 import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
 import { Response } from 'express';
+const mongoose = require('mongoose'); // Ensure this is at the top
 const ObjectId = mongoose.Types.ObjectId;
 
 const router = Router();
