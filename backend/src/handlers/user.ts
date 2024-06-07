@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
 import { Collection } from 'mongodb';
 import { UserData } from '../types/user';
+const ObjectId = mongoose.Types.ObjectId;
+import mongoose from "mongoose";
 
 const router = Router();
 const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
@@ -232,8 +234,8 @@ export default function mountUserEndpoints(router: Router) {
 
   router.get('/isFollowingCommunity/:communityId', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
     try {
-      const { communityId } = req.params; 
       const currentUser = req.user;
+      const communityId = new ObjectId(req.params.communityId);
       const userCollection = req.app.locals.userCollection;
       const user = await userCollection.findOne({ uid: currentUser.uid });
 

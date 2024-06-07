@@ -15,7 +15,7 @@ const config = { headers: { 'Content-Type': 'application/json', 'Access-Control-
 export default function Chat() {
   const { user, saveUser, saveShowModal, showModal, onModalClose } = React.useContext(UserContext) as UserContextType;
   const [community, setCommunity] = useState<any>(null);
-  const [isFollowing, setIsFollowing] = useState<boolean | undefined>(undefined);
+  const [isFollowing, setIsFollowing] = useState(false);
   const [loadingFollowStatus, setLoadingFollowStatus] = useState(true);
   
   const axiosClient = axios.create({
@@ -67,7 +67,8 @@ export default function Chat() {
 
   // Set the isFollowing state
   useEffect(() => {
-    axiosClient.get(`/user/isFollowingCommunity`, { params: { communityId } })
+    const fetchSubscribeStatus = async () => {
+    axiosClient.get(`/user/isFollowingCommunity/${communityId}`)
       .then((response) => {
         setIsFollowing(response.data.isFollowing);
         setLoadingFollowStatus(false);
@@ -76,6 +77,8 @@ export default function Chat() {
         console.error(error);
         setLoadingFollowStatus(false);
       });
+    }
+    fetchSubscribeStatus();
   }, [communityId]);
 
   const handleFollow = () => {
