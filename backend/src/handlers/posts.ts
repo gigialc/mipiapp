@@ -8,11 +8,10 @@ import mongoose from "mongoose";
 import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
 import { Response } from 'express';
+const ObjectId = mongoose.Types.ObjectId;
 
 const router = Router();
 const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
-
-const ObjectId = mongoose.Types.ObjectId;
 
 export default function mountPostEndpoints(router: Router) {
 
