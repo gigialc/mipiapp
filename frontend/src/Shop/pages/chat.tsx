@@ -70,7 +70,7 @@ export default function Chat() {
     if (!communityId) return;
     axiosClient.get(`/user/isFollowingCommunity/${communityId}`)
       .then((response) => {
-        setIsFollowing(response.data);
+        setIsFollowing(response.data.isFollowing);
         setLoadingFollowStatus(false);
       })
       .catch((error) => {
@@ -80,6 +80,7 @@ export default function Chat() {
   }, [communityId]);
 
   const handleFollow = () => {
+    if (isFollowing === undefined) return;
     if (!isFollowing) {
       axiosClient.post(`/user/joinCommunity`, { communityId: communityId })
         .then((response) => {
