@@ -68,15 +68,14 @@ export default function Chat() {
   // Set the isFollowing state
   useEffect(() => {
     const fetchSubscribeStatus = async () => {
+      try {
       const response = await axiosClient.get(`/user/isFollowingCommunity/${communityId}`)
-      .then((response) => {
         setIsFollowing(response.data.isFollowing);
         setLoadingFollowStatus(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
         setLoadingFollowStatus(false);
-      });
+      }
     }
     fetchSubscribeStatus();
   }, [communityId]);
