@@ -68,7 +68,7 @@ export default function Chat() {
   // Set the isFollowing state
   useEffect(() => {
     const fetchSubscribeStatus = async () => {
-    axiosClient.get(`/user/isFollowingCommunity/${communityId}`)
+      const response = await axiosClient.get(`/user/isFollowingCommunity/${communityId}`)
       .then((response) => {
         setIsFollowing(response.data.isFollowing);
         setLoadingFollowStatus(false);
@@ -123,7 +123,7 @@ export default function Chat() {
                     onClick={handleFollow}
                     style={{ borderRadius: 20, backgroundColor: isFollowing ? '#D3D3D3' : '#9E4291', color: 'white', textTransform: 'none' }}
                   >
-                    {isFollowing ? 'Unsubscribe' : 'Subscribe'}
+                    {isFollowing ? 'Following' : 'Follow'}
                   </Button>
                 )}
               </div>

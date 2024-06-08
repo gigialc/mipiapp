@@ -5,7 +5,7 @@ import Community, { CommunityDocument } from '../models/community';
 import platformAPIClient from "../services/platformAPIClient";
 import jwt from 'jsonwebtoken';
 import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
-const ObjectId = mongoose.Types.ObjectId;
+import { ObjectId } from 'mongodb';
 
 const router = Router();
 const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
@@ -236,17 +236,19 @@ export default function mountUserEndpoints(router: Router) {
       const communityId = new ObjectId(req.params.communityId);
       const userCollection = req.app.locals.userCollection;
       const user = await userCollection.findOne({ uid: currentUser.uid });
+      console.log('User:', user);
+      console.log('Community ID:', communityId);
+      console.log('User communities joined:', user.communitiesJoined);
 
       if (!currentUser) {
         return res.status(401).json({ error: "No current user found" });
       }
-
+      //check that user.communitiesJoined includes the communityId
       if (user.communitiesJoined.includes(communityId)) {
         return res.status(200).json({ isFollowing: true });
       }
       else {
-
-      return res.status(200).json({ isFollowing: false });
+        return res.status(200).json({ isFollowing: false });
       }
     } catch (error) {
       console.error(error);
