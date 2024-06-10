@@ -11,7 +11,8 @@ const axiosClient = axios.create({
   timeout: 20000,
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
+    'Access-Control-Allow-Origin': '*',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`
   }
 });
 
