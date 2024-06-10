@@ -1,23 +1,24 @@
 import axios from 'axios';
 import { PaymentDTO } from "./Types";
+import { UserContextType } from './Types';
+import React from 'react';
+import { UserContext } from "./Auth";
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
-const token = localStorage.getItem('token');
-console.log('Retrieved Token:', token); // Log the retrieved token to verify
-
-const axiosClient = axios.create({
-  baseURL: backendURL,
-  timeout: 20000,
-  headers: {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Authorization': `Bearer ${localStorage.getItem('token')}`
-  }
-});
-
 // Define your API calls
 export const onIncompletePaymentFound = (payment: PaymentDTO) => {
+  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+
   console.log("onIncompletePaymentFound", payment);
   return axiosClient.post(`/payments/incomplete`, { payment })
     .then(response => {
@@ -31,6 +32,16 @@ export const onIncompletePaymentFound = (payment: PaymentDTO) => {
 }
 
 export const onReadyForServerApproval = (paymentId: string) => {
+  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
   console.log("onReadyForServerApproval", paymentId);
   return axiosClient.post(`/payments/approve`, { paymentId })
     .then(response => {
@@ -44,6 +55,16 @@ export const onReadyForServerApproval = (paymentId: string) => {
 }
 
 export const onReadyForServerCompletion = (paymentId: string, txid: string) => {
+  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
   console.log("onReadyForServerCompletion", paymentId, txid);
   return axiosClient.post(`/payments/complete`, { paymentId, txid })
     .then(response => {
@@ -57,6 +78,16 @@ export const onReadyForServerCompletion = (paymentId: string, txid: string) => {
 }
 
 export const onCancel = (paymentId: string) => {
+  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
   console.log("onCancel", paymentId);
   return axiosClient.post(`/payments/cancelled_payment`, { paymentId })
     .then(response => {
@@ -70,6 +101,16 @@ export const onCancel = (paymentId: string) => {
 }
 
 export const onError = (error: Error, payment?: PaymentDTO) => {
+  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
+  const axiosClient = axios.create({
+    baseURL: backendURL,
+    timeout: 20000,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  });
   console.error("onError", error);
   if (payment) {
     console.log(payment);
