@@ -69,14 +69,18 @@ export default function Chat() {
   useEffect(() => {
     const fetchSubscribeStatus = async () => {
       try {
+      
       const response = await axiosClient.get(`/user/isFollowingCommunity/${communityId}`)
-        const isFollowing = response.data.isFollowing;
-        console.log(typeof isFollowing);
-        setIsFollowing(isFollowing);
-        setLoadingFollowStatus(false);
+        if (response.data.isFollowing === true) {
+          setIsFollowing(true);
+          const isFollowing = response.data.isFollowing;
+          console.log(typeof isFollowing);
+        }
+        else {
+          setIsFollowing(false);
+        }
       } catch (error) {
-        console.error(error);
-        setLoadingFollowStatus(false);
+        console.error("Failed to fetch follow status: ", error);
       }
     }
     fetchSubscribeStatus();
