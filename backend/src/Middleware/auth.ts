@@ -21,9 +21,11 @@ export const authenticateToken = (req: AuthenticatedRequest, res: Response, next
 
   jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
+      console.log('Token verification failed:', err);
       return res.sendStatus(403); // Forbidden
     }
     req.user = user;
+    console.log('Authenticated user:', user);
     next();
   });
 };

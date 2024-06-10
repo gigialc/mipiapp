@@ -3,19 +3,19 @@ import { PaymentDTO } from "./Types";
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
-const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
+const token = localStorage.getItem('token');
+console.log('Retrieved Token:', token); // Log the retrieved token to verify
 
 const axiosClient = axios.create({
   baseURL: backendURL,
   timeout: 20000,
-  withCredentials: true,
   headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
   }
 });
 
+// Define your API calls
 export const onIncompletePaymentFound = (payment: PaymentDTO) => {
   console.log("onIncompletePaymentFound", payment);
   return axiosClient.post(`/payments/incomplete`, { payment })
@@ -31,7 +31,7 @@ export const onIncompletePaymentFound = (payment: PaymentDTO) => {
 
 export const onReadyForServerApproval = (paymentId: string) => {
   console.log("onReadyForServerApproval", paymentId);
-  axiosClient.post(`/payments/approve`, { paymentId })
+  return axiosClient.post(`/payments/approve`, { paymentId })
     .then(response => {
       console.log('Payment approval response:', response);
     })
@@ -67,20 +67,19 @@ export const onCancel = (paymentId: string) => {
       throw error;
     });
 }
-  
+
 export const onError = (error: Error, payment?: PaymentDTO) => {
   console.error("onError", error);
   if (payment) {
-      console.log(payment);
-      return axiosClient.post(`/payments/error`, { error, payment })
-        .then(response => {
-          console.log('Payment error response:', response);
-          return response.data;
-        })
-        .catch(error => {
-          console.error('Error in payment error:', error);
-          throw error;
-        });
-
-    }
+    console.log(payment);
+    return axiosClient.post(`/payments/error`, { error, payment })
+      .then(response => {
+        console.log('Payment error response:', response);
+        return response.data;
+      })
+      .catch(error => {
+        console.error('Error in payment error:', error);
+        throw error;
+      });
+  }
 }

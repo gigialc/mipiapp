@@ -14,10 +14,9 @@ export type AuthResult = {
       posts: PostType[];
       date: Date;
     }
-    };
+  };
 
     export type User = AuthResult['user'];
-
 
     export type CommunityType = {
       _id: string,
