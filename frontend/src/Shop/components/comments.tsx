@@ -44,7 +44,7 @@ export default function Comments() {
             saveShowModal(true);
             return; // Exit if user is not signed in
         }   
-        orderProduct('Comment', 1, { postId }); // Call orderProduct with postId
+        orderProduct('Comment', 1, {productId: postId }); // Call orderProduct with postId
     };
 
     const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {

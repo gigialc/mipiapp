@@ -134,6 +134,7 @@ const startServer = async () => {
     app.locals.communityCollection = db.collection<CommunityType>('community');
     app.locals.postCollection = db.collection<PostType>('posts');
     app.locals.commentCollection = db.collection<CommentType>('comments');
+    app.locals.orderCollection = db.collection('order');
 
     console.log('Collections initialized');
     console.log('Connected to MongoDB on: ', mongoUri);
