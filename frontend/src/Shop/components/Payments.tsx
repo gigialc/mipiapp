@@ -1,14 +1,11 @@
 import axios from 'axios';
 import { PaymentDTO } from "./Types";
-import { UserContextType } from './Types';
-import React from 'react';
-import { UserContext } from "./Auth";
+
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 // Define your API calls
 export const onIncompletePaymentFound = (payment: PaymentDTO) => {
-  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
   const axiosClient = axios.create({
     baseURL: backendURL,
     timeout: 20000,
@@ -32,7 +29,6 @@ export const onIncompletePaymentFound = (payment: PaymentDTO) => {
 }
 
 export const onReadyForServerApproval = (paymentId: string) => {
-  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
   const axiosClient = axios.create({
     baseURL: backendURL,
     timeout: 20000,
@@ -55,7 +51,6 @@ export const onReadyForServerApproval = (paymentId: string) => {
 }
 
 export const onReadyForServerCompletion = (paymentId: string, txid: string) => {
-  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
   const axiosClient = axios.create({
     baseURL: backendURL,
     timeout: 20000,
@@ -78,7 +73,6 @@ export const onReadyForServerCompletion = (paymentId: string, txid: string) => {
 }
 
 export const onCancel = (paymentId: string) => {
-  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
   const axiosClient = axios.create({
     baseURL: backendURL,
     timeout: 20000,
@@ -101,7 +95,6 @@ export const onCancel = (paymentId: string) => {
 }
 
 export const onError = (error: Error, payment?: PaymentDTO) => {
-  const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
   const axiosClient = axios.create({
     baseURL: backendURL,
     timeout: 20000,
