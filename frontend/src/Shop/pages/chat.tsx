@@ -70,7 +70,9 @@ export default function Chat() {
     const fetchSubscribeStatus = async () => {
       try {
       const response = await axiosClient.get(`/user/isFollowingCommunity/${communityId}`)
-        setIsFollowing(response.data.isFollowing);
+        const isFollowing = response.data.isFollowing;
+        console.log(typeof isFollowing);
+        setIsFollowing(isFollowing);
         setLoadingFollowStatus(false);
       } catch (error) {
         console.error(error);

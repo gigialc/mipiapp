@@ -18,25 +18,32 @@ export default function mountCommentEndpoints(router: Router) {
     // Add a comment to a post
     router.post('/comments', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
         const { post_id, user_id, content } = req.body;
-        const comment = {
-            _id: new Types.ObjectId(),
-            content,
-            user: new Types.ObjectId(user_id),
-            postId: new Types.ObjectId(post_id),
-            likes: [],
-            date: new Date()
-        };
+        const userCollection = req.app.locals.userCollection;
+        const currentUser = req.user;
+        const userId = currentUser?._id;
 
         try {
-            const post = await Post.findById(post_id).exec();
-            if (!post) {
-                return res.status(404).json({ error: 'Not Found', message: "Post not found" });
-            }
-            const newComment = new Comment(comment);
-            await newComment.save();
-            post.comments.push(newComment._id);
-            await post.save();
-            return res.status(200).json({ message: "Comment added successfully" });
+            const comment = new Comment({
+                post_id: new Types.ObjectId(post_id),
+                user_id: new Types.ObjectId(userId),
+                content,
+                likes: [],
+                timestamp: new Date()
+            });
+
+            await comment.save();
+
+            await Post.updateOne(
+                { _id: new Types.ObjectId(post_id) },
+                { $push: { comments: comment._id } }
+            );
+
+            await User.updateOne(
+                { _id: new Types.ObjectId(userId) },
+                { $push: { comments: comment._id } }
+            );
+
+            return res.status(200).json({ message: "Comment added successfully", comment });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ message: "Error adding comment", error });
