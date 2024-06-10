@@ -6,8 +6,12 @@ import PiNetwork from 'pi-backend';
 import { Response } from 'express';
 import { AuthenticatedRequest, authenticateToken } from '../Middleware/auth';
 import env from "../environments";
+import dotenv from 'dotenv';
 
-/* 
+const router = Router();
+const JWT_SECRET =  process.env.JWT_SECRET || 'UaIh0qWFOiKOnFZmyuuZ524Jp74E7Glq';
+
+/*
 * DEVELOPER NOTE:
 * payment implementations are explained in our SDKs linked below, for more information
 * User to App Payments - https://github.com/pi-apps/pi-platform-docs/blob/master/README.md
@@ -116,7 +120,7 @@ export default function mountPaymentsEndpoints(router: Router) {
     /* 
       DEVELOPER NOTE:
       implement your logic here
-      e.g. verify the transaction, deliver the item to the user, etc...
+      e.g. verifying the payment, delivering the item to the user, etc...
     */
 
     await orderCollection.updateOne({ pi_payment_id: paymentId }, { $set: { txid: txid, paid: true } });

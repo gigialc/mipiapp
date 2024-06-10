@@ -5,7 +5,6 @@ const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d
 
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
-const token = localStorage.getItem('token');
 const axiosClient = axios.create({
   baseURL: backendURL,
   timeout: 20000,
@@ -32,7 +31,7 @@ export const onIncompletePaymentFound = (payment: PaymentDTO) => {
 
 export const onReadyForServerApproval = (paymentId: string) => {
   console.log("onReadyForServerApproval", paymentId);
-  axiosClient.post(`/payments/approve`, { paymentId }, config)
+  axiosClient.post(`/payments/approve`, { paymentId })
     .then(response => {
       console.log('Payment approval response:', response);
     })
@@ -45,7 +44,7 @@ export const onReadyForServerApproval = (paymentId: string) => {
 
 export const onReadyForServerCompletion = (paymentId: string, txid: string) => {
   console.log("onReadyForServerCompletion", paymentId, txid);
-  return axiosClient.post(`/payments/complete`, { paymentId, txid }, config)
+  return axiosClient.post(`/payments/complete`, { paymentId, txid })
     .then(response => {
       console.log('Payment completion response:', response);
       return response.data;
