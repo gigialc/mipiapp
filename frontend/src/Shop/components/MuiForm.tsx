@@ -11,7 +11,6 @@ import Box from '@mui/material/Box';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
-
 export default function MuiForm() {
 
     const [title, setTitle] = useState<string>('');
@@ -90,7 +89,6 @@ export default function MuiForm() {
         .post(`/community/create`, data)
             .then((response) => {
                 console.log(response);
-                saveShowModal(true);
             if (addCommunityToUser) { // Add null check for addCommunityToUser
                 addCommunityToUser(response.data);
                 }
