@@ -72,12 +72,12 @@ export default function MuiForm() {
             setPriceErrorMessage('');
         }
 
-        if (title !== '' && description !== '' && price !== '' && user) { // Ensure user is not null
+        if (title !== '' && description !== '' && price !== '' && user &&  user.uid) { // Ensure user is not null
             const data = {
                 title,
                 description,
                 price,
-                user_id: user?.uid // Pass the user id
+                user_id: user.uid // Pass the user id
             };
 
             axiosClient

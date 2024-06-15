@@ -1,6 +1,6 @@
 import React, { CSSProperties, useContext, useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Stack, FormControl, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab } from '@mui/material';
+import { TextField, Button, Stack, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { UserContext } from "./Auth";
 import { UserContextType } from './Types';
@@ -27,6 +27,8 @@ export default function Posts({ communityId }: { communityId: string }) {
 
     const [titleErrorMessage, setTitleErrorMessage] = useState<string>('');
     const [descriptionErrorMessage, setDescriptionErrorMessage] = useState<string>('');
+
+    const [thankYouMessage, setThankYouMessage] = useState<string>('');
 
     const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
@@ -62,7 +64,7 @@ export default function Posts({ communityId }: { communityId: string }) {
                 .post(`/posts/posted`, data)
                 .then((response) => {
                     console.log(response);
-                    saveShowModal(true); // Show the modal after successful post creation
+                    setThankYouMessage("Thanks for posting!");
                     setOpen(false); // Close the form dialog
                 })
                 .catch((error) => {
@@ -142,22 +144,22 @@ export default function Posts({ communityId }: { communityId: string }) {
                             <Button onClick={handleClose} style={{ color: '#9E4291' }}>
                                 Cancel
                             </Button>
-                            <Button type="submit" variant="contained" style={{ backgroundColor: '#9E4291', color: 'white' }}>
+                            <Button type="submit" variant="contained"  style={{ backgroundColor: '#9E4291', color: 'white' }}>
                                 Submit
                             </Button>
                         </DialogActions>
                     </form>
                 </DialogContent>
             </Dialog>
-            <Dialog open={showModal} onClose={onModalClose}>
-                <DialogTitle>Your post has been created</DialogTitle>
+            <Dialog open={!!thankYouMessage} onClose={() => setThankYouMessage('')}>
+                <DialogTitle>{thankYouMessage}</DialogTitle>
                 <DialogActions>
-                    <Button onClick={onModalClose} color="primary">Close</Button>
+                    <Button onClick={() => setThankYouMessage('')} color="primary">Close</Button>
                 </DialogActions>
             </Dialog>
         </div>
     );
-};
+}
 
 
 
