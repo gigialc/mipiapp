@@ -1,13 +1,8 @@
-// Date: 09/08/2021
-// Description: This is the main page for the Add page. It will display the header, the form, and the bottom navigation bar.
-// Created by Georgina Alacaraz
-
 import React, { CSSProperties, useContext, useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Stack, colors, FormControl } from '@mui/material';
+import { TextField, Button, Stack, FormControl } from '@mui/material';
 import { UserContext } from "../components/Auth";
 import { UserContextType } from './Types';
-import Box from '@mui/material/Box';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
@@ -77,50 +72,52 @@ export default function MuiForm() {
             setPriceErrorMessage('');
         }
 
-        if (title !== '' && description !== '' && price !== '') {
+        if (title !== '' && description !== '' && price !== '' && user) { // Ensure user is not null
             const data = {
                 title,
                 description,
                 price,
-             // Add null check for user
+                user_id: user?.uid // Pass the user id
             };
 
-    axiosClient
-        .post(`/community/create`, data)
-            .then((response) => {
-                console.log(response);
-            if (addCommunityToUser) { // Add null check for addCommunityToUser
-                addCommunityToUser(response.data);
-                }
-        })
-            .catch((error) => {
-                console.log(error);
-            });
+            axiosClient
+                .post(`/community/create`, data)
+                .then((response) => {
+                    console.log(response);
+                    saveShowModal(true);
+                    if (addCommunityToUser) {
+                        addCommunityToUser(response.data);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         }
     };
 
     const modalStyle: CSSProperties = {
-        backgroundColor: '#FEEAEE', 
-        position: 'absolute', 
-        left: '15vw', 
-        top: '40%', 
-        width: '70vw', 
-        height: '25vh', 
-        border: '1px solid pink', 
-        textAlign: 'center', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        justifyContent: 'center' 
-    }
+        backgroundColor: '#FEEAEE',
+        position: 'absolute',
+        left: '15vw',
+        top: '40%',
+        width: '70vw',
+        height: '25vh',
+        border: '1px solid pink',
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center'
+    };
+
     const inputStyle = {
         backgroundColor: "white",
         margin: "8px 0",
         borderRadius: "4px"
-      };
+    };
 
-      return (
+    return (
         <div style={{ padding: '15px', backgroundColor: 'white' }}>
-            <form onSubmit={handleSubmit} style={{ maxWidth: '100%' }}>         
+            <form onSubmit={handleSubmit} style={{ maxWidth: '100%' }}>
                 <Stack spacing={4}>
                     <TextField
                         id="title"
@@ -129,7 +126,7 @@ export default function MuiForm() {
                         value={title}
                         onChange={onTitleChange}
                         error={titleError}
-                        helperText={titleError ? "Title is required" : ""}
+                        helperText={titleError ? titleErrorMessage : ""}
                         fullWidth
                         required
                         style={{ backgroundColor: '#f8f8f8' }}
@@ -141,7 +138,7 @@ export default function MuiForm() {
                         value={description}
                         onChange={onDescriptionChange}
                         error={descriptionError}
-                        helperText={descriptionError ? "Content is required" : ""}
+                        helperText={descriptionError ? descriptionErrorMessage : ""}
                         fullWidth
                         required
                         multiline
@@ -155,13 +152,13 @@ export default function MuiForm() {
                         value={price}
                         onChange={onPriceChange}
                         error={priceError}
-                        helperText={priceError ? "Price is required" : ""}
+                        helperText={priceError ? priceErrorMessage : ""}
                         required
                         style={{ backgroundColor: '#f8f8f8' }}
                     />
-                    <Button 
-                        type="submit" 
-                        variant="contained" 
+                    <Button
+                        type="submit"
+                        variant="contained"
                         sx={{ alignSelf: 'start', mt: 2 }}
                         style={{
                             backgroundColor: "#9E4291",
@@ -174,14 +171,13 @@ export default function MuiForm() {
                         Create
                     </Button>
                 </Stack>
-          </form>
-          {showModal && (
-            <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'rgba(255, 255, 255, 0.9)', padding: '20px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)' }}>
-              <p style={{ fontWeight: 'light', marginBottom: '16px', color: '#333' }}>Your community has been created successfully!</p>
-              <Button onClick={onModalClose} variant="contained" style={{ backgroundColor: "#9E4291", color: "white", borderRadius: "100px", padding: '8px 32px' }}>Close</Button>
-            </div>
-          )}
+            </form>
+            {showModal && (
+                <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'rgba(255, 255, 255, 0.9)', padding: '20px', borderRadius: '10px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)' }}>
+                    <p style={{ fontWeight: 'light', marginBottom: '16px', color: '#333' }}>Your community has been created successfully!</p>
+                    <Button onClick={onModalClose} variant="contained" style={{ backgroundColor: "#9E4291", color: "white", borderRadius: "100px", padding: '8px 32px' }}>Close</Button>
+                </div>
+            )}
         </div>
-      );
+    );
 }
-

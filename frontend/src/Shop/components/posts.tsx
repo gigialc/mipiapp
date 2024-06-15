@@ -1,28 +1,24 @@
 import React, { CSSProperties, useContext, useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Stack, colors, FormControl } from '@mui/material';
+import { TextField, Button, Stack, FormControl, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import { UserContext } from "./Auth";
 import { UserContextType } from './Types';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import Fab from '@mui/material/Fab';
-
-// Make TS accept the existence of our window.__ENV object - defined in index.html:
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 export default function Posts({ communityId }: { communityId: string }) {
-    const {user ,showModal, saveShowModal, onModalClose, addCommunityToUser } = useContext(UserContext) as UserContextType;
+    const { user, showModal, saveShowModal, onModalClose, addCommunityToUser } = useContext(UserContext) as UserContextType;
     const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => {
-     setOpen(true);
+        setOpen(true);
     };
 
     const handleClose = () => {
-    setOpen(false);
-    }; 
-    
+        setOpen(false);
+    };
+
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
 
@@ -35,7 +31,7 @@ export default function Posts({ communityId }: { communityId: string }) {
     const onTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(event.target.value);
     };
-    
+
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(event.target.value);
     };
@@ -50,9 +46,8 @@ export default function Posts({ communityId }: { communityId: string }) {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
     });
-       
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        //get the community id and make it a current session
         event.preventDefault();
 
         if (title && description) {
@@ -64,30 +59,30 @@ export default function Posts({ communityId }: { communityId: string }) {
             };
 
             axiosClient
-                .post(`/posts/posted`,data)
+                .post(`/posts/posted`, data)
                 .then((response) => {
                     console.log(response);
+                    saveShowModal(true); // Show the modal after successful post creation
+                    setOpen(false); // Close the form dialog
                 })
                 .catch((error) => {
                     console.log(error);
-    
-                }
-            );
-        };
-    }
+                });
+        }
+    };
 
     const modalStyle: CSSProperties = {
-        backgroundColor: '#FEEAEE', 
-        position: 'absolute', 
-        left: '15vw', 
-        top: '40%', 
-        width: '70vw', 
-        height: '25vh', 
-        border: '1px solid pink', 
-        textAlign: 'center', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        justifyContent: 'center' 
+        backgroundColor: '#FEEAEE',
+        position: 'absolute',
+        left: '15vw',
+        top: '40%',
+        width: '70vw',
+        height: '25vh',
+        border: '1px solid pink',
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center'
     };
 
     const inputStyle = {
@@ -95,10 +90,9 @@ export default function Posts({ communityId }: { communityId: string }) {
         margin: "8px 0",
         borderRadius: "4px"
     };
-      
 
-      return (
-        <div style={{ padding: '32px', textAlign: 'center' }}> {/* Adjusted to center for consistency */}
+    return (
+        <div style={{ padding: '32px', textAlign: 'center' }}>
             <Fab
                 color="primary"
                 aria-label="add"
@@ -111,8 +105,7 @@ export default function Posts({ communityId }: { communityId: string }) {
                 }}
                 onClick={handleClickOpen}
             >
-            <AddIcon />
-            
+                <AddIcon />
             </Fab>
             <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Add a post</DialogTitle>
@@ -156,12 +149,12 @@ export default function Posts({ communityId }: { communityId: string }) {
                     </form>
                 </DialogContent>
             </Dialog>
-                <Dialog open={showModal} onClose={onModalClose}>
-                    <DialogTitle>Your post has been created</DialogTitle>
-                    <DialogActions>
-                        <Button onClick={onModalClose} color="primary">Close</Button>
-                    </DialogActions>
-                </Dialog>
+            <Dialog open={showModal} onClose={onModalClose}>
+                <DialogTitle>Your post has been created</DialogTitle>
+                <DialogActions>
+                    <Button onClick={onModalClose} color="primary">Close</Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 };
