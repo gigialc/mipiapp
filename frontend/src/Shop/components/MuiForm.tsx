@@ -11,6 +11,8 @@ export default function MuiForm() {
     const [title, setTitle] = useState<string>('');
     const [description, setDescription] = useState<string>('');
     const [price, setPrice] = useState<string>('');
+    const [open, setOpen] = useState(false);
+    const [thankYouMessage, setThankYouMessage] = useState<string>('');
     
     const [titleError, setTitleError] = useState<boolean>(false);
     const [descriptionError, setDescriptionError] = useState<boolean>(false);
@@ -77,14 +79,15 @@ export default function MuiForm() {
                 title,
                 description,
                 price,
-                user_id: user?.uid // Pass the user id
+                user_id: user.uid // Pass the user id
             };
 
             axiosClient
                 .post(`/community/create`, data)
                 .then((response) => {
                     console.log(response);
-                    saveShowModal(true);
+                    setThankYouMessage("Thanks for posting!");
+                    setOpen(false); // Close the form dialog
                     if (addCommunityToUser) {
                         addCommunityToUser(response.data);
                     }
