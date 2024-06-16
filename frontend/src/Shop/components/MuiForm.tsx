@@ -3,6 +3,7 @@ import axios from 'axios';
 import { TextField, Button, Stack } from '@mui/material';
 import { UserContext } from "../components/Auth";
 import { UserContextType } from './Types';
+import { on } from 'events';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
@@ -23,7 +24,11 @@ export default function MuiForm() {
     const [descriptionErrorMessage, setDescriptionErrorMessage] = useState<string>('');
     const [priceErrorMessage, setPriceErrorMessage] = useState<string>('');
 
-    const { user, showModal, saveShowModal, onModalClose, addCommunityToUser } = useContext(UserContext) as UserContextType;
+    const { user, showModal, saveShowModal, addCommunityToUser } = useContext(UserContext) as UserContextType;
+
+    const onModalClose = () => {
+        setShowDialog(false);
+    }
 
     const axiosClient = axios.create({
         baseURL: backendURL,
