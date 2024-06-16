@@ -1,6 +1,6 @@
 import React, { CSSProperties, useContext, useState } from 'react';
 import axios from 'axios';
-import { TextField, Button, Stack, FormControl } from '@mui/material';
+import { TextField, Button, Stack } from '@mui/material';
 import { UserContext } from "../components/Auth";
 import { UserContextType } from './Types';
 
@@ -72,12 +72,12 @@ export default function MuiForm() {
             setPriceErrorMessage('');
         }
 
-        if (title !== '' && description !== '' && price !== '' && user &&  user.uid) { // Ensure user is not null
+        if (title !== '' && description !== '' && price !== '' && user) { // Ensure user is not null
             const data = {
                 title,
                 description,
                 price,
-                user_id: user.uid // Pass the user id
+                user_id: user?.uid // Pass the user id
             };
 
             axiosClient
