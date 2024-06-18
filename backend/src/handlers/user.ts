@@ -240,16 +240,13 @@ export default function mountUserEndpoints(router: Router) {
       console.log('Community ID:', communityId);
       console.log('User communities joined:', user.communitiesJoined);
 
-      if (!currentUser) {
-        return res.status(401).json({ error: "No current user found" });
-      }
-      //check that user.communitiesJoined includes the communityId
-      if (user.communitiesJoined.includes(communityId)) {
-        return res.status(200).json({ isFollowing: true });
-      }
-      else {
+      if (!user.communitiesJoined || user.communitiesJoined.length === 0) {
         return res.status(200).json({ isFollowing: false });
       }
+  
+      const isFollowing = user.communitiesJoined.some((id: ObjectId) => id.equals(communityId));
+      return res.status(200).json({ isFollowing });
+
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: "Internal server error" });
