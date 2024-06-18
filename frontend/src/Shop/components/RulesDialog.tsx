@@ -33,7 +33,7 @@ const RulesDialog: React.FC<RulesDialogProps> = ({ open, onClose }) => {
             <li>400 total likes</li>
             <li>You own 100 likes from the pool</li>
             <li>25% of likes pool</li>
-            <li>1400 * 0.25 = 350 Pi for you</li>
+            <li>1400 * 0.25 = 350 Pi for YOU</li>
           </ul>
           
         </DialogContentText>
