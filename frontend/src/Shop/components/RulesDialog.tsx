@@ -14,17 +14,28 @@ interface RulesDialogProps {
 const RulesDialog: React.FC<RulesDialogProps> = ({ open, onClose }) => {
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Community Rules</DialogTitle>
+      <DialogTitle>How to earn pi? 💸 </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Here are the rules for creating and managing your community:
+          Here are some ways to earn pi tokens 💕
           <ol>
-            <li>Be respectful to all members.</li>
-            <li>No spamming or self-promotion without permission.</li>
-            <li>Maintain a positive and inclusive environment.</li>
-            <li>Report any inappropriate behavior to the admins.</li>
-            <li>Follow all platform guidelines and terms of service.</li>
+            <li>Create a community.</li>
+            <li>Create quality posts and earn 1 pi per comment.</li>
+            <li>Contribute to a community and earn tokens by the number of likes your post/comments receive. </li>
           </ol>
+          Tokenmoics example:
+          <ul>
+            <li>Community total number of subscribers: 1000</li>
+            <li>Cost of subscription: 2 Pi</li>
+            <li>Number of total tokens: 2000 earned per month</li>
+            <li>30% goes to the community owner → 600 tokens</li>
+            <li>1400 is the rest of the token pool</li>
+            <li>400 total likes</li>
+            <li>You own 100 likes from the pool</li>
+            <li>25% of likes pool</li>
+            <li>1400 * 0.25 = 350 Pi for you</li>
+          </ul>
+          
         </DialogContentText>
       </DialogContent>
       <DialogActions>
