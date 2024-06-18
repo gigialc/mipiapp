@@ -66,12 +66,13 @@ return(
   <Typography variant="h6" style={{ fontWeight: 'bold', color: '#E69BD1', marginBottom: '10px' }}>
         Create your own community ✨
     </Typography>
-  <MuiForm />
   <Typography margin={1} color="black">
-          <a href="" onClick={handleOpenRulesDialog} style={{ textDecoration: 'underline', color: '#E69BD1' }}>
+          <a onClick={handleOpenRulesDialog} style={{ textDecoration: 'underline', color: '#E69BD1' }}>
             How to earn pi? Click here! 🌟
           </a>
-        </Typography>
+  </Typography>
+       
+        <MuiForm />
   </div>
 
   { showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> }
