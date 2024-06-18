@@ -23,16 +23,16 @@ const RulesDialog: React.FC<RulesDialogProps> = ({ open, onClose }) => {
             <li>Create quality posts and earn 1 pi per comment.</li>
             <li>Contribute to a community and earn tokens by the number of likes your post/comments receive. </li>
           </ol>
-          Tokenmoics example:
+          Tokenomics example:
           <ul>
-            <li>Community total number of subscribers: 1000</li>
+            <li>Community subscribers: 1000</li>
             <li>Cost of subscription: 2 Pi</li>
-            <li>Number of total tokens: 2000 earned per month</li>
+            <li>Total pi: 1000 * 2 = 2000/month</li>
             <li>30% goes to the community owner → 600 tokens</li>
             <li>1400 is the rest of the token pool</li>
             <li>400 total likes</li>
-            <li>You own 100 likes from the pool</li>
-            <li>25% of likes pool</li>
+            <li>If you own 100 likes from the pool</li>
+            <li>100 likes → 25% of likes pool</li>
             <li>1400 * 0.25 = 350 Pi for YOU</li>
           </ul>
           
