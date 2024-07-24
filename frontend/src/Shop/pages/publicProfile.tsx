@@ -22,7 +22,8 @@ export default function  PublicProfile() {
   const [community, setCommunity] = useState<any>(null);
   const [userData, setUserData] = useState<UserData | null>(null);
   const location = useLocation();
-  const communityId = location.state?.communityId;
+  const userId = location.state?.userId;
+
 
   const axiosClient = axios.create({
     baseURL: backendURL,
@@ -52,56 +53,36 @@ export default function  PublicProfile() {
     console.log(payment);
   }
 
-    useEffect(() => {
-      if (!communityId) return;
-      axiosClient.get(`/community/community/${communityId}`, config)
-        .then((response) => {
-          setCommunity(response.data);
-          setUserData(response.data);
+  useEffect(() => {
+    if (!userId) return;
+    axiosClient.get(`/user/userInfo/${userId}`)
+      .then((response) => {
+        setUserData(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching user data:', error);
+      });
+  }, [userId]);
 
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }, [communityId]);
-
-    return (
-      <>
-  <Header/>
-  <Paper style={{ padding: 16, margin: '16px auto', maxWidth: 600, boxShadow: 'none' }}>
-    <Grid container direction="column" alignItems="center" justifyContent="center" spacing={2}>
-      {community.creator && (
-        <>
-          <Grid item>
-            <Avatar
-              alt={community.creator.username}
-              // src={community.user.avatarUrl} // Uncomment and use the actual path to the avatar image
-              sx={{ width: 100, height: 100 }} // Adjust size as needed
-            />
-          </Grid>
-          <Grid item>
-            <Typography variant="h5" component="h1" color="black" gutterBottom>
-              @{community.creator.username}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Typography variant="body1" color="textSecondary">
-              {community.creator.coinbalance} 💎
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Typography variant="body1">
-              {community.creator.bio || 'Bio not available.'}
-            </Typography>
-          </Grid>
-
-          { showModal && <SignIn onSignIn={saveUser} onModalClose={onModalClose} showModal={showModal}/> }
-        </>
-      )}
-    </Grid>
-  </Paper>
-</>
-
-    );
+  if (!userData) {
+    return <Typography>Loading...</Typography>;
   }
-  
+
+  return (
+    <>
+      <Header />
+      <Paper elevation={3} style={{ padding: '20px', margin: '20px' }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item>
+            <Typography >alt={userData.username} </Typography>
+          </Grid>
+          <Grid item xs>
+            <Typography variant="h5">@{userData.username}</Typography>
+            <Typography variant="body1">{userData.coinbalance} 💎</Typography>
+            <Typography variant="body2">{userData.bio || 'Bio not available.'}</Typography>
+          </Grid>
+        </Grid>
+      </Paper>
+    </>
+  );
+}
