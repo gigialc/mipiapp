@@ -55,7 +55,7 @@ export default function  PublicProfile() {
 
   useEffect(() => {
     if (!userId) return;
-    axiosClient.get(`/user/userInfo/${userId}`)
+    axiosClient.get(`/user/public/${userId}`)
       .then((response) => {
         setUserData(response.data);
       })
