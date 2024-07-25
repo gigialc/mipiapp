@@ -14,7 +14,7 @@ import CardActions from '@mui/material/CardActions';
 import { UserData } from './Types';
 
 interface Props {
-  _id: string,
+  key: string,
   title: string,
   description: string,
   creator: 
@@ -37,8 +37,8 @@ export default function ProductCard(props: Props) {
     navigate("/Chat", { state: { communityId: community._id } });
   };
 
-  const handleNavigatePublicProfile = (communityId: string) => {
-    navigate("/PublicProfile", { state: { communityId } });
+  const handleNavigatePublicProfile = (community: CommunityType) => {
+    navigate("/PublicProfile", { state: { communityId : community._id } });
   }
 
   return (
@@ -58,7 +58,7 @@ export default function ProductCard(props: Props) {
                 padding: 0, // Remove padding if you want the button to look like plain text
                 minWidth: 0, // Use this to prevent the button from having a minimum size
               }}
-              onClick={() => handleNavigatePublicProfile(props._id)}
+              onClick={() => handleNavigatePublicProfile(props.community)}
             >
              @{props.creator.username} 
             </Button>
