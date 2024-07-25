@@ -21,7 +21,6 @@ export default function PublicProfile() {
   const [createCommunityData, setCreateCommunityData] = useState<CommunityType[] | null>(null);
   const [selectedCommunity, setSelectedCommunity] = useState<CommunityType[] | null>(null);
   const [community, setCommunity] = useState<any>(null);
-  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const location = useLocation();
@@ -42,8 +41,8 @@ export default function PublicProfile() {
     const fetchData = async () => {
       try {
         const response = await axiosClient.get(`/community/community/${communityId}`);
-        const userData = response.data;
-        setCommunity(userData);
+        const community = response.data;
+        setCommunity(community);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching community data:', error);
@@ -60,7 +59,7 @@ export default function PublicProfile() {
     return <Typography>Loading...</Typography>;
   }
 
-  if (!userData) {
+  if (!community) {
     return <Typography>No user data available.</Typography>;
   }
 
