@@ -60,9 +60,7 @@ export default function PublicProfile() {
     return <Typography>Loading...</Typography>;
   }
 
-  if (error) {
-    return <Typography color="error">{error}</Typography>;
-  }
+
 
   if (!userData) {
     return <Typography>No user data available.</Typography>;
