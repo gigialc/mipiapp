@@ -36,8 +36,8 @@ export default function ProductCard(props: Props) {
     navigate("/Chat", { state: { communityId: community._id } });
   };
 
-  const handleNavigatePublicProfile = (userId: string) => {
-    navigate("/publicProfile", { state: { userId: userId } });
+  const handleNavigatePublicProfile = (community: CommunityType) => {
+    navigate("/publicProfile", { state: { community: community._id } });
   };
 
   return (
@@ -57,7 +57,7 @@ export default function ProductCard(props: Props) {
                 padding: 0, // Remove padding if you want the button to look like plain text
                 minWidth: 0, // Use this to prevent the button from having a minimum size
               }}
-              onClick={() => handleNavigatePublicProfile(props.creator.uid)}
+              onClick={() => handleNavigatePublicProfile(props.community)}
             >
              @{props.creator.username} 
             </Button>
