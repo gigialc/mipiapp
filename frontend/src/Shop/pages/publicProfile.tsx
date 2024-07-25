@@ -42,8 +42,8 @@ export default function PublicProfile() {
     const fetchData = async () => {
       try {
         const response = await axiosClient.get(`/community/community/${communityId}`);
-        const communityData = response.data;
-        setCommunity(communityData);
+        const userData = response.data;
+        setCommunity(userData);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching community data:', error);
@@ -59,8 +59,6 @@ export default function PublicProfile() {
   if (loading) {
     return <Typography>Loading...</Typography>;
   }
-
-
 
   if (!userData) {
     return <Typography>No user data available.</Typography>;
