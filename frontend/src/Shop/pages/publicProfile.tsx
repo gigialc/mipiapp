@@ -15,6 +15,9 @@ import SignIn from "../components/SignIn";
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 const config = {headers: {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'}};
 
+interface LocationState {
+  communityId: string;
+}
 
 export default function PublicProfile() {
   const { user, saveUser, saveShowModal, showModal, onModalClose } = React.useContext(UserContext) as UserContextType;
