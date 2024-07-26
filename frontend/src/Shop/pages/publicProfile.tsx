@@ -26,6 +26,7 @@ export default function PublicProfile() {
   const [community, setCommunity] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [creatorData, setCreatorData] = useState<UserData | null>(null);
   const location = useLocation();
   const communityId = location.state?.communityId;
 
@@ -46,16 +47,22 @@ export default function PublicProfile() {
         const response = await axiosClient.get(`/community/community/${communityId}`);
         const community = response.data;
         setCommunity(community);
+        // Fetch creator data
+        const creatorResponse = await axiosClient.get(`/user/userInfo/${community.creator.uid}`);
+        const creatorData = creatorResponse.data;
+        setCreatorData(creatorData);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching community data:', error);
-        setError('Error fetching community data');
+        console.error('Error fetching data:', error);
+        setError('Error fetching data');
         setLoading(false);
       }
     }
     fetchData();
   }
   , [communityId]);
+
+
 
 
   if (loading) {
@@ -72,12 +79,12 @@ export default function PublicProfile() {
       <Paper elevation={3} style={{ padding: '20px', margin: '20px' }}>
         <Grid container spacing={2} alignItems="center">
           <Grid item>
-            <Avatar alt={community.creator.username}  />
+            <Avatar alt={creatorData?.username}  />
           </Grid>
           <Grid item xs>
-            <Typography variant="h5">@{community.creator.username}</Typography>
-            <Typography variant="body1">{community.creator.coinbalance} 💎</Typography>
-            <Typography variant="body2">{community.creator.bio || 'Bio not available.'}</Typography>
+            <Typography variant="h5">@{creatorData?.username}</Typography>
+            <Typography variant="body1">{creatorData?.coinbalance} 💎</Typography>
+            <Typography variant="body2">{creatorData?.bio || 'Bio not available.'}</Typography>
           </Grid>
         </Grid>
       </Paper>
