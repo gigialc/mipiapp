@@ -9,6 +9,7 @@ import { onReadyForServerApproval, onReadyForServerCompletion, onCancel, onError
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CommentContent from './CommentContent';
 import Box from '@mui/material/Box';
+import { useEffect } from 'react';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
@@ -19,6 +20,9 @@ export default function Comments() {
     const { user, showModal, saveShowModal, onModalClose } = useContext(UserContext) as UserContextType;
     const location = useLocation();
     const postId = location.state.postId;
+    const [commentPrice, setCommentPrice] = useState<number>(0);
+    const [communityId, setCommunityId] = useState<string | null>(null);
+
     console.log(postId);
 
     const axiosClient = axios.create({
@@ -32,6 +36,49 @@ export default function Comments() {
       }
     });
 
+
+    const fetchCommunityId = async () => {
+      try {
+        const response = await axiosClient.get(`/posts/${postId}`);
+        const fetchedCommunityId = response.data.communityId;
+        setCommunityId(fetchedCommunityId);
+      } catch (error) {
+        console.error('Error fetching community ID:', error);
+      }
+    };
+
+    const fetchCommunityPrice = async () => {
+      if (!communityId) return;
+      
+      try {
+        const response = await axiosClient.get(`/community/${communityId}`);
+        const community = response.data;
+        const priceAsNumber = parseFloat(community.price);
+        
+        if (isNaN(priceAsNumber)) {
+          console.error('Invalid price format:', community.price);
+          setCommentPrice(1); // Default to 1 if parsing fails
+        } else {
+          setCommentPrice(priceAsNumber);
+        }
+      } catch (error) {
+        console.error('Error fetching community price:', error);
+        setCommentPrice(1); // Default to 1 if there's an error
+      }
+    };
+
+    useEffect(() => {
+      fetchCommunityId();
+    }, [postId]);
+
+    useEffect(() => {
+      if (communityId) {
+        fetchCommunityPrice();
+      }
+    }, [communityId]);
+
+
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -44,7 +91,7 @@ export default function Comments() {
             saveShowModal(true);
             return; // Exit if user is not signed in
         }   
-        orderProduct('Comment', 1, {productId: postId }); // Call orderProduct with postId
+        orderProduct('Comment', commentPrice , {productId: postId }); // Call orderProduct with postId
     };
 
     const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
@@ -59,8 +106,6 @@ export default function Comments() {
           onCancel,
           onError
         }
-
-        //make a payment
         try {
           //make a payment
           const payment = await window.Pi.createPayment(paymentData, callbacks);

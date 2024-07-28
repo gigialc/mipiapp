@@ -156,7 +156,7 @@ export default function MuiForm() {
                     />
                     <TextField
                         id="price"
-                        label="Cost of commenting"
+                        label="Comment Price"
                         variant="outlined"
                         value={price}
                         onChange={onPriceChange}
