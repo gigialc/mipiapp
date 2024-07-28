@@ -114,7 +114,7 @@ export default function mountPostEndpoints(router: Router) {
             return res.status(404).json({ error: 'Post not found' });
           }
           console.log(post);
-          return res.status(200).json({ title: post.title, description: post.description });
+          return res.status(200).json({ title: post.title, description: post.description , communityId: post.communityId });
 
         } catch (error) {
           console.error(error);
