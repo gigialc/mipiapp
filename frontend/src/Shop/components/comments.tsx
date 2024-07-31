@@ -115,26 +115,25 @@ export default function Comments() {
           if (description !== '' && payment.paymentCompleted) {
               const data = {
                 description: description,
-                user_id: user.uid, // Ensure you're sending user ID correctly
-                post_id: postId,
+                userId: user.uid,
+                postId: postId,
                 likes: [],
               };
           
-              axiosClient.post(`/comments/comments`, data)
+              axiosClient.post(`/posts/comments`, data)
               .then((response) => {
-                  console.log('Comment response:', response.data);
-                  setDescription('');
-                  setShowForm(false);
+                console.log('Comment added:', response.data);
+                setDescription('');
+                setShowForm(false);               
               })
               .catch((error) => {
-                  console.error('Error posting comment:', error);
+                console.error('Error adding comment:', error);
               });
           }
-      } catch (error) {
-          console.error('Payment error:', error);
-      }
+        } catch (error) {
+          console.error('Error making payment:', error);
+        }
   };
-
 
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(event.target.value);
