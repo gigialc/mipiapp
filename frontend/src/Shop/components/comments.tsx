@@ -10,6 +10,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CommentContent from './CommentContent';
 import Box from '@mui/material/Box';
 import { useEffect } from 'react';
+import { time } from 'console';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
@@ -114,13 +115,14 @@ export default function Comments() {
           // Make an API call to add person to the community if the payment was successful
           if (description !== '' && payment.paymentCompleted) {
               const data = {
-                description: description,
-                userId: user.uid,
-                postId: postId,
+                content : description,
+                user : user.uid,
+                posts : postId,
                 likes: [],
+                timestamp: new Date()
               };
           
-              axiosClient.post(`/posts/comments`, data)
+              axiosClient.post(`/comments`, data)
               .then((response) => {
                 console.log('Comment added:', response.data);
                 setDescription('');
@@ -175,6 +177,7 @@ export default function Comments() {
             <Button
               type="submit"
               variant="contained"
+
               sx={{ backgroundColor: '#ffe6ff', borderRadius: '20px', color: 'black', height: '30px' ,textTransform: 'none'}} // Adjust height here
             >
               Submit

@@ -8,19 +8,21 @@ import { UserContextType } from './Types';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
-interface CommentCardProps {
+interface CommentType {
   _id: string;
   content: string;
+  posts: string;
   user: { username: string };
   likes: string[];
-  postId: string;
+  timestamp: Date;
 }
 
-export default function CommentCard({ _id, content, user, likes, postId }: CommentCardProps) {
+export default function CommentCard({ _id, content, user, likes, posts }: CommentType) {
   const { user: currentUser } = React.useContext(UserContext) as UserContextType;
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikesCount] = useState(likes.length);
+  const [comments, setComments] = useState<CommentType[]>([]);
 
   const axiosClient = axios.create({
     baseURL: backendURL,
@@ -49,6 +51,7 @@ export default function CommentCard({ _id, content, user, likes, postId }: Comme
     }
   };
 
+  
   const handleNavigatePublicProfile = (username: string) => {
     navigate(`/profile/${username}`);
   };

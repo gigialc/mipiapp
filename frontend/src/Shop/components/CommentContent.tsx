@@ -15,7 +15,8 @@ interface CommentType {
   content: string;
   user: { username: string };
   likes: string[];
-  postId: string;
+  posts: string;
+  timestamp: Date;
 }
 
 
@@ -102,7 +103,8 @@ export default function CommentContent (){
               content={comment.content}
               user={comment.user}
               likes={comment.likes as []}
-              postId={comment.postId}
+              posts={comment.posts}
+              timestamp={comment.timestamp}
             />
           ))}
         </div>
