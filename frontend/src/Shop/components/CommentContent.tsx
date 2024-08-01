@@ -10,12 +10,21 @@ import CommentCard from './commentsCard';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
+interface CommentType {
+  _id: string;
+  content: string;
+  user: { username: string };
+  likes: string[];
+  postId: string;
+}
+
+
 export default function CommentContent (){ 
   const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
   const [post, setPost] = useState<PostType | null>(null);
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
-  const [comments, setComments] = useState<{ _id: string, content: string, likes: [] ,user: { username: string } }[]>([]);
+  const [comments, setComments] = useState<CommentType[]>([]);
   const [commentId, setCommentId] = useState<string | null>(null);
   const location = useLocation();
   const postId = location.state.postId;
@@ -69,36 +78,33 @@ export default function CommentContent (){
       }, [postId, commentId]);
 
 
-  return (
-    <div style={{ maxWidth: '600px', margin: '1', textAlign: 'left' }}>
-      {post ? (
-        <CardContent>
-          <Typography variant="h6" gutterBottom align="left">
-            {post.title}
-          </Typography>
-          <Typography variant="body1" color="text.secondary" align="left">
-            {post.description}
-          </Typography>
-        </CardContent>
-      ) : (
-        <Typography variant="subtitle2" style={{ marginTop: '5px', fontStyle: "italic", color: '#9E4291' }}>
-          Loading post...
-        </Typography>
-      )}
-      <br /><br />
-      
-      {comments.map((comment) => (
-        <CommentCard 
-          key={comment._id}
-          _id={comment._id}
-          content={comment.content}
-          user={comment.user}
-          likes={comment.likes}
-          postId={postId}
-        />
-      ))}
-    </div>
-  );
-  
-}
-
+      return (
+        <div style={{ maxWidth: '600px', margin: '1', textAlign: 'left' }}>
+          {post ? (
+            <CardContent>
+              <Typography variant="h6" gutterBottom align="left">
+                {post.title}
+              </Typography>
+              <Typography variant="body1" color="text.secondary" align="left">
+                {post.description}
+              </Typography>
+            </CardContent>
+          ) : (
+            <Typography variant="subtitle2" style={{ marginTop: '5px', fontStyle: "italic", color: '#9E4291' }}>
+              Loading post...
+            </Typography>
+          )}
+          <br /><br />
+          
+          {comments.map((comment) => (
+            <CommentCard 
+              _id={comment._id}
+              content={comment.content}
+              user={comment.user}
+              likes={comment.likes as []}
+              postId={comment.postId}
+            />
+          ))}
+        </div>
+      );
+    }
