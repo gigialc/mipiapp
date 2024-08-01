@@ -85,7 +85,7 @@ export default function CommentCard({ _id, content, user, likes, posts }: Commen
           onClick={() => handleNavigatePublicProfile(user.username)} 
           style={{ fontWeight: 'bold', color: '#9E4291', textTransform: 'none' }}
         >
-          By: {user.username || 'Anonymous'} 
+          by {user.username || 'Anonymous'} 
         </Button>   
       </CardActions>
     </Card>

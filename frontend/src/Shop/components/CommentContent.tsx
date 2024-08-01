@@ -95,7 +95,6 @@ export default function CommentContent (){
               Loading post...
             </Typography>
           )}
-          <br /><br />
           
           {comments.map((comment) => (
             <CommentCard 
