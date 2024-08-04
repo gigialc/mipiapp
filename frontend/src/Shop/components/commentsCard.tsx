@@ -17,12 +17,13 @@ interface CommentType {
   timestamp: Date;
 }
 
-export default function CommentCard({ _id, content, user, likes, posts }: CommentType) {
+export default function CommentCard({ _id, content, user, likes }: CommentType) {
   const { user: currentUser } = React.useContext(UserContext) as UserContextType;
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikesCount] = useState(likes.length);
   const [comments, setComments] = useState<CommentType[]>([]);
+  const [setUsername , username] = useState<string | null>(null);
 
   const axiosClient = axios.create({
     baseURL: backendURL,
@@ -43,13 +44,30 @@ export default function CommentCard({ _id, content, user, likes, posts }: Commen
 
   const handleLike = async () => {
     try {
-      const response = await axiosClient.post(`/comments/likeComment/${_id}`);
+      const response = await axiosClient.post(`/comments/like/${_id}`);
+      // Update based on the actual response
       setIsLiked(response.data.isLiked);
       setLikesCount(response.data.likeCount);
     } catch (error) {
-      console.error("Failed to handle comment like/unlike: ", error);
+      console.error("Failed to handle post like/unlike: ", error);
+ 
     }
   };
+
+  useEffect(() => {
+    //fetch the like status and count
+    const fetchLikeStatus = async () => {
+      try {
+        const response = await axiosClient.get(`/comments/like/${_id}`);
+        setIsLiked(response.data.isLiked);
+        setLikesCount(response.data.likeCount);
+      } catch (error) {
+        console.error("Failed to fetch like status: ", error);
+      }
+    };
+    fetchLikeStatus();
+    }
+    , [_id]);
 
   
   const handleNavigatePublicProfile = (username: string) => {

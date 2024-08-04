@@ -23,6 +23,7 @@ export default function Comments() {
     const postId = location.state.postId;
     const [commentPrice, setCommentPrice] = useState<number>(0);
     const [communityId, setCommunityId] = useState<string | null>(null);
+    const [thankYouMessage, setThankYouMessage] = useState<string | null>(null);
 
     console.log(postId);
 
@@ -108,20 +109,23 @@ export default function Comments() {
                 timestamp: new Date()
               };
           
-              const response = await axiosClient.post(`/comments/comments`, data);
-              console.log('Comment added:', response.data);
-              setDescription('');
-          }
-        } catch (error) {
-          console.error('Error making payment or adding comment:', error);
-        }
+              axiosClient
+                .post(`/comments/comments`, data)
+                .then((response) => {
+                    console.log(response);
+                    setThankYouMessage("Thanks for commenting!");
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+                
     };
 
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(event.target.value);
         if(descriptionError) setDescriptionError(null);
     };
-    
+
     return (
       <div style={{ padding: '32px', textAlign: 'center' }}>   
         <CommentContent/>
