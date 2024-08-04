@@ -37,37 +37,6 @@ export default function Comments() {
       }
     });
 
-
-    const fetchCommunityId = async () => {
-      try {
-        const response = await axiosClient.get(`/posts/${postId}`);
-        const fetchedCommunityId = response.data.communityId;
-        setCommunityId(fetchedCommunityId);
-      } catch (error) {
-        console.error('Error fetching community ID:', error);
-      }
-    };
-
-    const fetchCommunityPrice = async () => {
-      if (!communityId) return;
-      
-      try {
-        const response = await axiosClient.get(`/community/${communityId}`);
-        const community = response.data;
-        const priceAsNumber = parseFloat(community.price);
-        
-        if (isNaN(priceAsNumber)) {
-          console.error('Invalid price format:', community.price);
-          setCommentPrice(1); // Default to 1 if parsing fails
-        } else {
-          setCommentPrice(priceAsNumber);
-        }
-      } catch (error) {
-        console.error('Error fetching community price:', error);
-        setCommentPrice(1); // Default to 1 if there's an error
-      }
-    };
-
     useEffect(() => {
       fetchCommunityId();
     }, [postId]);
@@ -78,7 +47,27 @@ export default function Comments() {
       }
     }, [communityId]);
 
+    const fetchCommunityId = async () => {
+      try {
+        const response = await axiosClient.get(`/posts/${postId}`);
+        setCommunityId(response.data.communityId);
+      } catch (error) {
+        console.error('Error fetching community ID:', error);
+      }
+    };
 
+    const fetchCommunityPrice = async () => {
+      if (!communityId) return;
+      
+      try {
+        const response = await axiosClient.get(`/community/${communityId}`);
+        const priceAsNumber = parseFloat(response.data.price);
+        setCommentPrice(isNaN(priceAsNumber) ? 1 : priceAsNumber);
+      } catch (error) {
+        console.error('Error fetching community price:', error);
+        setCommentPrice(1);
+      }
+    };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -88,11 +77,10 @@ export default function Comments() {
             return;
         }
         if(!user) {
-          
             saveShowModal(true);
-            return; // Exit if user is not signed in
+            return;
         }   
-        orderProduct('Comment', commentPrice , {productId: postId }); // Call orderProduct with postId
+        await orderProduct('Comment', commentPrice, { productId: postId });
     };
 
     const orderProduct = async (memo: string, amount: number, paymentMetadata: MyPaymentMetadata) => {
@@ -108,40 +96,32 @@ export default function Comments() {
           onError
         }
         try {
-          //make a payment
           const payment = await window.Pi.createPayment(paymentData, callbacks);
           console.log('Payment:', payment);
 
-          // Make an API call to add person to the community if the payment was successful
-          if (description !== '' && payment.paymentCompleted) {
+          if (description !== '' && payment.status === 'COMPLETED') {
               const data = {
-                content : description,
-                user : user.uid,
-                posts : postId,
+                content: description,
+                user: user.uid,
+                posts: postId,
                 likes: [],
                 timestamp: new Date()
               };
           
-              axiosClient.post(`/comments/comments`, data)
-              .then((response) => {
-                console.log('Comment added:', response.data);
-                setDescription('');
-                setShowForm(false);               
-              })
-              .catch((error) => {
-                console.error('Error adding comment:', error);
-              });
+              const response = await axiosClient.post(`/comments/comments`, data);
+              console.log('Comment added:', response.data);
+              setDescription('');
           }
         } catch (error) {
-          console.error('Error making payment:', error);
+          console.error('Error making payment or adding comment:', error);
         }
-  };
+    };
 
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(event.target.value);
-        if(descriptionError) setDescriptionError(null); // Reset error when user starts typing
+        if(descriptionError) setDescriptionError(null);
     };
-
+    
     return (
       <div style={{ padding: '32px', textAlign: 'center' }}>   
         <CommentContent/>
