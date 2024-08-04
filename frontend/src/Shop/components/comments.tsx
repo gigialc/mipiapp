@@ -118,6 +118,10 @@ export default function Comments() {
                 .catch((error) => {
                     console.log(error);
                 });
+          }
+        } catch (error) {
+          console.error('Error creating payment:', error);
+        }
                 
     };
 
@@ -174,5 +178,5 @@ export default function Comments() {
         <br />
       </div>
     );
-  };
+}
   
