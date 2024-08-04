@@ -122,7 +122,7 @@ export default function Comments() {
                 timestamp: new Date()
               };
           
-              axiosClient.post(`/comments`, data)
+              axiosClient.post(`/comments/comments`, data)
               .then((response) => {
                 console.log('Comment added:', response.data);
                 setDescription('');
