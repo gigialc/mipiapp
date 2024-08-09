@@ -101,7 +101,7 @@ export default function Comments() {
             const payment = await window.Pi.createPayment(paymentData, callbacks);
             console.log('Payment:', payment);
 
-            if (payment.status === 'COMPLETED') {
+            // if (payment.status === 'COMPLETED') {
                 const data = {
                     content: description,
                     user: user.uid,
@@ -112,12 +112,13 @@ export default function Comments() {
                 console.log(response);
                 setThankYouMessage("Thanks for commenting!");
                 setDescription(''); // Clear the input after successful submission
-            }
-        } catch (error) {
+            //  }
+          } catch (error) {
             console.error('Error creating payment:', error);
-        }
+         }
     };
 
+    
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(event.target.value);
         if(descriptionError) setDescriptionError(null);
