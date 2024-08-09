@@ -91,34 +91,40 @@ export default function Comments() {
       
         const paymentData = { amount, memo, metadata: paymentMetadata };
         const callbacks = {
-            onReadyForServerApproval: () => {},
-            onReadyForServerCompletion: () => {},
-            onCancel: () => {},
-            onError: (error: any) => console.error(error)
-        };
-
+          onReadyForServerApproval,
+          onReadyForServerCompletion,
+          onCancel,
+          onError
+        }
         try {
-            const payment = await window.Pi.createPayment(paymentData, callbacks);
-            console.log('Payment:', payment);
+          const payment = await window.Pi.createPayment(paymentData, callbacks);
+          console.log('Payment:', payment);
 
-            // if (payment.status === 'COMPLETED') {
-                const data = {
-                    content: description,
-                    user: user.uid,
-                    posts: postId,
-                };
+          if (description !== '' && payment.status === 'COMPLETED') {
+              const data = {
+                content: description,
+                user: user.uid,
+                posts: postId,
+                likes: [],
+                timestamp: new Date()
+              };
           
-                const response = await axiosClient.post('/comments/comments', data);
-                console.log(response);
-                setThankYouMessage("Thanks for commenting!");
-                setDescription(''); // Clear the input after successful submission
-            //  }
-          } catch (error) {
-            console.error('Error creating payment:', error);
-         }
+              axiosClient
+                .post(`/comments/comments`, data)
+                .then((response) => {
+                    console.log(response);
+                    setThankYouMessage("Thanks for commenting!");
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+          }
+        } catch (error) {
+          console.error('Error creating payment:', error);
+        }
+                
     };
 
-    
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(event.target.value);
         if(descriptionError) setDescriptionError(null);
