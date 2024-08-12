@@ -1,31 +1,22 @@
-import React, { CSSProperties, useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextField, Button, Stack, colors, FormControl } from '@mui/material';
+import { TextField, Button, Stack } from '@mui/material';
 import { UserContext } from "../components/Auth";
-import { UserContextType } from './Types';
+import { UserContextType, MyPaymentMetadata } from './Types';
 import { useLocation } from 'react-router-dom';
-import { MyPaymentMetadata, WindowWithEnv } from './Types';
-import { onReadyForServerApproval, onReadyForServerCompletion, onCancel, onError } from './Payments';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CommentContent from './CommentContent';
-import Box from '@mui/material/Box';
-import { useEffect } from 'react';
-import { time } from 'console';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
 export default function Comments() {
-    const [showForm, setShowForm] = useState(false);
     const [description, setDescription] = useState<string>('');
     const [descriptionError, setDescriptionError] = useState<string | null>(null);
-    const { user, showModal, saveShowModal, onModalClose } = useContext(UserContext) as UserContextType;
+    const { user, saveShowModal } = useContext(UserContext) as UserContextType;
     const location = useLocation();
     const postId = location.state.postId;
     const [commentPrice, setCommentPrice] = useState<number>(0);
     const [communityId, setCommunityId] = useState<string | null>(null);
     const [thankYouMessage, setThankYouMessage] = useState<string | null>(null);
-
-    console.log(postId);
 
     const axiosClient = axios.create({
       baseURL: backendURL,
@@ -91,38 +82,54 @@ export default function Comments() {
       
         const paymentData = { amount, memo, metadata: paymentMetadata };
         const callbacks = {
-          onReadyForServerApproval,
-          onReadyForServerCompletion,
-          onCancel,
-          onError
-        }
-        try {
-          const payment = await window.Pi.createPayment(paymentData, callbacks);
-          console.log('Payment:', payment);
-
-          if (description !== '' && payment.status === 'COMPLETED') {
-              const data = {
-                content: description,
-                user: user.uid,
-                posts: postId,
-                likes: [],
-                timestamp: new Date()
-              };
-          
-              axiosClient
-                .post(`/comments/comments`, data)
-                .then((response) => {
-                    console.log(response);
-                    setThankYouMessage("Thanks for commenting!");
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+          onReadyForServerApproval: ({ paymentId }: { paymentId: string }) => {
+            console.log("onReadyForServerApproval", paymentId);
+            return axiosClient.post('/payments/approve', { paymentId });
+          },
+          onReadyForServerCompletion: ({ paymentId, txid }: { paymentId: string, txid: string }) => {
+            console.log("onReadyForServerCompletion", paymentId, txid);
+            return axiosClient.post('/payments/complete', { paymentId, txid }).then(() => {
+              postComment();
+            });
+          },
+          onCancel: ({ paymentId }: { paymentId: string }) => {
+            console.log("Payment Cancelled", paymentId);
+          },
+          onError: (error: Error, payment?: any) => {
+            console.error("Error", error);
+            if (payment) {
+              console.log(payment);
+            }
           }
+        };
+
+        try {
+          const payment = await (window as any).Pi.createPayment(paymentData, callbacks);
+          console.log('Payment:', payment);
         } catch (error) {
           console.error('Error creating payment:', error);
         }
-                
+    };
+
+    const postComment = async () => {
+      if (description !== '') { 
+        const data = {
+          content: description,
+          user: user?.uid,
+          posts: postId,
+          likes: [],
+          timestamp: new Date()
+        };
+    
+        try {
+          const response = await axiosClient.post(`/comments/comments`, data);
+          console.log(response);
+          setThankYouMessage("Thanks for commenting!");
+          setDescription('');  // Clear the comment input after posting
+        } catch (error) {
+          console.error('Error posting comment:', error);
+        }
+      }
     };
 
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,16 +154,16 @@ export default function Comments() {
               InputProps={{
                 style: {
                   borderRadius: '30px',
-                  height: "35px", // Adjust this value to control the roundness of the input field
-                  textAlign: 'center', // Center the text in the input field
+                  height: "35px",
+                  textAlign: 'center',
                 },
                 inputProps: {
                   style: {
-                    textAlign: 'center', // Center the text in the input field
+                    textAlign: 'center',
                   },
                 },
               }}
-              InputLabelProps={{ // Move the label to the center
+              InputLabelProps={{
                 style: {
                   textAlign: 'center',
                 },
@@ -165,18 +172,13 @@ export default function Comments() {
             <Button
               type="submit"
               variant="contained"
-
-              sx={{ backgroundColor: '#ffe6ff', borderRadius: '20px', color: 'black', height: '30px' ,textTransform: 'none'}} // Adjust height here
+              sx={{ backgroundColor: '#ffe6ff', borderRadius: '20px', color: 'black', height: '30px' ,textTransform: 'none'}}
             >
               Submit
             </Button>
           </Stack>
         </form>
-        <br />
-        <br />
-        <br />
-        <br />
+        {thankYouMessage && <p>{thankYouMessage}</p>}
       </div>
     );
 }
-  
