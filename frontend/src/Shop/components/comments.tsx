@@ -100,7 +100,6 @@ export default function Comments() {
           const payment = await window.Pi.createPayment(paymentData, callbacks);
           console.log('Payment:', payment);
 
-          if (description !== '') { 
               const data = {
                 content: description,
                 user: user.uid,
@@ -118,17 +117,17 @@ export default function Comments() {
                 .catch((error) => {
                     console.log(error);
                 });
-          }
+          
         } catch (error) {
           console.error('Error creating payment:', error);
         }
-                
-    };
+      }
 
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(event.target.value);
         if(descriptionError) setDescriptionError(null);
     };
+  
 
     return (
       <div style={{ padding: '32px', textAlign: 'center' }}>   
@@ -179,4 +178,5 @@ export default function Comments() {
       </div>
     );
 }
+
   
