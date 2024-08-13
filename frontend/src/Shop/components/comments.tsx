@@ -97,8 +97,9 @@ export default function Comments() {
           onError
         }
         try {
-          await window.Pi.createPayment(paymentData, callbacks);
-
+          const payment = await window.Pi.createPayment(paymentData, callbacks);
+          console.log('Payment:', payment);
+          if(payment) {
           console.log('Reached here');
               const data = {
                 content: description,
@@ -111,11 +112,12 @@ export default function Comments() {
               const response = await axiosClient.post(`/comments/comments`, data);
               console.log('Response from backend:', response);
               setThankYouMessage('Thanks for commenting!');          
-          
+          }
         } catch (error) {
           console.error('Error creating payment:', error);
         }
       }
+    
 
     const onDescriptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setDescription(event.target.value);
