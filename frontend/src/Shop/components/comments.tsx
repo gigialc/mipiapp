@@ -111,7 +111,7 @@ export default function Comments() {
           
               const response = await axiosClient.post(`/comments/addComment`, data);
               console.log('Response from backend:', response);
-              setThankYouMessage('Thanks for commenting!');          
+              setThankYouMessage('Thanks for commenting user!');          
           // }
         } catch (error) {
           console.error('Error creating payment:', error);
