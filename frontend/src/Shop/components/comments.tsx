@@ -109,7 +109,7 @@ export default function Comments() {
                 timestamp: new Date()
               };
           
-              const response = await axiosClient.post(`/comments/comments`, data);
+              const response = await axiosClient.post(`/comments/addComment`, data);
               console.log('Response from backend:', response);
               setThankYouMessage('Thanks for commenting!');          
           // }
