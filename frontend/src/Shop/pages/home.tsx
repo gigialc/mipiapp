@@ -54,30 +54,6 @@ export default function HomePage() {
     console.log(createCommunityData);
   }, [createCommunityData]);
 
-  // // Make an API call to add person to the community if the payment was successful
-  // // if (payment.paymentCompleted === true) {
-  // console.log("Payment was successful");
-  // axiosClient.post(`/user/addUser`)
-  //   .then((response) => {
-  //     console.log(response);
-  //     // Redirect to the chat page
-  //     navigate("/Chat", { state: { communityId: selectedCommunity?._id } });
-  //   })
-  //   .catch((error) => {
-  //     console.log(error);
-  //   });
-  // // }
-
-  // useEffect(() => {
-  //   axiosClient.get(`/user/userInfo`)
-  //     .then((response) => {
-  //       console.log('Response data for /user/me:', response.data);
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error fetching /user/me:', error);
-  //     });
-  // }, []);
-
   useEffect(() => {
     // Make an API call to fetch the create community data
     axiosClient.get(`/community/hi`)

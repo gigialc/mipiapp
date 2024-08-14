@@ -13,7 +13,10 @@ const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d
 interface CommentType {
   _id: string;
   content: string;
-  user: { username: string };
+  user: { 
+    _id: string;
+    username: string;
+  };
   likes: string[];
   posts: string;
   timestamp: Date;
@@ -27,7 +30,6 @@ export default function CommentContent (){
   const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [commentId, setCommentId] = useState<string | null>(null);
-  const [usernames, setUsernames] = useState<string[]>([]);
   const location = useLocation();
   const postId = location.state.postId;
   console.log(postId);
@@ -47,7 +49,6 @@ export default function CommentContent (){
       const fetchComments = async () => {
         try {
           const response = await axiosClient.get(`/comments/fetch/${postId}`);
-          setUsernames(response.data.username);
           console.log(response.data.comments);
           setComments(response.data.comments || []);
         } catch (error) {

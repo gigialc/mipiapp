@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import HeartIcon from '@mui/icons-material/Favorite';
 import { UserContext } from "./Auth";
 import { UserContextType } from './Types';
+import { useLocation } from 'react-router-dom';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
@@ -12,7 +13,10 @@ interface CommentType {
   _id: string;
   content: string;
   posts: string;
-  user: { username: string };
+  user: {
+    _id: string;
+    username: string;
+  };
   likes: string[];
   timestamp: Date;
 }
@@ -24,6 +28,8 @@ export default function CommentCard({ _id, content, user, likes }: CommentType) 
   const [likeCount, setLikesCount] = useState(likes.length);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [setUsername , username] = useState<string | null>(null);
+  const location = useLocation();
+  const postId = location.state.postId;
 
   const axiosClient = axios.create({
     baseURL: backendURL,
@@ -41,6 +47,7 @@ export default function CommentCard({ _id, content, user, likes }: CommentType) 
       setIsLiked(likes.includes(currentUser.uid));
     }
   }, [currentUser, likes]);
+
 
   const handleLike = async () => {
     try {
