@@ -13,15 +13,12 @@ interface CommentType {
   _id: string;
   content: string;
   posts: string;
-  user: {
-    _id: string;
-    username: string;
-  };
+  user: string;
   likes: string[];
   timestamp: Date;
 }
 
-export default function CommentCard({ _id, content, user, likes }: CommentType) {
+export default function CommentCard({ _id, content, posts, user, likes }: CommentType) {
   const { user: currentUser } = React.useContext(UserContext) as UserContextType;
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
@@ -107,10 +104,10 @@ export default function CommentCard({ _id, content, user, likes }: CommentType) 
           />
         </IconButton>
         <Button
-          onClick={() => handleNavigatePublicProfile(user.username)} 
+          onClick={() => handleNavigatePublicProfile(user)} 
           style={{ fontWeight: 'bold', color: '#9E4291', textTransform: 'none' }}
         >
-          by {user.username || 'Anonymous'} 
+          by {user}  
         </Button>   
       </CardActions>
     </Card>

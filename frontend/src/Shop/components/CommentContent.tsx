@@ -13,10 +13,7 @@ const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d
 interface CommentType {
   _id: string;
   content: string;
-  user: { 
-    _id: string;
-    username: string;
-  };
+  user: string;
   likes: string[];
   posts: string;
   timestamp: Date;
@@ -100,7 +97,7 @@ export default function CommentContent (){
           )}
           
           <br />
-          
+
           {comments.map((comment) => (
             <CommentCard 
               _id={comment._id}
@@ -110,7 +107,6 @@ export default function CommentContent (){
               posts={comment.posts}
               timestamp={comment.timestamp}
             />
-        
           ))}
         </div>
       );
