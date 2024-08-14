@@ -7,6 +7,9 @@ import { UserContext } from './Auth';
 import { Card, CardContent, Typography } from '@mui/material';
 import { PostType } from './Types';
 import CommentCard from './commentsCard';
+import { formatDistanceToNow } from 'date-fns';
+import { Box, Divider } from '@mui/material';
+import { Avatar } from '@mui/material';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
@@ -80,32 +83,54 @@ export default function CommentContent (){
 
 
       return (
-        <div style={{ maxWidth: '600px', margin: '1', textAlign: 'left' }}>
+        <Card sx={{ maxWidth: '600px', margin: 'auto', mt: 4, boxShadow: 3 }}>
           {post ? (
             <CardContent>
-              <Typography variant="h6" gutterBottom align="left">
+              <Typography variant="h5" gutterBottom fontWeight="bold">
                 {post.title}
               </Typography>
-              <Typography variant="body1" color="text.secondary" align="left">
+              <Typography variant="body1" color="text.secondary" paragraph>
                 {post.description}
+              </Typography>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                Comments
               </Typography>
             </CardContent>
           ) : (
-            <Typography variant="subtitle2" style={{ marginTop: '5px', fontStyle: "italic", color: '#9E4291' }}>
-              Loading post...
-            </Typography>
+            <CardContent>
+              <Typography variant="subtitle1" sx={{ fontStyle: "italic", color: 'primary.main' }}>
+                Loading post...
+              </Typography>
+            </CardContent>
           )}
           
-          {comments.map((comment) => (
-            <CommentCard 
-              _id={comment._id}
-              content={comment.content}
-              user={comment.user}
-              likes={comment.likes as []}
-              posts={comment.posts}
-              timestamp={comment.timestamp}
-            />
+          {comments.map((comment, index) => (
+            <Box key={comment._id} sx={{ p: 2, borderTop: index > 0 ? 1 : 0, borderColor: 'divider' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                <Avatar sx={{ width: 32, height: 32, mr: 1 }}>
+                  {comment.user.username.charAt(0).toUpperCase()}
+                </Avatar>
+                <Typography variant="subtitle2" fontWeight="bold">
+                  {comment.user.username}
+                </Typography>
+                <Typography variant="caption" sx={{ ml: 'auto', color: 'text.secondary' }}>
+                  {formatDistanceToNow(new Date(comment.timestamp), { addSuffix: true })}
+                </Typography>
+              </Box>
+              <Typography variant="body2" sx={{ ml: 5 }}>
+                {comment.content}
+              </Typography>
+            </Box>
           ))}
-        </div>
+          
+          {comments.length === 0 && (
+            <CardContent>
+              <Typography variant="body2" sx={{ fontStyle: "italic", color: 'text.secondary' }}>
+                No comments yet. Be the first to comment!
+              </Typography>
+            </CardContent>
+          )}
+        </Card>
       );
-    }
+    };
