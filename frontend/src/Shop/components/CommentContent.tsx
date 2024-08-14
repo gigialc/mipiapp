@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { UserContext } from './Auth';
 import { PostType } from './Types';
 import CommentCard from './commentsCard';
+import { CardContent, Typography } from '@mui/material';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
