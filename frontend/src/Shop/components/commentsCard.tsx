@@ -24,7 +24,6 @@ export default function CommentCard({ _id, content, posts, user, likes }: Commen
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikesCount] = useState(likes.length);
   const [comments, setComments] = useState<CommentType[]>([]);
-  const [setUsername , username] = useState<string | null>(null);
   const location = useLocation();
   const postId = location.state.postId;
 
@@ -77,6 +76,7 @@ export default function CommentCard({ _id, content, posts, user, likes }: Commen
   const handleNavigatePublicProfile = (username: string) => {
     navigate(`/profile/${username}`);
   };
+  console.log('User prop:', user);
 
   return (
     <Card>
@@ -107,7 +107,8 @@ export default function CommentCard({ _id, content, posts, user, likes }: Commen
           onClick={() => handleNavigatePublicProfile(user)} 
           style={{ fontWeight: 'bold', color: '#9E4291', textTransform: 'none' }}
         >
-          by {user}  
+            by @{user || 'anonymous'}  
+
         </Button>   
       </CardActions>
     </Card>
