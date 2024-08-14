@@ -99,6 +99,8 @@ export default function CommentContent (){
             </Typography>
           )}
           
+          <br />
+          
           {comments.map((comment) => (
             <CommentCard 
               _id={comment._id}

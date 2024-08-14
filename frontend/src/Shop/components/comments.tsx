@@ -10,7 +10,6 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CommentContent from './CommentContent';
 import Box from '@mui/material/Box';
 import { useEffect } from 'react';
-import { time } from 'console';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
@@ -103,7 +102,7 @@ export default function Comments() {
           console.log('Reached here');
               const data = {
                 content: description,
-                user: user.uid,
+                user: user,
                 posts: postId,
                 likes: [],
                 timestamp: new Date()
