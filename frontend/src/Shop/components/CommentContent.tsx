@@ -30,6 +30,7 @@ export default function CommentContent (){
   const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [commentId, setCommentId] = useState<string | null>(null);
+  const [usernames, setUsernames] = useState<string[]>([]);
   const location = useLocation();
   const postId = location.state.postId;
   console.log(postId);
@@ -49,6 +50,7 @@ export default function CommentContent (){
       const fetchComments = async () => {
         try {
           const response = await axiosClient.get(`/comments/fetch/${postId}`);
+          setUsernames(response.data.username);
           console.log(response.data.comments);
           setComments(response.data.comments || []);
         } catch (error) {
@@ -112,7 +114,7 @@ export default function CommentContent (){
                   {comment.user.username.charAt(0).toUpperCase()}
                 </Avatar>
                 <Typography variant="subtitle2" fontWeight="bold">
-                  {comment.user.username}
+                  {usernames[index]}
                 </Typography>
                 <Typography variant="caption" sx={{ ml: 'auto', color: 'text.secondary' }}>
                   {formatDistanceToNow(new Date(comment.timestamp), { addSuffix: true })}
