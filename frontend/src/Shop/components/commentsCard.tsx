@@ -26,6 +26,7 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
   const [likeCount, setLikesCount] = useState(likes.length);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [isPostOwner, setIsPostOwner] = useState(false);
+  const [isApproved, setIsApproved] = useState(approved);
   const location = useLocation();
   const postId = location.state.postId;
 
@@ -46,10 +47,11 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
     }
   }, [currentUser, likes]);
 
+
   useEffect(() => {
     const fetchIsOwner = async () => {
       try {
-        const response = await axiosClient.get(`/owner/${postId}`);
+        const response = await axiosClient.get(`/comments/owner/${postId}`);
         if (response.data.isOwner) {
           setIsPostOwner(true);
         }
@@ -62,14 +64,12 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
   , [postId]);
 
 
-  const handleApproveComment = async (commentId: string) => {
+  const handleApproveComment = async () => {
     try {
-      await axiosClient.put(`/comments/updateApproval/${commentId}`);
-      setComments((prevComments) =>
-        prevComments.map((comment) =>
-          comment._id === commentId ? { ...comment, approved: true } : comment
-        )
-      );
+      const response = await axiosClient.put(`/comments/updateApproval/${_id}`);
+      if (response.status === 200) {
+        setIsApproved(true);
+      }
     } catch (error) {
       console.error("Failed to approve comment: ", error);
     }
@@ -138,12 +138,12 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
           style={{ fontWeight: 'bold', color: '#9E4291', textTransform: 'none' }}
         >
           @{user || 'anonymous'}  
-
         </Button>    
-          {/* Display the "Approve" button if the comment is not approved and the current user is the post owner */}
+
+        {isPostOwner && !isApproved && (
           <Button
           variant="contained"
-          onClick={(event) => handleApproveComment(_id)} 
+          onClick={handleApproveComment} 
           style={{
             marginLeft: 'auto',
             backgroundColor: '#ffe6ff',
@@ -158,10 +158,12 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
         >
           Approve
         </Button>
-
+        )}
       </CardActions>
+
       <br />
     </Card>
+
     
   );
 }
