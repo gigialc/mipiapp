@@ -139,18 +139,25 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
         >
           @{user || 'anonymous'}  
 
-        </Button>  
-        
+        </Button>    
           {/* Display the "Approve" button if the comment is not approved and the current user is the post owner */}
           <Button
-            variant="contained"
-            color="primary"
-            onClick={(event) => handleApproveComment(_id)} 
-            style={{ marginLeft: 'auto' }}
-          >
-            Approve
-          </Button>
-
+          variant="contained"
+          onClick={(event) => handleApproveComment(_id)} 
+          style={{
+            marginLeft: 'auto',
+            backgroundColor: '#ffe6ff',
+            color: 'white',
+            textTransform: 'none',
+            borderRadius: '20px',
+            padding: '5px 15px',
+            fontSize: '0.8rem',
+            fontWeight: 'bold',
+            boxShadow: 'none',
+          }}
+        >
+          Approve
+        </Button>
 
       </CardActions>
       <br />
