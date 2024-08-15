@@ -147,7 +147,7 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
           style={{
             marginLeft: 'auto',
             backgroundColor: '#ffe6ff',
-            color: 'white',
+            color: 'black',
             textTransform: 'none',
             borderRadius: '20px',
             padding: '5px 15px',
