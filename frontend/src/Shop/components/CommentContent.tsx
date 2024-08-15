@@ -8,6 +8,7 @@ import { PostType } from './Types';
 import CommentCard from './commentsCard';
 import { CardContent, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
+import { Button } from '@mui/material';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
@@ -18,8 +19,8 @@ interface CommentType {
   likes: string[];
   posts: string;
   timestamp: Date;
+  approved: boolean;
 }
-
 
 export default function CommentContent (){ 
   const { user, saveUser, showModal, saveShowModal, onModalClose } = React.useContext(UserContext) as UserContextType;
@@ -28,6 +29,7 @@ export default function CommentContent (){
   const [likesCount, setLikesCount] = useState(0);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [commentId, setCommentId] = useState<string | null>(null);
+  const [isPostOwner, setIsPostOwner] = useState(false);
   const location = useLocation();
   const postId = location.state.postId;
   console.log(postId);
@@ -43,6 +45,26 @@ export default function CommentContent (){
     }
   });
 
+
+    useEffect(() => {
+      const fetchPost = async () => {
+        try {
+          const response = await axiosClient.get(`/posts/${postId}`);
+          console.log(response.data);
+          setPost(response.data || null);
+          // Check if the user is the post owner
+          const post = response.data;
+          if (post && user && post.user === user.username) {
+            setIsPostOwner(true);
+          }
+        } catch (error) {
+          console.error("Failed to fetch post: ", error);
+        }
+      }
+      fetchPost();
+      }, [postId, commentId]);
+
+
     useEffect(() => {
       const fetchComments = async () => {
         try {
@@ -53,8 +75,27 @@ export default function CommentContent (){
           console.error("Failed to fetch comments: ", error);
         }
       };
-        fetchComments();
+      fetchComments();
+    }, [postId]);
 
+
+      useEffect(() => {
+        const fetchUnnaprovedComments = async () => {
+          try {
+            const response = await axiosClient.get(`/comments/fetchUnapproved/${postId}`);
+            setComments(prevComments => [
+              ...prevComments,
+              ...response.data.comments || []
+            ]);
+          } catch (error) {
+            console.error("Failed to fetch comments: ", error);
+          }
+        }
+        fetchUnnaprovedComments();
+      }
+      , [postId]);
+
+      useEffect(() => {
       const fetchLikeStatus = async () => {
         try {
           const response = await axiosClient.get(`/comments/likeComment/${postId}`);
@@ -66,19 +107,22 @@ export default function CommentContent (){
         }
       };
        fetchLikeStatus();
-
-      const fetchPost = async () => {
-        try {
-          const response = await axiosClient.get(`/posts/${postId}`);
-          console.log(response.data);
-          setPost(response.data || null);
-        } catch (error) {
-          console.error("Failed to fetch post: ", error);
-        }
       }
-      fetchPost();
-      }, [postId, commentId]);
+      , [postId]);
 
+
+      const approveComment = async (commentId: string) => {
+        try {
+          await axiosClient.put(`/comments/updateApproval/${commentId}`);
+          setComments(prevComments => 
+            prevComments.map(comment =>
+              comment._id === commentId ? { ...comment, approved: true } : comment
+            )
+          );
+        } catch (error) {
+          console.error("Failed to approve comment: ", error);
+        }
+      };
 
       return (
         <div style={{ maxWidth: '600px', margin: '1', textAlign: 'left' }}>
@@ -108,7 +152,18 @@ export default function CommentContent (){
                likes={comment.likes as []}
                posts={comment.posts}
                timestamp={comment.timestamp}
+                approved={comment.approved}
              />
+
+              {isPostOwner && !comment.approved && (
+                <Button 
+                variant="contained" 
+                color="primary" 
+                onClick={() => approveComment(comment._id)}
+            >
+              Approve
+            </Button>
+          )}
            </Box>
           ))}
           

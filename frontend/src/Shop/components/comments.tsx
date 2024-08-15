@@ -104,7 +104,8 @@ export default function Comments() {
                 user: user,
                 posts: postId,
                 likes: [],
-                timestamp: new Date()
+                timestamp: new Date(), 
+                approved: false
               };
           
               const response = await axiosClient.post(`/comments/addComment`, data);
@@ -172,5 +173,3 @@ export default function Comments() {
       </div>
     );
 }
-
-  

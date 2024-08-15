@@ -16,6 +16,7 @@ interface CommentType {
   user: string;
   likes: string[];
   timestamp: Date;
+  approved: boolean;
 }
 
 export default function CommentCard({ _id, content, posts, user, likes }: CommentType) {
@@ -106,7 +107,7 @@ export default function CommentCard({ _id, content, posts, user, likes }: Commen
           onClick={() => handleNavigatePublicProfile(user)} 
           style={{ fontWeight: 'bold', color: '#9E4291', textTransform: 'none' }}
         >
-            by @{user || 'anonymous'}  
+          @{user || 'anonymous'}  
 
         </Button>   
       </CardActions>
