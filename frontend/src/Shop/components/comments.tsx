@@ -95,9 +95,9 @@ export default function Comments() {
           onError
         }
         try {
-          // const payment = await window.Pi.createPayment(paymentData, callbacks);
-          // console.log('Payment:', payment);
-          // if(payment) {
+          const payment = await window.Pi.createPayment(paymentData, callbacks);
+          console.log('Payment:', payment);
+          if(payment) {
           console.log('Reached here');
               const data = {
                 content: description,
@@ -110,7 +110,7 @@ export default function Comments() {
               const response = await axiosClient.post(`/comments/addComment`, data);
               console.log('Response from backend:', response);
               setThankYouMessage('Thanks for commenting user!');          
-          // }
+          }
         } catch (error) {
           console.error('Error creating payment:', error);
         }
