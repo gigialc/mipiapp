@@ -34,7 +34,7 @@ export default function CommentContent (){
   const postId = location.state.postId;
   console.log(postId);
 
-  
+
   const axiosClient = axios.create({
     baseURL: backendURL,
     timeout: 20000,
@@ -154,7 +154,6 @@ export default function CommentContent (){
                 approved={comment.approved}
              />
 
-          {isPostOwner && (
                 <Button 
                 variant="contained" 
                 color="primary" 
@@ -162,7 +161,7 @@ export default function CommentContent (){
             >
               Approve
             </Button>
-          )}
+          
            </Box>
           ))}
           
