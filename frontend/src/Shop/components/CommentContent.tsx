@@ -34,6 +34,7 @@ export default function CommentContent (){
   const postId = location.state.postId;
   console.log(postId);
 
+  
   const axiosClient = axios.create({
     baseURL: backendURL,
     timeout: 20000,
@@ -84,7 +85,7 @@ export default function CommentContent (){
           try {
             const response = await axiosClient.get(`/comments/fetchUnapproved/${postId}`);
             setComments(response.data.comments || []);
-            setIsPostOwner(true);
+            setIsPostOwner(response.data.isOwner);
           } catch (error) {
             console.error("Failed to fetch comments: ", error);
           }
@@ -112,6 +113,11 @@ export default function CommentContent (){
       const approveComment = async (commentId: string) => {
         try {
           await axiosClient.put(`/comments/updateApproval/${commentId}`);
+          setComments((prevComments) =>
+            prevComments.map((comment) =>
+              comment._id === commentId ? { ...comment, approved: true } : comment
+            )
+          );
         } catch (error) {
           console.error("Failed to approve comment: ", error);
         }
