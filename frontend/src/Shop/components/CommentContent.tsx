@@ -75,19 +75,31 @@ export default function CommentContent (){
     }, [postId]);
 
 
-      useEffect(() => {
-        const fetchUnnaprovedComments = async () => {
+    useEffect(() => {
+      const checkIfPostOwner = async () => {
+        try {
+          const response = await axiosClient.get(`/posts/isOwner/${postId}`);
+          setIsPostOwner(response.data.isOwner);
+        } catch (error) {
+          console.error("Failed to check post ownership: ", error);
+        }
+      };
+      checkIfPostOwner();
+    }, [postId]);
+  
+    useEffect(() => {
+      if (isPostOwner) {
+        const fetchUnapprovedComments = async () => {
           try {
             const response = await axiosClient.get(`/comments/fetchUnapproved/${postId}`);
-            setComments(response.data.comments || []);
-            setIsPostOwner(response.data.isOwner);
+            setComments((prevComments) => [...prevComments, ...(response.data.comments || [])]);
           } catch (error) {
-            console.error("Failed to fetch comments: ", error);
+            console.error("Failed to fetch unapproved comments: ", error);
           }
-        }
-        fetchUnnaprovedComments();
+        };
+        fetchUnapprovedComments();
       }
-      , [postId]);
+    }, [postId, isPostOwner]);
 
       useEffect(() => {
       const fetchLikeStatus = async () => {
