@@ -56,6 +56,7 @@ export default function Comments() {
       }
     };
 
+    //fetching the price of the community
     const fetchCommunityPrice = async () => {
       if (!communityId) return;
       try {

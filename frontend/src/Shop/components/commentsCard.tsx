@@ -25,7 +25,6 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikesCount] = useState(likes.length);
   const [comments, setComments] = useState<CommentType[]>([]);
-  const [isPostOwner, setIsPostOwner] = useState(false);
   const [isApproved, setIsApproved] = useState(approved);
   const location = useLocation();
   const postId = location.state.postId;
@@ -48,32 +47,28 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
   }, [currentUser, likes]);
 
 
-  useEffect(() => {
-    const fetchIsOwner = async () => {
-      try {
-        const response = await axiosClient.get(`/comments/owner/${postId}`);
-        if (response.data.isOwner) {
-          setIsPostOwner(true);
-        }
-      } catch (error) {
-        console.error("Failed to fetch comments: ", error);
-      }
-    };
-    fetchIsOwner();
-  }
-  , [postId]);
-
-
   const handleApproveComment = async () => {
     try {
-      const response = await axiosClient.put(`/comments/updateApproval/${_id}`);
-      if (response.status === 200) {
-        setIsApproved(true);
-      }
+      const response = await axiosClient.post(`/comments/approve/${_id}`);
+      setIsApproved(response.data.approved);
     } catch (error) {
-      console.error("Failed to approve comment: ", error);
+      console.error("Failed to handle comment approval: ", error);
+
     }
-  };
+  }
+  useEffect(() => {
+    //fetch approved status 
+    const fetchApprovedStatus = async () => {
+      try {
+        const response = await axiosClient.get(`/comments/approve/${_id}`);
+        setIsApproved(response.data.approved);
+      } catch (error) {
+        console.error("Failed to fetch approved status: ", error);
+      }
+    };
+    fetchApprovedStatus();
+    }
+    , [_id]);
 
 
   const handleLike = async () => {
@@ -140,30 +135,28 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
           @{user || 'anonymous'}  
         </Button>    
 
-        {isPostOwner && !isApproved && (
+      {!isApproved && (
           <Button
-          variant="contained"
-          onClick={handleApproveComment} 
-          style={{
-            marginLeft: 'auto',
-            backgroundColor: '#ffe6ff',
-            color: 'black',
-            textTransform: 'none',
-            borderRadius: '20px',
-            padding: '5px 15px',
-            fontSize: '0.8rem',
-            fontWeight: 'bold',
-            boxShadow: 'none',
-          }}
+            variant="contained"
+            onClick={handleApproveComment} 
+            style={{
+              marginLeft: 'auto',
+              backgroundColor: '#ffe6ff',
+              color: 'black',
+              textTransform: 'none',
+              borderRadius: '20px',
+              padding: '5px 15px',
+              fontSize: '0.8rem',
+              fontWeight: 'bold',
+              boxShadow: 'none',
+            }}
         >
           Approve
         </Button>
-        )}
+      )}
       </CardActions>
 
       <br />
     </Card>
-
-    
   );
 }
