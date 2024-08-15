@@ -53,11 +53,6 @@ export default function CommentContent (){
           const response = await axiosClient.get(`/posts/${postId}`);
           console.log(response.data);
           setPost(response.data || null);
-          // Check if the user is the post owner
-          const post = response.data;
-          if (post && user && post.user === user.username) {
-            setIsPostOwner(true);
-          }
         } catch (error) {
           console.error("Failed to fetch post: ", error);
         }
@@ -109,20 +104,6 @@ export default function CommentContent (){
       }
       , [postId]);
 
-
-      const approveComment = async (commentId: string) => {
-        try {
-          await axiosClient.put(`/comments/updateApproval/${commentId}`);
-          setComments((prevComments) =>
-            prevComments.map((comment) =>
-              comment._id === commentId ? { ...comment, approved: true } : comment
-            )
-          );
-        } catch (error) {
-          console.error("Failed to approve comment: ", error);
-        }
-      };
-
       return (
         <div style={{ maxWidth: '600px', margin: '1', textAlign: 'left' }}>
           {post ? (
@@ -153,14 +134,6 @@ export default function CommentContent (){
                timestamp={comment.timestamp}
                 approved={comment.approved}
              />
-
-                <Button 
-                variant="contained" 
-                color="primary" 
-                onClick={() => approveComment(comment._id)}
-            >
-              Approve
-            </Button>
           
            </Box>
           ))}

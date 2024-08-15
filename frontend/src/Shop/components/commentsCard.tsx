@@ -19,12 +19,13 @@ interface CommentType {
   approved: boolean;
 }
 
-export default function CommentCard({ _id, content, posts, user, likes }: CommentType) {
+export default function CommentCard({ _id, content, posts, user, likes , approved}: CommentType) {
   const { user: currentUser } = React.useContext(UserContext) as UserContextType;
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikesCount] = useState(likes.length);
   const [comments, setComments] = useState<CommentType[]>([]);
+  const [isPostOwner, setIsPostOwner] = useState(false);
   const location = useLocation();
   const postId = location.state.postId;
 
@@ -44,6 +45,34 @@ export default function CommentCard({ _id, content, posts, user, likes }: Commen
       setIsLiked(likes.includes(currentUser.uid));
     }
   }, [currentUser, likes]);
+
+  useEffect(() => {
+    const fetchIsOwner = async () => {
+      try {
+        const response = await axiosClient.get(`/owner/${postId}`);
+        if (response.data.isOwner) {
+          setIsPostOwner(true);
+        }
+      } catch (error) {
+        console.error("Failed to fetch comments: ", error);
+      }
+    };
+    fetchIsOwner();
+  }
+  , [postId]);
+
+  const handleApproveComment = async (commentId: string) => {
+    try {
+      await axiosClient.put(`/comments/updateApproval/${commentId}`);
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment._id === commentId ? { ...comment, approved: true } : comment
+        )
+      );
+    } catch (error) {
+      console.error("Failed to approve comment: ", error);
+    }
+  };
 
 
   const handleLike = async () => {
@@ -109,7 +138,20 @@ export default function CommentCard({ _id, content, posts, user, likes }: Commen
         >
           @{user || 'anonymous'}  
 
-        </Button>   
+        </Button>  
+        
+          {/* Display the "Approve" button if the comment is not approved and the current user is the post owner */}
+          {isPostOwner && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={(event) => handleApproveComment(_id)} 
+            style={{ marginLeft: 'auto' }}
+          >
+            Approve
+          </Button>
+        )}
+
       </CardActions>
       <br />
     </Card>
