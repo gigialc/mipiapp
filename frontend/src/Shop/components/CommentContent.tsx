@@ -7,6 +7,7 @@ import { UserContext } from './Auth';
 import { PostType } from './Types';
 import CommentCard from './commentsCard';
 import { CardContent, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
 
 const backendURL = process.env.REACT_APP_BACKEND_URL || 'https://backend-piapp-d985003a74e5.herokuapp.com/';
 
@@ -99,6 +100,7 @@ export default function CommentContent (){
           <br />
 
           {comments.map((comment) => (
+            <Box key={comment._id} mb={2}>
             <CommentCard 
               _id={comment._id}
               content={comment.content}
@@ -107,7 +109,9 @@ export default function CommentContent (){
               posts={comment.posts}
               timestamp={comment.timestamp}
             />
+          </Box>
           ))}
         </div>
+        
       );
     }

@@ -112,5 +112,6 @@ export default function CommentCard({ _id, content, posts, user, likes }: Commen
       </CardActions>
       <br />
     </Card>
+    
   );
 }
