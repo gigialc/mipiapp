@@ -148,7 +148,7 @@ export default function CommentContent (){
                 approved={comment.approved}
              />
 
-              {isPostOwner && !comment.approved && (
+          {isPostOwner && (
                 <Button 
                 variant="contained" 
                 color="primary" 
