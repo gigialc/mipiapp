@@ -83,10 +83,8 @@ export default function CommentContent (){
         const fetchUnnaprovedComments = async () => {
           try {
             const response = await axiosClient.get(`/comments/fetchUnapproved/${postId}`);
-            setComments(prevComments => [
-              ...prevComments,
-              ...response.data.comments || []
-            ]);
+            setComments(response.data.comments || []);
+            setIsPostOwner(true);
           } catch (error) {
             console.error("Failed to fetch comments: ", error);
           }
@@ -114,11 +112,6 @@ export default function CommentContent (){
       const approveComment = async (commentId: string) => {
         try {
           await axiosClient.put(`/comments/updateApproval/${commentId}`);
-          setComments(prevComments => 
-            prevComments.map(comment =>
-              comment._id === commentId ? { ...comment, approved: true } : comment
-            )
-          );
         } catch (error) {
           console.error("Failed to approve comment: ", error);
         }
