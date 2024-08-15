@@ -58,7 +58,6 @@ export default function Comments() {
 
     const fetchCommunityPrice = async () => {
       if (!communityId) return;
-      
       try {
         const response = await axiosClient.get(`/community/${communityId}`);
         const priceAsNumber = parseFloat(response.data.price);

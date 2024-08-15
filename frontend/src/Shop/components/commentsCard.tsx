@@ -73,8 +73,8 @@ export default function CommentCard({ _id, content, posts, user, likes }: Commen
     , [_id]);
 
   
-  const handleNavigatePublicProfile = (username: string) => {
-    navigate(`/profile/${username}`);
+  const handleNavigatePublicProfile = (user: string) => {
+    navigate(`/profile/${user}`);
   };
 
   return (
@@ -112,6 +112,5 @@ export default function CommentCard({ _id, content, posts, user, likes }: Commen
       </CardActions>
       <br />
     </Card>
-  
   );
 }
