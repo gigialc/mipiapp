@@ -61,6 +61,7 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
   }
   , [postId]);
 
+
   const handleApproveComment = async (commentId: string) => {
     try {
       await axiosClient.put(`/comments/updateApproval/${commentId}`);
@@ -141,7 +142,6 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
         </Button>  
         
           {/* Display the "Approve" button if the comment is not approved and the current user is the post owner */}
-          {isPostOwner && (
           <Button
             variant="contained"
             color="primary"
@@ -150,7 +150,7 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
           >
             Approve
           </Button>
-        )}
+
 
       </CardActions>
       <br />
