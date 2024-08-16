@@ -26,6 +26,7 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
   const [likeCount, setLikesCount] = useState(likes.length);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [isApproved, setIsApproved] = useState(approved);
+  const [isPostOwner, setIsPostOwner] = useState(false);
   const location = useLocation();
   const postId = location.state.postId;
 
@@ -98,6 +99,20 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
     }
     , [_id]);
 
+    
+  //check if the user is the owner of the post
+  useEffect(() => {
+    const checkIfPostOwner = async () => {
+      try {
+        const response = await axiosClient.get(`/comments/isOwner/${postId}`);
+        setIsPostOwner(response.data.isOwner);
+      } catch (error) {
+        console.error("Failed to check post ownership: ", error);
+      }
+    };
+    checkIfPostOwner();
+  }, [postId]);
+
   
   const handleNavigatePublicProfile = (user: string) => {
     navigate(`/profile/${user}`);
@@ -135,7 +150,7 @@ export default function CommentCard({ _id, content, posts, user, likes , approve
           @{user || 'anonymous'}  
         </Button>    
 
-      {!isApproved && (
+      {!isApproved && isPostOwner && (
           <Button
             variant="contained"
             onClick={handleApproveComment} 
