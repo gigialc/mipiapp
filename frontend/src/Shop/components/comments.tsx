@@ -20,9 +20,12 @@ export default function Comments() {
     const { user, showModal, saveShowModal, onModalClose } = useContext(UserContext) as UserContextType;
     const location = useLocation();
     const postId = location.state.postId;
+
     const [commentPrice, setCommentPrice] = useState<number>(0);
     const [communityId, setCommunityId] = useState<string | null>(null);
+
     const [thankYouMessage, setThankYouMessage] = useState<string | null>(null);
+    
 
     console.log(postId);
 
@@ -49,7 +52,7 @@ export default function Comments() {
 
     const fetchCommunityId = async () => {
       try {
-        const response = await axiosClient.get(`/posts/${postId}`);
+        const response = await axiosClient.get(`/posts/communityIdFromPost/${postId}`);
         setCommunityId(response.data.communityId);
       } catch (error) {
         console.error('Error fetching community ID:', error);
@@ -60,7 +63,7 @@ export default function Comments() {
     const fetchCommunityPrice = async () => {
       if (!communityId) return;
       try {
-        const response = await axiosClient.get(`/community/${communityId}`);
+        const response = await axiosClient.get(`/community/price/${communityId}`);
         const priceAsNumber = parseFloat(response.data.price);
         setCommentPrice(isNaN(priceAsNumber) ? 1 : priceAsNumber);
       } catch (error) {

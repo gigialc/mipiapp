@@ -87,6 +87,7 @@ export default function CommentContent (){
       checkIfPostOwner();
     }, [postId]);
   
+
     useEffect(() => {
       if (isPostOwner) {
         const fetchUnapprovedComments = async () => {
@@ -100,6 +101,7 @@ export default function CommentContent (){
         fetchUnapprovedComments();
       }
     }, [postId, isPostOwner]);
+
 
       useEffect(() => {
       const fetchLikeStatus = async () => {
@@ -116,6 +118,7 @@ export default function CommentContent (){
       }
       , [postId]);
 
+      
       return (
         <div style={{ maxWidth: '600px', margin: '1', textAlign: 'left' }}>
           {post ? (
